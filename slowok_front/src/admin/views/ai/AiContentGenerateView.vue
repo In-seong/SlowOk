@@ -60,8 +60,20 @@ async function handleGenerate() {
       fetchUsage()
     }
   } catch (e: unknown) {
-    const err = e as { response?: { data?: { message?: string } } }
-    error.value = err.response?.data?.message || 'AI 콘텐츠 생성에 실패했습니다.'
+    const err = e as { response?: { data?: { message?: string }; status?: number }; message?: string; code?: string }
+    const serverMsg = err.response?.data?.message
+    const status = err.response?.status
+    const code = err.code
+
+    if (serverMsg) {
+      error.value = serverMsg
+    } else if (code === 'ECONNABORTED') {
+      error.value = 'AI 생성 요청이 시간 초과되었습니다. 다시 시도해주세요.'
+    } else if (status) {
+      error.value = `서버 오류 (${status}). 잠시 후 다시 시도해주세요.`
+    } else {
+      error.value = `연결 실패: ${err.message || '네트워크 오류'}`
+    }
     fetchUsage()
   } finally {
     generating.value = false

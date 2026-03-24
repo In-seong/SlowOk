@@ -46,6 +46,11 @@ class AiContentController extends BaseAdminController
                 'success' => false,
                 'message' => $e->getMessage(),
             ], $code);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => '[서버 오류] ' . $e->getMessage(),
+            ], 500);
         }
     }
 

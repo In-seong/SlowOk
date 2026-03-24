@@ -88,16 +88,20 @@ class GeminiService
 
     private function logUsage(int $accountId, int $institutionId, string $prompt, int $promptTokens, int $completionTokens, int $totalTokens, string $status, ?string $errorMessage = null): void
     {
-        AiGenerationLog::create([
-            'account_id' => $accountId,
-            'institution_id' => $institutionId,
-            'prompt' => mb_substr($prompt, 0, 2000),
-            'prompt_tokens' => $promptTokens,
-            'completion_tokens' => $completionTokens,
-            'total_tokens' => $totalTokens,
-            'status' => $status,
-            'error_message' => $errorMessage,
-        ]);
+        try {
+            AiGenerationLog::create([
+                'account_id' => $accountId,
+                'institution_id' => $institutionId,
+                'prompt' => mb_substr($prompt, 0, 2000),
+                'prompt_tokens' => $promptTokens,
+                'completion_tokens' => $completionTokens,
+                'total_tokens' => $totalTokens,
+                'status' => $status,
+                'error_message' => $errorMessage,
+            ]);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('AI 사용량 로그 저장 실패: ' . $e->getMessage());
+        }
     }
 
     public static function getUsageStats(int $institutionId): array

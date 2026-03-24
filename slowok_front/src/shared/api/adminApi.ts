@@ -155,7 +155,7 @@ export const adminApi = {
     return api.get<ApiResponse<{ today: { requests: number; success: number; tokens: number; limit: number }; month: { requests: number; success: number; tokens: number } }>>('/admin/ai-content/usage')
   },
   generateAiContent(prompt: string) {
-    return api.post<ApiResponse<Record<string, unknown>>>('/admin/ai-content/generate', { prompt })
+    return api.post<ApiResponse<Record<string, unknown>>>('/admin/ai-content/generate', { prompt }, { timeout: 120000 })
   },
   saveAiContent(data: Record<string, unknown>) {
     return api.post<ApiResponse<{ package_id: number; package_name: string; counts: { learning_contents: number; challenges: number; screening_tests: number } }>>('/admin/ai-content/save', data)
