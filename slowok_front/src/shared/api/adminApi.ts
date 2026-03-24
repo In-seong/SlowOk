@@ -150,6 +150,14 @@ export const adminApi = {
     return api.delete<ApiResponse<null>>(`/admin/master/admins/${id}`)
   },
 
+  // AI 콘텐츠 생성
+  generateAiContent(prompt: string) {
+    return api.post<ApiResponse<Record<string, unknown>>>('/admin/ai-content/generate', { prompt })
+  },
+  saveAiContent(data: Record<string, unknown>) {
+    return api.post<ApiResponse<{ package_id: number; package_name: string; counts: { learning_contents: number; challenges: number; screening_tests: number } }>>('/admin/ai-content/save', data)
+  },
+
   // MASTER 전용 - 권한 관리
   getPermissions() {
     return api.get<ApiResponse<AdminPermission[]>>('/admin/master/permissions')

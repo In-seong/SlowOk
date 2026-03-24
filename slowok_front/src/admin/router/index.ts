@@ -106,6 +106,12 @@ const router = createRouter({
       meta: { requiresAuth: true, permissionKey: 'package_manage' },
     },
     {
+      path: '/ai-content',
+      name: 'ai-content',
+      component: () => import('../views/ai/AiContentGenerateView.vue'),
+      meta: { requiresAuth: true, permissionKey: 'content_manage' },
+    },
+    {
       path: '/recommendation-rules',
       name: 'recommendation-rules',
       component: () => import('../views/recommendation/RecommendationRuleView.vue'),
