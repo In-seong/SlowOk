@@ -151,6 +151,9 @@ export const adminApi = {
   },
 
   // AI 콘텐츠 생성
+  getAiUsage() {
+    return api.get<ApiResponse<{ today: { requests: number; success: number; tokens: number; limit: number }; month: { requests: number; success: number; tokens: number } }>>('/admin/ai-content/usage')
+  },
   generateAiContent(prompt: string) {
     return api.post<ApiResponse<Record<string, unknown>>>('/admin/ai-content/generate', { prompt })
   },

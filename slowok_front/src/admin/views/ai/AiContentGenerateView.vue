@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { adminApi } from '@shared/api/adminApi'
 import { useToastStore } from '@shared/stores/toastStore'
 
@@ -10,6 +10,26 @@ const generating = ref(false)
 const saving = ref(false)
 const previewData = ref<Record<string, unknown> | null>(null)
 const error = ref('')
+
+// 사용량 통계
+interface UsageStats {
+  today: { requests: number; success: number; tokens: number; limit: number }
+  month: { requests: number; success: number; tokens: number }
+}
+const usage = ref<UsageStats | null>(null)
+
+async function fetchUsage() {
+  try {
+    const res = await adminApi.getAiUsage()
+    if (res.data.success) {
+      usage.value = res.data.data
+    }
+  } catch {
+    // 사용량 로딩 실패해도 기능은 작동
+  }
+}
+
+onMounted(fetchUsage)
 
 const EXAMPLE_PROMPTS = [
   '초등생 기준으로 사회성 발달 교육을 필요로 하는 내담자들이 집에서 편하게 할 수 있는 8가지 콘텐츠를 만들어줘. 콘텐츠 유형은 다양하게.',
@@ -37,10 +57,12 @@ async function handleGenerate() {
     if (res.data.success) {
       previewData.value = res.data.data
       toast.success('AI 콘텐츠가 생성되었습니다. 아래에서 확인 후 저장해주세요.')
+      fetchUsage()
     }
   } catch (e: unknown) {
     const err = e as { response?: { data?: { message?: string } } }
     error.value = err.response?.data?.message || 'AI 콘텐츠 생성에 실패했습니다.'
+    fetchUsage()
   } finally {
     generating.value = false
   }
@@ -92,6 +114,45 @@ function getContentTypeBg(type: string): string {
       <div class="mb-6">
         <h2 class="text-[18px] font-bold text-[#333]">AI 콘텐츠 생성</h2>
         <p class="text-[13px] text-[#888] mt-1">프롬프트를 입력하면 AI가 학습 콘텐츠 + 챌린지 + 진단검사를 한번에 생성합니다.</p>
+      </div>
+
+      <!-- 사용량 표시 -->
+      <div v-if="usage" class="bg-white rounded-[16px] shadow-[0_0_10px_rgba(0,0,0,0.08)] p-4 mb-5">
+        <div class="flex items-center gap-2 mb-3">
+          <svg class="w-4 h-4 text-[#4CAF50]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18" /><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3" /></svg>
+          <span class="text-[13px] font-semibold text-[#333]">API 사용량</span>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <!-- 오늘 -->
+          <div>
+            <p class="text-[11px] text-[#999] mb-1">오늘</p>
+            <div class="flex items-end gap-1">
+              <span class="text-[20px] font-bold" :class="usage.today.requests >= usage.today.limit * 0.9 ? 'text-red-500' : 'text-[#333]'">{{ usage.today.requests }}</span>
+              <span class="text-[12px] text-[#999] mb-0.5">/ {{ usage.today.limit }}회</span>
+            </div>
+            <!-- 프로그레스 바 -->
+            <div class="mt-1.5 h-1.5 bg-[#F0F0F0] rounded-full overflow-hidden">
+              <div
+                class="h-full rounded-full transition-all"
+                :class="usage.today.requests >= usage.today.limit * 0.9 ? 'bg-red-400' : usage.today.requests >= usage.today.limit * 0.7 ? 'bg-orange-400' : 'bg-[#4CAF50]'"
+                :style="{ width: Math.min(100, (usage.today.requests / usage.today.limit) * 100) + '%' }"
+              ></div>
+            </div>
+            <p class="text-[11px] text-[#999] mt-1">성공 {{ usage.today.success }}회 · {{ usage.today.tokens.toLocaleString() }} 토큰</p>
+          </div>
+          <!-- 이번 달 -->
+          <div>
+            <p class="text-[11px] text-[#999] mb-1">이번 달</p>
+            <div class="flex items-end gap-1">
+              <span class="text-[20px] font-bold text-[#333]">{{ usage.month.requests }}</span>
+              <span class="text-[12px] text-[#999] mb-0.5">회</span>
+            </div>
+            <p class="text-[11px] text-[#999] mt-3">성공 {{ usage.month.success }}회 · {{ usage.month.tokens.toLocaleString() }} 토큰</p>
+          </div>
+        </div>
+        <p v-if="usage.today.requests >= usage.today.limit * 0.9" class="mt-2 text-[12px] text-red-500 font-medium">
+          일일 사용량 한도에 거의 도달했습니다. (무료: {{ usage.today.limit }}회/일)
+        </p>
       </div>
 
       <!-- 프롬프트 입력 -->

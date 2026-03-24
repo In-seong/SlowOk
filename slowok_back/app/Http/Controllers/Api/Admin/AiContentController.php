@@ -32,7 +32,8 @@ class AiContentController extends BaseAdminController
 
         try {
             $service = new GeminiService();
-            $data = $service->generateContentPackage($request->input('prompt'), $instId);
+            $accountId = $request->user()->account_id;
+            $data = $service->generateContentPackage($request->input('prompt'), $instId, $accountId);
 
             return response()->json([
                 'success' => true,
@@ -46,6 +47,24 @@ class AiContentController extends BaseAdminController
                 'message' => $e->getMessage(),
             ], $code);
         }
+    }
+
+    public function usage(Request $request): JsonResponse
+    {
+        $instId = $this->getInstitutionId($request);
+        if (!$instId) {
+            return response()->json([
+                'success' => false,
+                'message' => '기관을 선택해주세요.',
+            ], 422);
+        }
+
+        $stats = GeminiService::getUsageStats($instId);
+
+        return response()->json([
+            'success' => true,
+            'data' => $stats,
+        ]);
     }
 
     public function save(Request $request): JsonResponse

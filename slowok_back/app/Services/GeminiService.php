@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\AiGenerationLog;
 use App\Models\LearningCategory;
 use Illuminate\Support\Facades\Http;
 
@@ -16,7 +17,7 @@ class GeminiService
         $this->model = config('services.gemini.model');
     }
 
-    public function generateContentPackage(string $prompt, int $institutionId): array
+    public function generateContentPackage(string $prompt, int $institutionId, int $accountId): array
     {
         if (empty($this->apiKey)) {
             throw new \RuntimeException('GEMINI_API_KEY가 설정되지 않았습니다.');
@@ -35,37 +36,98 @@ class GeminiService
 
         $url = "https://generativelanguage.googleapis.com/v1beta/models/{$this->model}:generateContent?key={$this->apiKey}";
 
-        $response = Http::timeout(120)
-            ->retry(2, 3000)
-            ->post($url, [
-                'contents' => [
-                    ['role' => 'user', 'parts' => [['text' => $prompt]]],
-                ],
-                'systemInstruction' => [
-                    'parts' => [['text' => $systemPrompt]],
-                ],
-                'generationConfig' => [
-                    'responseMimeType' => 'application/json',
-                    'temperature' => 0.8,
-                ],
-            ]);
+        try {
+            $response = Http::timeout(120)
+                ->retry(2, 3000)
+                ->post($url, [
+                    'contents' => [
+                        ['role' => 'user', 'parts' => [['text' => $prompt]]],
+                    ],
+                    'systemInstruction' => [
+                        'parts' => [['text' => $systemPrompt]],
+                    ],
+                    'generationConfig' => [
+                        'responseMimeType' => 'application/json',
+                        'temperature' => 0.8,
+                    ],
+                ]);
+        } catch (\Exception $e) {
+            $this->logUsage($accountId, $institutionId, $prompt, 0, 0, 0, 'error', $e->getMessage());
+            throw new \RuntimeException('Gemini API 연결 실패: ' . $e->getMessage());
+        }
 
         if (!$response->successful()) {
             $error = $response->json('error.message') ?? $response->body();
+            $this->logUsage($accountId, $institutionId, $prompt, 0, 0, 0, 'error', $error);
             throw new \RuntimeException('Gemini API 호출 실패: ' . $error);
         }
 
+        // 토큰 사용량 추출
+        $usage = $response->json('usageMetadata') ?? [];
+        $promptTokens = $usage['promptTokenCount'] ?? 0;
+        $completionTokens = $usage['candidatesTokenCount'] ?? 0;
+        $totalTokens = $usage['totalTokenCount'] ?? 0;
+
         $text = $response->json('candidates.0.content.parts.0.text');
         if (!$text) {
+            $this->logUsage($accountId, $institutionId, $prompt, $promptTokens, $completionTokens, $totalTokens, 'error', '응답 텍스트 없음');
             throw new \RuntimeException('Gemini 응답에서 텍스트를 추출할 수 없습니다.');
         }
 
         $data = json_decode($text, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
+            $this->logUsage($accountId, $institutionId, $prompt, $promptTokens, $completionTokens, $totalTokens, 'error', 'JSON 파싱 실패');
             throw new \RuntimeException('Gemini 응답 JSON 파싱 실패: ' . json_last_error_msg());
         }
 
+        // 성공 로그
+        $this->logUsage($accountId, $institutionId, $prompt, $promptTokens, $completionTokens, $totalTokens, 'success');
+
         return $data;
+    }
+
+    private function logUsage(int $accountId, int $institutionId, string $prompt, int $promptTokens, int $completionTokens, int $totalTokens, string $status, ?string $errorMessage = null): void
+    {
+        AiGenerationLog::create([
+            'account_id' => $accountId,
+            'institution_id' => $institutionId,
+            'prompt' => mb_substr($prompt, 0, 2000),
+            'prompt_tokens' => $promptTokens,
+            'completion_tokens' => $completionTokens,
+            'total_tokens' => $totalTokens,
+            'status' => $status,
+            'error_message' => $errorMessage,
+        ]);
+    }
+
+    public static function getUsageStats(int $institutionId): array
+    {
+        $today = now()->startOfDay();
+        $monthStart = now()->startOfMonth();
+
+        $todayStats = AiGenerationLog::where('institution_id', $institutionId)
+            ->where('created_at', '>=', $today)
+            ->selectRaw('COUNT(*) as count, COALESCE(SUM(total_tokens), 0) as tokens, COALESCE(SUM(CASE WHEN status = "success" THEN 1 ELSE 0 END), 0) as success_count')
+            ->first();
+
+        $monthStats = AiGenerationLog::where('institution_id', $institutionId)
+            ->where('created_at', '>=', $monthStart)
+            ->selectRaw('COUNT(*) as count, COALESCE(SUM(total_tokens), 0) as tokens, COALESCE(SUM(CASE WHEN status = "success" THEN 1 ELSE 0 END), 0) as success_count')
+            ->first();
+
+        return [
+            'today' => [
+                'requests' => (int) $todayStats->count,
+                'success' => (int) $todayStats->success_count,
+                'tokens' => (int) $todayStats->tokens,
+                'limit' => 1500,
+            ],
+            'month' => [
+                'requests' => (int) $monthStats->count,
+                'success' => (int) $monthStats->success_count,
+                'tokens' => (int) $monthStats->tokens,
+            ],
+        ];
     }
 
     private function buildSystemPrompt(array $categories): string
