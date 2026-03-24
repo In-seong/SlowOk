@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #4CAF50;
+  --color-primary-light: #E8F5E9;
+  --color-primary-hover: #388E3C;
+  --color-secondary: #FF9800;
+  --color-secondary-light: #FFF3E0;
+  --color-accent: #2196F3;
+  --color-accent-light: #E3F2FD;
+  --font-family-pretendard: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+:root {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #213547;
+  background-color: #ffffff;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+#app {
+  width: 100%;
+  min-height: 100vh;
+}

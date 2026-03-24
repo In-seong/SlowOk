@@ -1,0 +1,95 @@
+//
+//  AppDelegate.swift
+//  SlowOK
+//
+//  Created by scoop dev on 3/1/26.
+//
+
+import UIKit
+import UserNotifications
+// TODO: Firebase 설정 후 아래 import 주석 해제
+// import FirebaseCore
+// import FirebaseMessaging
+
+class AppDelegate: UIResponder, UIApplicationDelegate {
+
+    // FCM 토큰
+    var fcmToken: String?
+
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
+
+        // TODO: Firebase 설정 후 아래 코드 주석 해제
+        // Firebase 초기화
+        // FirebaseApp.configure()
+
+        // FCM 메시징 델리게이트 등록
+        // Messaging.messaging().delegate = self
+
+        // 푸시 알림 권한 요청
+        UNUserNotificationCenter.current().delegate = self
+
+        application.registerForRemoteNotifications()
+        return true
+    }
+
+    // MARK: - APNs 토큰 등록
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        print("✅ APNs token: \(deviceToken.map { String(format: "%02.2hhx", $0) }.joined())")
+        // TODO: Firebase 설정 후 아래 코드 주석 해제
+        // FCM에 APNs 토큰 전달
+        // Messaging.messaging().apnsToken = deviceToken
+    }
+
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        print("🔴 Failed to register for remote notifications: \(error)")
+    }
+}
+
+// MARK: - Messaging Delegate
+// TODO: Firebase 설정 후 아래 extension 주석 해제
+/*
+extension AppDelegate: MessagingDelegate {
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        guard let token = fcmToken else { return }
+        self.fcmToken = token
+        print("✅ FCM registration token: \(token)")
+
+        // 토큰을 저장하고 WebView로 전달
+        UserDefaults.standard.set(fcmToken, forKey: "fcmToken")
+
+        // MainView에 토큰 전달
+        NotificationCenter.default.post(
+            name: Notification.Name("FCMTokenReceived"),
+            object: nil,
+            userInfo: ["token": token]
+        )
+    }
+}
+*/
+
+// MARK: - Notification Delegate
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    // 앱이 foreground일 때 알림 수신 처리
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler:
+        @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        print("📩 Foreground Notification: \(notification.request.content.userInfo)")
+        completionHandler([.banner, .sound, .badge])
+    }
+
+    // 사용자가 알림을 탭했을 때 동작
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
+        print("📬 User tapped notification: \(response.notification.request.content.userInfo)")
+        completionHandler()
+    }
+}

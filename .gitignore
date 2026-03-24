@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Claude
+.claude/
+
+# Laravel
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+bootstrap/cache/*
+!storage/logs/.gitkeep
+!storage/framework/cache/.gitkeep
+!storage/framework/sessions/.gitkeep
+!storage/framework/views/.gitkeep
+!bootstrap/cache/.gitkeep
+
+# Database
+database/database.sqlite
+
+# Build output
+dist/
+slowok_front/dist/
+
+# Package lock
+package-lock.json
+composer.lock
+
+# Upload files
+storage/app/public/images/*
+storage/app/public/videos/*
+storage/app/public/audios/*
+storage/app/public/thumbnails/*
+storage/app/public/recordings/*
+!storage/app/public/.gitkeep

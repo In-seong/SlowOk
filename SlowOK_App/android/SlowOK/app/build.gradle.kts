@@ -1,0 +1,79 @@
+plugins {
+    alias(libs.plugins.android.application)
+    id("com.google.gms.google-services")
+}
+
+android {
+    namespace = "com.spoon.slowok"
+    compileSdk = 36
+
+    defaultConfig {
+        minSdk = 24
+        targetSdk = 36
+        versionCode = 1
+        versionName = "1.0.0"
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        debug {
+            isDebuggable = true
+            applicationIdSuffix = ".dev"
+            resValue("string", "app_name_suffix", " (Dev)")
+        }
+        release {
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            resValue("string", "app_name_suffix", "")
+        }
+    }
+
+    flavorDimensions += "version"
+    productFlavors {
+        create("user") {
+            dimension = "version"
+            applicationId = "com.spoon.slowok.user"
+        }
+        create("admin") {
+            dimension = "version"
+            applicationId = "com.spoon.slowok.admin"
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    buildFeatures {
+        viewBinding = true
+        buildConfig = true
+    }
+}
+
+dependencies {
+    // AndroidX Core
+    implementation("androidx.core:core-ktx:1.15.0")
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("androidx.activity:activity:1.9.3")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.0")
+
+    // WebKit
+    implementation("androidx.webkit:webkit:1.12.1")
+
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation("com.google.firebase:firebase-messaging")
+
+    // Google Play Services
+    implementation("com.google.android.gms:play-services-base:18.5.0")
+
+    // Testing
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+}

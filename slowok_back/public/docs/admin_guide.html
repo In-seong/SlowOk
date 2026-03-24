@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>느려도 괜찮아 - 관리자 사용 설명서</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --green: #4CAF50;
+    --green-dark: #388E3C;
+    --green-light: #E8F5E9;
+    --blue: #2196F3;
+    --blue-light: #E3F2FD;
+    --orange: #FF9800;
+    --orange-light: #FFF3E0;
+    --purple: #9C27B0;
+    --purple-light: #F3E5F5;
+    --dark: #333333;
+    --gray: #888888;
+    --light: #F5F5F5;
+    --white: #FFFFFF;
+  }
+
+  body {
+    font-family: 'Noto Sans KR', -apple-system, sans-serif;
+    background: #000;
+    overflow: hidden;
+    color: var(--dark);
+  }
+
+  .slide-container { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
+
+  .slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 50px 70px;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    background: var(--white);
+    overflow-y: auto;
+  }
+
+  .slide.active { opacity: 1; transform: translateX(0); pointer-events: auto; }
+  .slide.prev { opacity: 0; transform: translateX(-60px); }
+
+  .nav {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    z-index: 100;
+    background: rgba(255,255,255,0.95);
+    padding: 8px 20px;
+    border-radius: 50px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px);
+  }
+
+  .nav button {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: var(--light);
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    color: var(--dark);
+  }
+
+  .nav button:hover { background: var(--green); color: white; }
+  .nav .counter { font-size: 13px; font-weight: 500; color: var(--gray); min-width: 60px; text-align: center; }
+
+  .progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--green), var(--blue));
+    z-index: 100;
+    transition: width 0.4s ease;
+  }
+
+  /* Typography */
+  .page-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: var(--white);
+    background: var(--green);
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+
+  .page-title {
+    font-size: 34px;
+    font-weight: 900;
+    line-height: 1.3;
+    margin-bottom: 8px;
+  }
+
+  .page-desc {
+    font-size: 16px;
+    color: var(--gray);
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
+
+  /* Cover */
+  .cover {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: linear-gradient(135deg, var(--green-light) 0%, white 50%, var(--blue-light) 100%);
+  }
+
+  .cover .badge-line {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--green);
+    letter-spacing: 3px;
+    margin-bottom: 16px;
+  }
+
+  .cover .page-title { font-size: 44px; color: var(--green-dark); }
+  .cover .sub { font-size: 18px; color: var(--gray); margin-top: 12px; }
+  .cover .role-badges { display: flex; gap: 12px; justify-content: center; margin-top: 32px; }
+  .cover .role-badge {
+    padding: 8px 24px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  /* Step block */
+  .steps { display: flex; flex-direction: column; gap: 16px; flex: 1; }
+
+  .step-block {
+    display: flex;
+    gap: 16px;
+    padding: 18px;
+    background: var(--light);
+    border-radius: 14px;
+    align-items: flex-start;
+  }
+
+  .step-num {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--green);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .step-content h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .step-content p { font-size: 13px; color: #666; line-height: 1.6; }
+
+  /* Tip box */
+  .tip-box {
+    background: var(--green-light);
+    border-left: 4px solid var(--green);
+    border-radius: 0 12px 12px 0;
+    padding: 14px 18px;
+    margin-top: 12px;
+  }
+
+  .tip-box .tip-title { font-size: 12px; font-weight: 700; color: var(--green-dark); margin-bottom: 4px; }
+  .tip-box p { font-size: 13px; color: #555; line-height: 1.6; }
+
+  /* Warning box */
+  .warn-box {
+    background: var(--orange-light);
+    border-left: 4px solid var(--orange);
+    border-radius: 0 12px 12px 0;
+    padding: 14px 18px;
+    margin-top: 12px;
+  }
+
+  .warn-box .warn-title { font-size: 12px; font-weight: 700; color: #E65100; margin-bottom: 4px; }
+  .warn-box p { font-size: 13px; color: #555; line-height: 1.6; }
+
+  /* Feature grid */
+  .feat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-top: 16px;
+  }
+
+  .feat-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+
+  .feat-card {
+    background: var(--white);
+    border: 1px solid #E8E8E8;
+    border-radius: 12px;
+    padding: 18px;
+  }
+
+  .feat-card h5 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+  .feat-card p { font-size: 12px; color: var(--gray); line-height: 1.5; }
+
+  .feat-card .icon-sm {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    font-size: 17px;
+  }
+
+  /* Menu path */
+  .menu-path {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #F0F0F0;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #555;
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+
+  .menu-path .sep { color: var(--green); font-weight: 700; }
+
+  /* Table */
+  .guide-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 12px;
+  }
+
+  .guide-table th {
+    background: var(--green);
+    color: white;
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+  }
+
+  .guide-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #F0F0F0;
+  }
+
+  .guide-table tr:hover td { background: #FAFAFA; }
+
+  /* Two column layout */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+
+  /* Role comparison */
+  .role-box {
+    border: 2px solid #E8E8E8;
+    border-radius: 14px;
+    padding: 20px;
+  }
+
+  .role-box.master { border-color: var(--purple); }
+  .role-box.admin { border-color: var(--blue); }
+
+  .role-box h4 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .role-box ul { list-style: none; }
+  .role-box li {
+    padding: 6px 0;
+    font-size: 13px;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .role-box li .check { color: var(--green); font-weight: 700; }
+  .role-box li .cross { color: #CCC; }
+
+  /* TOC */
+  .toc-list { list-style: none; margin-top: 20px; }
+  .toc-list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #F0F0F0;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .toc-list li:hover { color: var(--green); }
+
+  .toc-num {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  /* End */
+  .end-slide {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: linear-gradient(135deg, var(--green-dark), var(--green));
+    color: white;
+  }
+
+  .end-slide .page-title { color: white; }
+
+  /* Print */
+  @media print {
+    body { background: white; }
+    .nav, .progress-bar { display: none !important; }
+    .slide-container { height: auto; overflow: visible; }
+    .slide {
+      position: relative !important;
+      opacity: 1 !important;
+      transform: none !important;
+      pointer-events: auto !important;
+      page-break-after: always;
+      min-height: 100vh;
+    }
+    .slide.prev { opacity: 1 !important; transform: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="slide-container" id="slideContainer">
+
+  <!-- S0: Cover -->
+  <div class="slide cover active" data-slide="0">
+    <div class="badge-line">ADMIN GUIDE</div>
+    <div class="page-title">관리자 사용 설명서</div>
+    <div class="sub">느려도 괜찮아 &middot; 관리 시스템 운영 가이드</div>
+    <div class="role-badges">
+      <span class="role-badge" style="background: var(--purple-light); color: var(--purple);">MASTER</span>
+      <span class="role-badge" style="background: var(--blue-light); color: var(--blue);">ADMIN</span>
+    </div>
+  </div>
+
+  <!-- S1: TOC -->
+  <div class="slide" data-slide="1">
+    <div class="page-badge">목차</div>
+    <div class="page-title">가이드 구성</div>
+    <ol class="toc-list">
+      <li onclick="goSlide(2)"><span class="toc-num" style="background:var(--purple);">1</span> 역할 및 권한 체계</li>
+      <li onclick="goSlide(3)"><span class="toc-num" style="background:var(--green);">2</span> 초기 설정 (기관/관리자/권한)</li>
+      <li onclick="goSlide(4)"><span class="toc-num" style="background:var(--blue);">3</span> 대시보드 활용</li>
+      <li onclick="goSlide(5)"><span class="toc-num" style="background:var(--orange);">4</span> 콘텐츠 관리 (카테고리/콘텐츠/챌린지)</li>
+      <li onclick="goSlide(6)"><span class="toc-num" style="background:#F44336;">5</span> 진단 검사 관리</li>
+      <li onclick="goSlide(7)"><span class="toc-num" style="background:#009688;">6</span> 사용자 관리 & 메모</li>
+      <li onclick="goSlide(8)"><span class="toc-num" style="background:#795548;">7</span> 콘텐츠 할당 & 패키지</li>
+      <li onclick="goSlide(9)"><span class="toc-num" style="background:#607D8B;">8</span> 음성 녹음 관리</li>
+      <li onclick="goSlide(10)"><span class="toc-num" style="background:var(--purple);">9</span> 데이터 내보내기 (CSV)</li>
+      <li onclick="goSlide(11)"><span class="toc-num" style="background:var(--green);">10</span> 플랜/기능 관리 (MASTER)</li>
+      <li onclick="goSlide(12)"><span class="toc-num" style="background:var(--dark);">11</span> FAQ & 문제 해결</li>
+    </ol>
+  </div>
+
+  <!-- S2: Roles -->
+  <div class="slide" data-slide="2">
+    <div class="page-badge" style="background: var(--purple);">CHAPTER 1</div>
+    <div class="page-title">역할 및 권한 체계</div>
+    <div class="page-desc">시스템에는 MASTER와 ADMIN 두 가지 관리자 역할이 있습니다.</div>
+    <div class="two-col">
+      <div class="role-box master">
+        <h4><span style="color:var(--purple);">&#9733;</span> MASTER (최고 관리자)</h4>
+        <ul>
+          <li><span class="check">&#10003;</span> 전체 기관 생성/관리</li>
+          <li><span class="check">&#10003;</span> 기관 전환 (드롭다운)</li>
+          <li><span class="check">&#10003;</span> ADMIN 계정 생성/삭제</li>
+          <li><span class="check">&#10003;</span> 권한 설정 (ON/OFF)</li>
+          <li><span class="check">&#10003;</span> 초대코드 발급</li>
+          <li><span class="check">&#10003;</span> 플랜/기능 관리</li>
+          <li><span class="check">&#10003;</span> 모든 ADMIN 기능 포함</li>
+        </ul>
+      </div>
+      <div class="role-box admin">
+        <h4><span style="color:var(--blue);">&#9632;</span> ADMIN (기관 관리자)</h4>
+        <ul>
+          <li><span class="check">&#10003;</span> 소속 기관 데이터만 접근</li>
+          <li><span class="check">&#10003;</span> 사용자 관리/메모</li>
+          <li><span class="check">&#10003;</span> 콘텐츠/챌린지 등록</li>
+          <li><span class="check">&#10003;</span> 진단 검사 관리</li>
+          <li><span class="check">&#10003;</span> 콘텐츠 할당/배정</li>
+          <li><span class="check">&#10003;</span> 대시보드/리포트 조회</li>
+          <li><span class="cross">&#10007;</span> 기관 생성, 관리자 관리 불가</li>
+        </ul>
+      </div>
+    </div>
+    <div class="tip-box">
+      <div class="tip-title">&#128161; TIP</div>
+      <p>ADMIN의 권한은 MASTER가 세밀하게 ON/OFF할 수 있습니다. 예: 대시보드만 볼 수 있는 조회 전용 ADMIN 생성 가능.</p>
+    </div>
+  </div>
+
+  <!-- S3: Initial Setup -->
+  <div class="slide" data-slide="3">
+    <div class="page-badge" style="background: var(--green);">CHAPTER 2</div>
+    <div class="page-title">초기 설정</div>
+    <div class="page-desc">서비스 사용을 위한 필수 설정 단계입니다. (MASTER 전용)</div>
+    <div class="steps">
+      <div class="step-block">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h4>기관 생성 및 초대코드 발급</h4>
+          <p><span class="menu-path">사이드바 <span class="sep">></span> 운영 <span class="sep">></span> 기관 관리</span><br>
+          "기관 추가" 버튼 클릭 > 기관명, 유형, 주소 입력 > "자동 생성"으로 초대코드 발급. 이 코드를 학부모에게 전달합니다.</p>
+        </div>
+      </div>
+      <div class="step-block">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h4>ADMIN 계정 생성</h4>
+          <p><span class="menu-path">사이드바 <span class="sep">></span> 시스템 <span class="sep">></span> 관리자 관리</span><br>
+          "관리자 추가" 버튼 > 아이디, 비밀번호, 이름, 역할(ADMIN), 소속 기관 선택. 생성된 계정 정보를 담당자에게 전달합니다.</p>
+        </div>
+      </div>
+      <div class="step-block">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h4>권한 설정</h4>
+          <p><span class="menu-path">사이드바 <span class="sep">></span> 시스템 <span class="sep">></span> 권한 관리</span><br>
+          각 ADMIN별로 대시보드, 콘텐츠, 진단, 사용자 관리 등 기능 단위 ON/OFF. 변경 즉시 적용됩니다.</p>
+        </div>
+      </div>
+    </div>
+    <div class="warn-box">
+      <div class="warn-title">&#9888; 주의사항</div>
+      <p>초대코드는 기관당 1개입니다. 변경 시 기존 코드는 즉시 비활성화되므로, 이미 전달한 코드가 있다면 사용자에게 안내하세요.</p>
+    </div>
+  </div>
+
+  <!-- S4: Dashboard -->
+  <div class="slide" data-slide="4">
+    <div class="page-badge" style="background: var(--blue);">CHAPTER 3</div>
+    <div class="page-title">대시보드 활용</div>
+    <div class="page-desc">로그인 후 첫 화면. 기관의 핵심 현황을 한눈에 파악합니다.</div>
+    <div class="menu-path">사이드바 <span class="sep">></span> 대시보드</div>
+
+    <div class="feat-grid" style="margin-top: 8px;">
+      <div class="feat-card">
+        <div class="icon-sm" style="background: var(--blue-light);">&#128202;</div>
+        <h5>요약 카드 (4개)</h5>
+        <p>전체 사용자, 학습자, 학습 콘텐츠 수, 진단 완료 건수를 숫자로 표시합니다.</p>
+      </div>
+      <div class="feat-card">
+        <div class="icon-sm" style="background: var(--green-light);">&#128200;</div>
+        <h5>학습 완료율</h5>
+        <p>도넛 차트로 전체 배정 중 완료 비율을 퍼센트로 보여줍니다.</p>
+      </div>
+      <div class="feat-card">
+        <div class="icon-sm" style="background: var(--orange-light);">&#128202;</div>
+        <h5>7일 활동 추이</h5>
+        <p>최근 7일간 일별 진단/학습완료/챌린지 활동을 바 차트로 표시합니다.</p>
+      </div>
+      <div class="feat-card">
+        <div class="icon-sm" style="background: var(--purple-light);">&#128200;</div>
+        <h5>주간 학습 추이 (8주)</h5>
+        <p>라인 차트로 주별 학습 시작/완료 건수 추세를 확인합니다.</p>
+      </div>
+      <div class="feat-card">
+        <div class="icon-sm" style="background: #E0F7FA;">&#128200;</div>
+        <h5>월간 진단 현황 (6개월)</h5>
+        <p>월별 진단 검사 수와 평균 점수를 바+라벨로 표시합니다.</p>
+      </div>
+      <div class="feat-card">
+        <div class="icon-sm" style="background: #FFF8E1;">&#128221;</div>
+        <h5>최근 진단/가입자</h5>
+        <p>최근 5건의 진단 결과와 최근 가입자를 실시간으로 확인합니다.</p>
+      </div>
+    </div>
+    <div class="tip-box">
+      <div class="tip-title">&#128161; TIP</div>
+      <p>MASTER는 상단 기관 드롭다운으로 기관을 전환하면 해당 기관의 대시보드를 볼 수 있습니다. "전체"를 선택하면 통합 현황을 확인합니다.</p>
+    </div>
+  </div>
+
+  <!-- S5: Content Management -->
+  <div class="slide" data-slide="5">
+    <div class="page-badge" style="background: var(--orange);">CHAPTER 4</div>
+    <div class="page-title">콘텐츠 관리</div>
+    <div class="page-desc">학습 카테고리, 콘텐츠, 챌린지를 등록하고 관리합니다.</div>
+
+    <div class="steps">
+      <div class="step-block">
+        <div class="step-num" style="background: var(--orange);">1</div>
+        <div class="step-content">
+          <h4>카테고리 생성</h4>
+          <p><span class="menu-path">콘텐츠 <span class="sep">></span> 카테고리 관리</span><br>
+          학습 영역(언어, 수학, 사회성 등)을 카테고리로 생성합니다. 아이콘과 설명을 추가할 수 있습니다.</p>
+        </div>
+      </div>
+      <div class="step-block">
+        <div class="step-num" style="background: var(--orange);">2</div>
+        <div class="step-content">
+          <h4>학습 콘텐츠 등록</h4>
+          <p><span class="menu-path">콘텐츠 <span class="sep">></span> 콘텐츠 관리</span><br>
+          카테고리 선택 > 제목, 유형(영상/퀴즈/게임/읽기), 난이도 설정 > 파일 업로드. 영상, 이미지, 음성 파일을 첨부할 수 있습니다.</p>
+        </div>
+      </div>
+      <div class="step-block">
+        <div class="step-num" style="background: var(--orange);">3</div>
+        <div class="step-content">
+          <h4>챌린지 & 문항 등록</h4>
+          <p><span class="menu-path">콘텐츠 <span class="sep">></span> 챌린지 관리</span><br>
+          챌린지 생성 후 문항(객관식, 주관식)을 추가합니다. 이미지 첨부, 정답, 순서 설정이 가능합니다.</p>
+        </div>
+      </div>
+      <div class="step-block">
+        <div class="step-num" style="background: var(--orange);">4</div>
+        <div class="step-content">
+          <h4>보상 카드 등록</h4>
+          <p><span class="menu-path">콘텐츠 <span class="sep">></span> 보상카드 관리</span><br>
+          챌린지 통과 시 지급할 보상 카드를 등록합니다. 이름, 설명, 이미지, 희귀도를 설정합니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S6: Screening -->
+  <div class="slide" data-slide="6">
+    <div class="page-badge" style="background: #F44336;">CHAPTER 5</div>
+    <div class="page-title">진단 검사 관리</div>
+    <div class="page-desc">학습자의 수준을 파악하기 위한 진단 검사를 생성하고 결과를 확인합니다.</div>
+
+    <div class="two-col" style="margin-top: 8px;">
+      <div>
+        <h4 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">진단 생성</h4>
+        <div class="menu-path">진단 <span class="sep">></span> 진단 관리</div>
+        <div class="steps" style="gap: 10px; margin-top: 8px;">
+          <div class="step-block" style="padding: 12px;">
+            <div class="step-num" style="background: #F44336; width: 26px; height: 26px; font-size: 12px;">1</div>
+            <div class="step-content">
+              <h4>진단 테스트 생성</h4>
+              <p>제목, 설명, 카테고리, 시간제한 설정</p>
+            </div>
+          </div>
+          <div class="step-block" style="padding: 12px;">
+            <div class="step-num" style="background: #F44336; width: 26px; height: 26px; font-size: 12px;">2</div>
+            <div class="step-content">
+              <h4>문항 추가</h4>
+              <p>객관식/주관식, 보기, 정답, 순서 설정</p>
+            </div>
+          </div>
+          <div class="step-block" style="padding: 12px;">
+            <div class="step-num" style="background: #F44336; width: 26px; height: 26px; font-size: 12px;">3</div>
+            <div class="step-content">
+              <h4>학습자에게 배정</h4>
+              <p>콘텐츠 할당에서 진단 선택 후 배정</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h4 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">결과 확인</h4>
+        <div class="menu-path">진단 <span class="sep">></span> 진단 결과</div>
+        <table class="guide-table" style="margin-top: 8px;">
+          <thead><tr><th>항목</th><th>설명</th></tr></thead>
+          <tbody>
+            <tr><td>사용자</td><td>검사를 실시한 학습자명</td></tr>
+            <tr><td>진단명</td><td>어떤 진단 테스트인지</td></tr>
+            <tr><td>점수</td><td>획득 점수</td></tr>
+            <tr><td>레벨</td><td>우수/보통/노력 등 자동 분류</td></tr>
+            <tr><td>CSV</td><td>우측 상단 "CSV 내보내기" 버튼</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- S7: User Management -->
+  <div class="slide" data-slide="7">
+    <div class="page-badge" style="background: #009688;">CHAPTER 6</div>
+    <div class="page-title">사용자 관리 & 메모</div>
+    <div class="page-desc">가입한 사용자를 관리하고, 학습자별 내부 메모를 남깁니다.</div>
+    <div class="menu-path">운영 <span class="sep">></span> 사용자 관리</div>
+
+    <div class="feat-grid cols-3" style="margin-top: 8px;">
+      <div class="feat-card">
+        <h5>&#128269; 사용자 검색</h5>
+        <p>이름 또는 아이디로 검색. 유형(학습자/보호자), 상태(활성/비활성) 확인.</p>
+      </div>
+      <div class="feat-card">
+        <h5>&#9998; 정보 수정</h5>
+        <p>사용자 클릭 > 상세 > "정보 수정" 버튼. 이름, 연락처, 이메일 변경 가능.</p>
+      </div>
+      <div class="feat-card">
+        <h5>&#128274; 비밀번호 초기화</h5>
+        <p>"비밀번호 초기화" 버튼 > 임시 비밀번호 생성. 화면에 표시된 비밀번호를 사용자에게 전달.</p>
+      </div>
+      <div class="feat-card" style="border-color: var(--green);">
+        <h5>&#128221; 학습자 메모 (신규)</h5>
+        <p>사용자 상세 > "메모" 탭. 관찰/상담/인수인계/일반 카테고리. 고정 기능으로 중요 메모 상단 표시.</p>
+      </div>
+      <div class="feat-card">
+        <h5>&#128101; 할당 콘텐츠</h5>
+        <p>"할당 콘텐츠" 탭에서 배정된 콘텐츠 목록, 상태, 마감일 확인 및 해제.</p>
+      </div>
+      <div class="feat-card">
+        <h5>&#128200; 학습 이력</h5>
+        <p>진단결과, 학습진도, 챌린지결과 탭에서 개별 학습 데이터 확인.</p>
+      </div>
+    </div>
+    <div class="tip-box">
+      <div class="tip-title">&#128161; 메모 활용법</div>
+      <p><b>관찰</b>: 학습 중 관찰한 행동 기록 | <b>상담</b>: 학부모/학습자 상담 내용 | <b>인수인계</b>: 담당자 변경 시 전달 사항 | <b>일반</b>: 기타 메모. 메모는 직원 간 공유용이며, 학부모/학습자에게 보이지 않습니다.</p>
+    </div>
+  </div>
+
+  <!-- S8: Content Assignment -->
+  <div class="slide" data-slide="8">
+    <div class="page-badge" style="background: #795548;">CHAPTER 7</div>
+    <div class="page-title">콘텐츠 할당 & 패키지</div>
+    <div class="page-desc">학습자에게 콘텐츠를 배정하는 방법입니다.</div>
+
+    <div class="two-col" style="margin-top: 8px;">
+      <div>
+        <h4 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">개별/일괄 배정</h4>
+        <div class="menu-path">운영 <span class="sep">></span> 콘텐츠 할당</div>
+        <div class="steps" style="gap: 10px; margin-top: 8px;">
+          <div class="step-block" style="padding: 12px;">
+            <div class="step-num" style="background: #795548; width: 26px; height: 26px; font-size: 12px;">1</div>
+            <div class="step-content">
+              <h4>개별 배정</h4>
+              <p>사용자 선택 > 콘텐츠 유형/항목 선택 > 마감일 설정 > 배정</p>
+            </div>
+          </div>
+          <div class="step-block" style="padding: 12px;">
+            <div class="step-num" style="background: #795548; width: 26px; height: 26px; font-size: 12px;">2</div>
+            <div class="step-content">
+              <h4>일괄 배정</h4>
+              <p>여러 사용자 체크박스 선택 > 콘텐츠 선택 > 한번에 배정</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h4 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">콘텐츠 패키지</h4>
+        <div class="menu-path">콘텐츠 <span class="sep">></span> 패키지 관리</div>
+        <div class="steps" style="gap: 10px; margin-top: 8px;">
+          <div class="step-block" style="padding: 12px;">
+            <div class="step-num" style="background: #795548; width: 26px; height: 26px; font-size: 12px;">1</div>
+            <div class="step-content">
+              <h4>패키지 생성</h4>
+              <p>진단/학습/챌린지를 조합하여 패키지로 묶습니다</p>
+            </div>
+          </div>
+          <div class="step-block" style="padding: 12px;">
+            <div class="step-num" style="background: #795548; width: 26px; height: 26px; font-size: 12px;">2</div>
+            <div class="step-content">
+              <h4>패키지 배정</h4>
+              <p>패키지 선택 > 사용자 선택 > 한번에 여러 콘텐츠 배정</p>
+            </div>
+          </div>
+          <div class="step-block" style="padding: 12px;">
+            <div class="step-num" style="background: #795548; width: 26px; height: 26px; font-size: 12px;">3</div>
+            <div class="step-content">
+              <h4>추천 규칙 설정</h4>
+              <p>진단 점수 범위별 자동 패키지 배정 규칙을 설정합니다</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tip-box">
+      <div class="tip-title">&#128161; TIP</div>
+      <p>콘텐츠가 배정되면 학습자에게 자동 알림이 발송됩니다. 추천 규칙을 설정하면 진단 완료 시 자동으로 적합한 패키지가 배정됩니다.</p>
+    </div>
+  </div>
+
+  <!-- S9: Voice Recording -->
+  <div class="slide" data-slide="9">
+    <div class="page-badge" style="background: #607D8B;">CHAPTER 8</div>
+    <div class="page-title">음성 녹음 관리</div>
+    <div class="page-desc">학습자가 제출한 음성 녹음을 확인하고 피드백을 남깁니다.</div>
+    <div class="menu-path">운영 <span class="sep">></span> 음성 녹음 관리</div>
+
+    <div class="feat-grid" style="margin-top: 8px;">
+      <div class="feat-card">
+        <h5>&#127911; 녹음 목록</h5>
+        <p>기관 소속 학습자들의 전체 녹음 목록을 확인합니다. 프로필별, 콘텐츠 유형별 필터링이 가능합니다.</p>
+      </div>
+      <div class="feat-card">
+        <h5>&#9654; 재생</h5>
+        <p>녹음을 바로 재생하여 들을 수 있습니다. 재생/일시정지 버튼을 이용합니다.</p>
+      </div>
+      <div class="feat-card">
+        <h5>&#128172; 피드백 작성</h5>
+        <p>"피드백" 버튼 클릭 > 코멘트 입력 > 등록. 학습자에게 자동 알림이 발송됩니다.</p>
+      </div>
+      <div class="feat-card">
+        <h5>&#128101; 학부모 연동</h5>
+        <p>학부모도 자녀 녹음에 피드백을 남길 수 있습니다. 관리자와 학부모의 피드백이 함께 표시됩니다.</p>
+      </div>
+    </div>
+    <div class="tip-box">
+      <div class="tip-title">&#128161; TIP</div>
+      <p>음성 녹음은 학습 콘텐츠와 챌린지 진행 중 학습자가 직접 녹음합니다. 관리자의 따뜻한 피드백 한마디가 학습 동기에 큰 영향을 줍니다.</p>
+    </div>
+  </div>
+
+  <!-- S10: CSV Export -->
+  <div class="slide" data-slide="10">
+    <div class="page-badge" style="background: var(--purple);">CHAPTER 9</div>
+    <div class="page-title">데이터 내보내기 (CSV)</div>
+    <div class="page-desc">사용자, 학습 진도, 진단 결과를 CSV 파일로 다운로드합니다.</div>
+
+    <table class="guide-table" style="margin-top: 16px;">
+      <thead>
+        <tr>
+          <th>내보내기 항목</th>
+          <th>위치</th>
+          <th>포함 데이터</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>사용자 목록</b></td>
+          <td>운영 > 사용자 관리 > "사용자 목록" 버튼</td>
+          <td>아이디, 이름, 연락처, 이메일, 유형, 상태, 로그인일, 가입일</td>
+        </tr>
+        <tr>
+          <td><b>학습 진도</b></td>
+          <td>운영 > 사용자 관리 > "학습 진도" 버튼</td>
+          <td>학습자, 콘텐츠명, 유형, 난이도, 상태, 점수, 시도횟수, 시작/최종일</td>
+        </tr>
+        <tr>
+          <td><b>진단 결과</b></td>
+          <td>진단 > 진단 결과 > "CSV 내보내기" 버튼</td>
+          <td>학습자, 진단명, 점수, 레벨, 검사일</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="two-col" style="margin-top: 20px;">
+      <div class="tip-box" style="margin: 0;">
+        <div class="tip-title">&#128161; 파일 형식</div>
+        <p>CSV (UTF-8 BOM) 형식으로 다운로드됩니다. Excel에서 바로 열어도 한글이 깨지지 않습니다. 파일명에 날짜가 자동 포함됩니다.</p>
+      </div>
+      <div class="warn-box" style="margin: 0;">
+        <div class="warn-title">&#9888; 주의사항</div>
+        <p>내보내기 시 현재 기관의 데이터만 포함됩니다. MASTER가 "전체"를 선택한 경우 모든 기관 데이터가 포함됩니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- S11: Plan/Feature Gate -->
+  <div class="slide" data-slide="11">
+    <div class="page-badge" style="background: var(--green);">CHAPTER 10</div>
+    <div class="page-title">플랜/기능 관리</div>
+    <div class="page-desc">기관별 이용 가능한 기능을 플랜 단위로 제어합니다. (MASTER 전용)</div>
+
+    <div class="steps" style="margin-top: 8px;">
+      <div class="step-block">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h4>기능 등록</h4>
+          <p><span class="menu-path">시스템 <span class="sep">></span> 기능 관리</span><br>
+          시스템에서 제어할 기능(key, 이름, 카테고리)을 등록합니다. 예: screening_access, challenge_access 등.</p>
+        </div>
+      </div>
+      <div class="step-block">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h4>플랜 생성</h4>
+          <p><span class="menu-path">시스템 <span class="sep">></span> 플랜 관리</span><br>
+          Basic/Standard/Enterprise 등 플랜을 생성하고, 각 플랜에 포함할 기능을 선택합니다.</p>
+        </div>
+      </div>
+      <div class="step-block">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h4>기관에 플랜 배정</h4>
+          <p><span class="menu-path">시스템 <span class="sep">></span> 기관 플랜</span><br>
+          기관을 선택하고 플랜을 배정합니다. 시작일/만료일을 설정할 수 있습니다.</p>
+        </div>
+      </div>
+      <div class="step-block">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h4>사용자별 오버라이드</h4>
+          <p><span class="menu-path">사용자 상세 <span class="sep">></span> 기능 탭</span><br>
+          특정 사용자에게 플랜과 무관하게 기능을 ON/OFF할 수 있습니다 (세밀한 제어).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S12: FAQ -->
+  <div class="slide" data-slide="12">
+    <div class="page-badge" style="background: var(--dark);">CHAPTER 11</div>
+    <div class="page-title">FAQ & 문제 해결</div>
+
+    <div class="steps" style="margin-top: 8px;">
+      <div class="step-block" style="background: #FFF8E1;">
+        <div class="step-num" style="background: var(--orange);">Q</div>
+        <div class="step-content">
+          <h4>관리자 비밀번호를 잊었어요</h4>
+          <p>MASTER가 <b>시스템 > 관리자 관리</b>에서 해당 관리자의 "비밀번호 초기화" 버튼을 클릭하면 임시 비밀번호가 생성됩니다.</p>
+        </div>
+      </div>
+      <div class="step-block" style="background: #FFF8E1;">
+        <div class="step-num" style="background: var(--orange);">Q</div>
+        <div class="step-content">
+          <h4>사용자가 초대코드를 모르겠다고 해요</h4>
+          <p><b>운영 > 기관 관리</b>에서 해당 기관의 초대코드를 확인하여 전달합니다. 사용자는 마이페이지에서 나중에 입력할 수 있습니다.</p>
+        </div>
+      </div>
+      <div class="step-block" style="background: #FFF8E1;">
+        <div class="step-num" style="background: var(--orange);">Q</div>
+        <div class="step-content">
+          <h4>CSV를 Excel에서 열었는데 글씨가 깨져요</h4>
+          <p>UTF-8 BOM이 포함되어 있어 일반적으로 깨지지 않습니다. 구버전 Excel이라면 "데이터 > 텍스트에서"로 가져오기 시 UTF-8을 선택하세요.</p>
+        </div>
+      </div>
+      <div class="step-block" style="background: #FFF8E1;">
+        <div class="step-num" style="background: var(--orange);">Q</div>
+        <div class="step-content">
+          <h4>특정 ADMIN에게 읽기 전용 권한을 주고 싶어요</h4>
+          <p>MASTER로 <b>시스템 > 권한 관리</b>에서 해당 ADMIN의 관리 권한을 모두 OFF하고, 대시보드/리포트만 ON으로 설정합니다.</p>
+        </div>
+      </div>
+      <div class="step-block" style="background: #FFF8E1;">
+        <div class="step-num" style="background: var(--orange);">Q</div>
+        <div class="step-content">
+          <h4>담당자가 바뀌면 학습자 정보는 어떻게 인계하나요?</h4>
+          <p>사용자 상세 > <b>메모 탭</b>에서 "인수인계" 카테고리로 핵심 정보를 기록해두면, 새 담당자가 바로 확인할 수 있습니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S13: End -->
+  <div class="slide end-slide" data-slide="13">
+    <div style="font-size: 60px; margin-bottom: 24px;">&#128218;</div>
+    <div class="page-title" style="color: white; font-size: 40px;">사용 중 궁금한 점이 있으면<br>언제든 문의하세요</div>
+    <div style="margin-top: 32px; font-size: 16px; opacity: 0.85;">
+      <p>support@slowok.kr</p>
+      <p style="margin-top: 8px;">느려도 괜찮아 &middot; 관리자 가이드 v1.0</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav">
+  <button onclick="navigate(-1)">&#8592;</button>
+  <span class="counter" id="counter">1 / 14</span>
+  <button onclick="navigate(1)">&#8594;</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  function showSlide(index) {
+    slides.forEach((s, i) => {
+      s.classList.remove('active', 'prev');
+      if (i === index) s.classList.add('active');
+      else if (i < index) s.classList.add('prev');
+    });
+    document.getElementById('counter').textContent = `${index + 1} / ${total}`;
+    document.getElementById('progressBar').style.width = `${((index + 1) / total) * 100}%`;
+  }
+
+  function navigate(dir) {
+    const next = current + dir;
+    if (next >= 0 && next < total) {
+      current = next;
+      showSlide(current);
+    }
+  }
+
+  function goSlide(index) {
+    current = index;
+    showSlide(current);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); navigate(1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); navigate(-1); }
+    if (e.key === 'Home') { current = 0; showSlide(0); }
+    if (e.key === 'End') { current = total - 1; showSlide(current); }
+  });
+
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => {
+    const touch = e.touches[0];
+    if (touch) touchStartX = touch.clientX;
+  });
+  document.addEventListener('touchend', (e) => {
+    const touch = e.changedTouches[0];
+    if (!touch) return;
+    const diff = touchStartX - touch.clientX;
+    if (Math.abs(diff) > 50) navigate(diff > 0 ? 1 : -1);
+  });
+</script>
+
+</body>
+</html>

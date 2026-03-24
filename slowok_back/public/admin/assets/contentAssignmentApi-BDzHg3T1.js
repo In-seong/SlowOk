@@ -1,0 +1,1 @@
+import{m as t}from"./admin-CFL5od7s.js";const s={getAssignments(n){return t.get("/admin/content-assignments",{params:n})},createAssignment(n){return t.post("/admin/content-assignments",n)},bulkAssign(n){return t.post("/admin/content-assignments/bulk",n)},deleteAssignment(n){return t.delete(`/admin/content-assignments/${n}`)}};export{s as c};
