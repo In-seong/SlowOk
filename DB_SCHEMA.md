@@ -751,3 +751,4 @@ learner_memo
 | 2026-03-08 | challenge_question에 match_pairs, accept_answers JSON 컬럼 추가 (매칭게임/허용정답) |
 | 2026-03-08 | challenge_attempt에 answers JSON, time_spent INT 컬럼 추가 (답변상세/소요시간) |
 | 2026-03-08 | voice_recording에 stt_text, stt_confidence, question_id 컬럼 추가 (STT 결과) |
+| 2026-03-24 | ai_generation_log 테이블 추가 (AI 콘텐츠 생성 사용량 추적 - Gemini API 토큰/요청 수 로깅) |
