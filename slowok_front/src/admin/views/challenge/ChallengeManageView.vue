@@ -261,11 +261,10 @@ async function handleMatchPairImageUpload(event: Event, idx: number) {
     const compressed = await compressImage(file)
     const res = await adminApi.uploadFile(compressed, 'image')
     if (res.data.success) {
-      const pair = questionForm.value.match_pairs[idx]
-      if (pair) {
-        pair.right_image = res.data.data.url
-        pair.right = pair.right || ''
-      }
+      const url = res.data.data.url
+      questionForm.value.match_pairs = questionForm.value.match_pairs.map((p, i) =>
+        i === idx ? { ...p, right_image: url, right: p.right || '' } : p
+      )
     }
   } catch (e: any) {
     questionModalError.value = e.response?.data?.message || '이미지 업로드에 실패했습니다.'
@@ -276,10 +275,9 @@ async function handleMatchPairImageUpload(event: Event, idx: number) {
 }
 
 function removeMatchPairImage(idx: number) {
-  const pair = questionForm.value.match_pairs[idx]
-  if (pair) {
-    pair.right_image = null
-  }
+  questionForm.value.match_pairs = questionForm.value.match_pairs.map((p, i) =>
+    i === idx ? { ...p, right_image: null } : p
+  )
 }
 
 function removeMatchPair(idx: number) {
