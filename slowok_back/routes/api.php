@@ -42,6 +42,7 @@ use App\Http\Controllers\Api\Admin\ExportController;
 use App\Http\Controllers\Api\Admin\VoiceRecordingController as AdminVoiceRecordingController;
 use App\Http\Controllers\Api\Admin\LearnerMemoController;
 use App\Http\Controllers\Api\User\FeatureCheckController;
+use App\Http\Controllers\Api\Admin\AiContentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -254,6 +255,12 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::put('/memos/{memoId}', [LearnerMemoController::class, 'update']);
             Route::delete('/memos/{memoId}', [LearnerMemoController::class, 'destroy']);
             Route::patch('/memos/{memoId}/pin', [LearnerMemoController::class, 'togglePin']);
+        });
+
+        // AI 콘텐츠 생성
+        Route::middleware('perm:content_manage')->prefix('ai-content')->group(function () {
+            Route::post('/generate', [AiContentController::class, 'generate']);
+            Route::post('/save', [AiContentController::class, 'save']);
         });
 
         // MASTER 전용 - 관리자 관리
