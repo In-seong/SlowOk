@@ -49,7 +49,7 @@ class AuthController extends Controller
             ]);
         }
 
-        $account->tokens()->delete();
+        // 중복 로그인 허용 (여러 기기에서 동시 사용 가능)
         $token = $account->createToken('auth-token')->plainTextToken;
         $account->update(['last_login_at' => now()]);
         $account->load(['profile', 'profiles', 'institution']);
