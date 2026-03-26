@@ -220,12 +220,17 @@ onUnmounted(() => {
               <path d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
-          <!-- Thin progress bar -->
-          <div class="flex-1 h-[10px] rounded-full bg-[#E8E8E8] overflow-hidden">
-            <div
-              class="h-full rounded-full bg-[#4CAF50] transition-all duration-500"
-              :style="{ width: (isCompleted ? 100 : progress) + '%' }"
-            />
+          <!-- Progress -->
+          <div class="flex-1 flex flex-col gap-1">
+            <div class="flex items-center justify-between">
+              <span class="text-[12px] font-semibold text-[#333]">{{ currentQuestion + 1 }} / {{ totalQuestions }}</span>
+            </div>
+            <div class="h-[8px] rounded-full bg-[#E8E8E8] overflow-hidden">
+              <div
+                class="h-full rounded-full bg-[#4CAF50] transition-all duration-500"
+                :style="{ width: (isCompleted ? 100 : progress) + '%' }"
+              />
+            </div>
           </div>
         </div>
       </header>
