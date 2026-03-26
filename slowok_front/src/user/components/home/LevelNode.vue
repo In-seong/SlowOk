@@ -13,7 +13,15 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="flex flex-col items-center gap-1.5" style="width: 120px;">
+  <div class="flex flex-col items-center gap-1" style="width: 120px;">
+    <!-- Title (상단) -->
+    <span
+      class="text-[11px] leading-snug text-center w-full line-clamp-2 mb-0.5"
+      :class="status === 'locked' ? 'text-[#BDBDBD]' : 'text-[#555] font-medium'"
+    >
+      {{ challenge.title }}
+    </span>
+
     <!-- Node Button -->
     <button
       :disabled="status === 'locked'"
@@ -44,7 +52,7 @@ const emit = defineEmits<{
       </svg>
     </button>
 
-    <!-- Stars (completed only) -->
+    <!-- Stars (하단, completed only) -->
     <div v-if="status === 'completed'" class="flex gap-0.5">
       <svg
         v-for="i in 3"
@@ -58,14 +66,6 @@ const emit = defineEmits<{
       </svg>
     </div>
     <div v-else class="h-3.5" />
-
-    <!-- Title -->
-    <span
-      class="text-[11px] leading-snug text-center w-full line-clamp-2"
-      :class="status === 'locked' ? 'text-[#BDBDBD]' : 'text-[#555] font-medium'"
-    >
-      {{ challenge.title }}
-    </span>
   </div>
 </template>
 
