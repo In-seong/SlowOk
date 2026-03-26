@@ -15,12 +15,12 @@ const emit = defineEmits<{
 <template>
   <div class="flex flex-col items-center gap-1" style="width: 120px;">
     <!-- Title (상단) -->
-    <span
-      class="text-[11px] leading-snug text-center w-full line-clamp-2 mb-0.5"
-      :class="status === 'locked' ? 'text-[#BDBDBD] font-medium' : 'text-[#333] font-bold'"
+    <div
+      class="text-[11px] leading-snug text-center w-full line-clamp-2 px-2 py-1 rounded-lg mb-0.5"
+      :class="status === 'locked' ? 'text-[#BDBDBD] font-medium bg-[#F5F5F5]' : 'text-[#2E7D32] font-bold bg-[#E8F5E9]'"
     >
       {{ challenge.title }}
-    </span>
+    </div>
 
     <!-- Node Button -->
     <button
