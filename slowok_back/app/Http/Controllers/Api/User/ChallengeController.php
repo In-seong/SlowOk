@@ -61,6 +61,10 @@ class ChallengeController extends Controller
         }
 
         $challenge = Challenge::with(['category', 'questions'])->findOrFail($id);
+
+        // 플레이 시 정답 판정을 위해 correct_answer 노출
+        $challenge->questions->each(fn ($q) => $q->makeVisible('correct_answer'));
+
         return response()->json(['success' => true, 'data' => $challenge]);
     }
 

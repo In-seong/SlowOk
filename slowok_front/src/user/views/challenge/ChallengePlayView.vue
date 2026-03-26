@@ -73,13 +73,19 @@ function checkAnswer(): void {
   const type = q.question_type ?? 'multiple_choice'
 
   if (type === 'multiple_choice') {
-    const correct = answers.value[idx] === getCorrectIndex(q)
+    const selectedIdx = answers.value[idx]
+    const correctIdx = getCorrectIndex(q)
+    const correct = selectedIdx === correctIdx
     questionResults.value[idx] = correct
     feedbackCorrect.value = correct
     feedbackAnswer.value = q.correct_answer ?? ''
+  } else if (questionResults.value[idx] !== undefined) {
+    // image_choice, matching, image_text, image_voice — 컴포넌트가 이미 판정
+    feedbackCorrect.value = questionResults.value[idx]
+    feedbackAnswer.value = q.correct_answer ?? q.accept_answers?.[0] ?? ''
   } else {
-    // For other types, result was already set by component emit
-    feedbackCorrect.value = !!questionResults.value[idx]
+    // 컴포넌트가 아직 결과를 emit하지 않은 경우 (방어)
+    feedbackCorrect.value = false
     feedbackAnswer.value = q.correct_answer ?? q.accept_answers?.[0] ?? ''
   }
 
