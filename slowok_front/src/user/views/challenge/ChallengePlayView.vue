@@ -302,7 +302,7 @@ onUnmounted(() => {
         <!-- ===== BOTTOM: Big "확인" button ===== -->
         <div
           v-if="!showFeedback"
-          class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[402px] bg-white border-t border-[#F0F0F0] px-5 py-4 z-20"
+          class="fixed bottom-0 inset-x-0 mx-auto w-full max-w-[402px] bg-white border-t border-[#F0F0F0] px-5 py-4 z-20"
         >
           <button
             @click="checkAnswer"
@@ -319,7 +319,7 @@ onUnmounted(() => {
         <!-- ===== FEEDBACK BANNER (slides up from bottom) ===== -->
         <div
           v-if="showFeedback"
-          class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[402px] z-30 animate-slide-up"
+          class="fixed bottom-0 inset-x-0 mx-auto w-full max-w-[402px] z-30 animate-slide-up"
           :class="feedbackCorrect ? 'bg-[#E8F5E9]' : 'bg-[#FFEBEE]'"
         >
           <div class="px-5 py-5">
@@ -428,10 +428,10 @@ onUnmounted(() => {
 <style scoped>
 @keyframes slide-up {
   from {
-    transform: translate(-50%, 100%);
+    transform: translateY(100%);
   }
   to {
-    transform: translate(-50%, 0);
+    transform: translateY(0);
   }
 }
 .animate-slide-up {
