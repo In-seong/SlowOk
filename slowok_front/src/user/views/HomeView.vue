@@ -85,7 +85,7 @@ const quickMenusParent = [
       <AppHeader>
         <template #badge>
           <span
-            v-if="unreadNotifications > 0"
+            v-if="!isLearner && unreadNotifications > 0"
             class="absolute -top-0.5 -right-0.5 w-[18px] h-[18px] bg-[#F44336] rounded-full flex items-center justify-center text-[10px] font-bold text-white"
           >
             {{ unreadNotifications }}
@@ -151,9 +151,9 @@ const quickMenusParent = [
             </div>
           </div>
 
-          <!-- 1. Notification Banner -->
+          <!-- 1. Notification Banner (학부모만) -->
           <button
-            v-if="unreadNotifications > 0"
+            v-if="!isLearner && unreadNotifications > 0"
             class="w-full bg-[#E8F5E9] rounded-[12px] p-3.5 flex items-center gap-3"
             @click="router.push({ name: 'notifications' })"
           >
