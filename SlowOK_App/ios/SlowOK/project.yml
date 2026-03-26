@@ -1,0 +1,48 @@
+name: SlowOK
+options:
+  bundleIdPrefix: com.spoon.slowok
+  deploymentTarget:
+    iOS: "15.0"
+  xcodeVersion: "16.0"
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: 1
+    DEVELOPMENT_TEAM: ""
+
+targets:
+  SlowOK-User:
+    type: application
+    platform: iOS
+    sources:
+      - path: SlowOK
+        excludes:
+          - plist/Info-Admin.plist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.spoon.slowok.user
+        INFOPLIST_FILE: SlowOK/plist/Info-User.plist
+        PRODUCT_NAME: 느려도 괜찮아
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: USER
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    scheme:
+      testTargets: []
+
+  SlowOK-Admin:
+    type: application
+    platform: iOS
+    sources:
+      - path: SlowOK
+        excludes:
+          - plist/Info-User.plist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.spoon.slowok.admin
+        INFOPLIST_FILE: SlowOK/plist/Info-Admin.plist
+        PRODUCT_NAME: 느려도 괜찮아 Admin
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: ADMIN
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    scheme:
+      testTargets: []

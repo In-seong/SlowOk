@@ -1,0 +1,447 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3FC1F6579EEB73A659360CD1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96391B72BEB31615E25488C /* ContentView.swift */; };
+		5BA74019650DF18E7D48D152 /* SlowOKApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7F18BC7E2E7635E40B27CD /* SlowOKApp.swift */; };
+		5C43E6194BD36F02CF524734 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC52B125DF1876011CFA9B90 /* WebView.swift */; };
+		6908E0C6C78CCF3A316C1E96 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E464550AEC569D3D2222E5A /* MainView.swift */; };
+		8D565C310F89B4F93DD6A6F3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A063CD24B7166A3DAEC1A35 /* Assets.xcassets */; };
+		A57FA14F905F99F049532530 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96391B72BEB31615E25488C /* ContentView.swift */; };
+		AC7B919D4FA774A68C942E8F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE0474B232850ED43FAE8F7 /* AppDelegate.swift */; };
+		B0A6644D9037C19D6F9419AF /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC52B125DF1876011CFA9B90 /* WebView.swift */; };
+		C152BA9E17F0AD3D11EB3BDD /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E464550AEC569D3D2222E5A /* MainView.swift */; };
+		CF96291F250C36BEA34E5C37 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A063CD24B7166A3DAEC1A35 /* Assets.xcassets */; };
+		EE3EBD5FB8E5F12DA5C687E2 /* SlowOKApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7F18BC7E2E7635E40B27CD /* SlowOKApp.swift */; };
+		FC2346253A7C6453E67C2E72 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE0474B232850ED43FAE8F7 /* AppDelegate.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1A063CD24B7166A3DAEC1A35 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		5AE0474B232850ED43FAE8F7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		6A1A8D1D45706569D276B342 /* Info-Admin.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Info-Admin.plist"; sourceTree = "<group>"; };
+		6E5D6F485D830F0D67F84FBE /* SlowOK-User.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "SlowOK-User.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		877D7E22919C2C820DB94DC1 /* Info-User.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Info-User.plist"; sourceTree = "<group>"; };
+		8E464550AEC569D3D2222E5A /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		9A7F18BC7E2E7635E40B27CD /* SlowOKApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlowOKApp.swift; sourceTree = "<group>"; };
+		B1A87D95991AE3C73967B8E4 /* SlowOK-Admin.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "SlowOK-Admin.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CC52B125DF1876011CFA9B90 /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
+		E96391B72BEB31615E25488C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		32248B231B19EC1BFB00E5D6 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				CC52B125DF1876011CFA9B90 /* WebView.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		4AF6A838C57BB9E12EB93AC4 /* SlowOK */ = {
+			isa = PBXGroup;
+			children = (
+				5AE0474B232850ED43FAE8F7 /* AppDelegate.swift */,
+				1A063CD24B7166A3DAEC1A35 /* Assets.xcassets */,
+				E96391B72BEB31615E25488C /* ContentView.swift */,
+				9A7F18BC7E2E7635E40B27CD /* SlowOKApp.swift */,
+				61D1CABECF23B3EE77938643 /* plist */,
+				32248B231B19EC1BFB00E5D6 /* Utils */,
+				83BFFDE549F4DD63230D8BDC /* Views */,
+			);
+			path = SlowOK;
+			sourceTree = "<group>";
+		};
+		61D1CABECF23B3EE77938643 /* plist */ = {
+			isa = PBXGroup;
+			children = (
+				6A1A8D1D45706569D276B342 /* Info-Admin.plist */,
+				877D7E22919C2C820DB94DC1 /* Info-User.plist */,
+			);
+			path = plist;
+			sourceTree = "<group>";
+		};
+		83BFFDE549F4DD63230D8BDC /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				8E464550AEC569D3D2222E5A /* MainView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		8CBCD3A63632D02FA479526C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B1A87D95991AE3C73967B8E4 /* SlowOK-Admin.app */,
+				6E5D6F485D830F0D67F84FBE /* SlowOK-User.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C74A1181DF3C7260BE6CAEC9 = {
+			isa = PBXGroup;
+			children = (
+				4AF6A838C57BB9E12EB93AC4 /* SlowOK */,
+				8CBCD3A63632D02FA479526C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		0FB5296113176AE534F45104 /* SlowOK-User */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8258ECC37F499D6553505A2D /* Build configuration list for PBXNativeTarget "SlowOK-User" */;
+			buildPhases = (
+				5D269D2EB2304035EDADD246 /* Sources */,
+				FDD55F575067D6CBC263C17D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "SlowOK-User";
+			packageProductDependencies = (
+			);
+			productName = "SlowOK-User";
+			productReference = 6E5D6F485D830F0D67F84FBE /* SlowOK-User.app */;
+			productType = "com.apple.product-type.application";
+		};
+		42912541E14489A127FF1CE5 /* SlowOK-Admin */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 24FEDADF7C8AB3B450BD272D /* Build configuration list for PBXNativeTarget "SlowOK-Admin" */;
+			buildPhases = (
+				21F1E1F8011A74ECBA70B253 /* Sources */,
+				FEA57E2E761F8610061536FB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "SlowOK-Admin";
+			packageProductDependencies = (
+			);
+			productName = "SlowOK-Admin";
+			productReference = B1A87D95991AE3C73967B8E4 /* SlowOK-Admin.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		7A6BEBF9DE209C96E9A11E4A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					0FB5296113176AE534F45104 = {
+						DevelopmentTeam = "";
+					};
+					42912541E14489A127FF1CE5 = {
+						DevelopmentTeam = "";
+					};
+				};
+			};
+			buildConfigurationList = 292AD5D7633CAB584FB98BAE /* Build configuration list for PBXProject "SlowOK" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = C74A1181DF3C7260BE6CAEC9;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 8CBCD3A63632D02FA479526C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				42912541E14489A127FF1CE5 /* SlowOK-Admin */,
+				0FB5296113176AE534F45104 /* SlowOK-User */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		FDD55F575067D6CBC263C17D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D565C310F89B4F93DD6A6F3 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FEA57E2E761F8610061536FB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CF96291F250C36BEA34E5C37 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		21F1E1F8011A74ECBA70B253 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AC7B919D4FA774A68C942E8F /* AppDelegate.swift in Sources */,
+				3FC1F6579EEB73A659360CD1 /* ContentView.swift in Sources */,
+				C152BA9E17F0AD3D11EB3BDD /* MainView.swift in Sources */,
+				5BA74019650DF18E7D48D152 /* SlowOKApp.swift in Sources */,
+				5C43E6194BD36F02CF524734 /* WebView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5D269D2EB2304035EDADD246 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FC2346253A7C6453E67C2E72 /* AppDelegate.swift in Sources */,
+				A57FA14F905F99F049532530 /* ContentView.swift in Sources */,
+				6908E0C6C78CCF3A316C1E96 /* MainView.swift in Sources */,
+				EE3EBD5FB8E5F12DA5C687E2 /* SlowOKApp.swift in Sources */,
+				B0A6644D9037C19D6F9419AF /* WebView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		0FFBB3FD4A0FC6B2708C9533 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = "SlowOK/plist/Info-Admin.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.spoon.slowok.admin;
+				PRODUCT_NAME = "느려도 괜찮아 Admin";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = ADMIN;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		1737B3E580D768AB6B0975D6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = "SlowOK/plist/Info-Admin.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.spoon.slowok.admin;
+				PRODUCT_NAME = "느려도 괜찮아 Admin";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = ADMIN;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		40D9D8C27CEB25A8281A1F00 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		94E8D46E13C18E0D5160B06E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = "SlowOK/plist/Info-User.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.spoon.slowok.user;
+				PRODUCT_NAME = "느려도 괜찮아";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = USER;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		9F95AEA37853AD8C60F8829C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = "SlowOK/plist/Info-User.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.spoon.slowok.user;
+				PRODUCT_NAME = "느려도 괜찮아";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = USER;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A67E4C52F18D3676F585E4C6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		24FEDADF7C8AB3B450BD272D /* Build configuration list for PBXNativeTarget "SlowOK-Admin" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1737B3E580D768AB6B0975D6 /* Debug */,
+				0FFBB3FD4A0FC6B2708C9533 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		292AD5D7633CAB584FB98BAE /* Build configuration list for PBXProject "SlowOK" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				40D9D8C27CEB25A8281A1F00 /* Debug */,
+				A67E4C52F18D3676F585E4C6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		8258ECC37F499D6553505A2D /* Build configuration list for PBXNativeTarget "SlowOK-User" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9F95AEA37853AD8C60F8829C /* Debug */,
+				94E8D46E13C18E0D5160B06E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 7A6BEBF9DE209C96E9A11E4A /* Project object */;
+}

@@ -5,7 +5,17 @@
 	<key>CFBundleDisplayName</key>
 	<string>느려도 괜찮아 Admin</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.spoon.slowok.admin</string>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(MARKETING_VERSION)</string>
+	<key>UILaunchStoryboardName</key>
+	<string></string>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>armv7</string>
+	</array>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
