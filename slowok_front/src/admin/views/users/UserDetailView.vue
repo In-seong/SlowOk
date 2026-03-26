@@ -29,10 +29,50 @@ function profileName(p: import('@shared/types').UserProfile): string {
   return p.decrypted_name ?? p.name ?? '-'
 }
 
+const assignmentTypeFilter = ref<string | null>(null)
+
 function filteredAssignments() {
-  const all = user.value?.assignments ?? []
-  if (!selectedProfileId.value) return all
-  return all.filter(a => a.profile_id === selectedProfileId.value)
+  let all = user.value?.assignments ?? []
+  if (selectedProfileId.value) {
+    all = all.filter(a => a.profile_id === selectedProfileId.value)
+  }
+  if (assignmentTypeFilter.value) {
+    all = all.filter(a => a.assignable_type === assignmentTypeFilter.value)
+  }
+  // 챌린지 필터일 때 sort_order 순 정렬
+  if (assignmentTypeFilter.value === 'challenge') {
+    all = [...all].sort((a, b) => ((a as any).sort_order ?? 0) - ((b as any).sort_order ?? 0))
+  }
+  return all
+}
+
+const reordering = ref(false)
+
+async function moveAssignment(assignmentId: number, direction: 'up' | 'down') {
+  const list = filteredAssignments()
+  const idx = list.findIndex(a => a.assignment_id === assignmentId)
+  if (idx < 0) return
+  const swapIdx = direction === 'up' ? idx - 1 : idx + 1
+  if (swapIdx < 0 || swapIdx >= list.length) return
+
+  const current = list[idx]!
+  const swap = list[swapIdx]!
+
+  // 순서 교환
+  const orders = [
+    { assignment_id: current.assignment_id, sort_order: (swap as any).sort_order ?? swapIdx },
+    { assignment_id: swap.assignment_id, sort_order: (current as any).sort_order ?? idx },
+  ]
+
+  reordering.value = true
+  try {
+    await contentAssignmentApi.reorder(orders)
+    await fetchUser()
+  } catch (e: any) {
+    toast.error(e.response?.data?.message || '순서 변경에 실패했습니다.')
+  } finally {
+    reordering.value = false
+  }
 }
 
 // 수정 모달
@@ -312,32 +352,64 @@ onMounted(fetchUser)
 
       <!-- 할당 콘텐츠 탭 -->
       <div v-if="activeTab === 'assignments'" class="space-y-3">
-        <!-- 프로필 필터 -->
-        <div v-if="allProfiles().length > 1" class="flex gap-2 flex-wrap">
-          <button
-            class="px-3 py-1.5 rounded-[8px] text-[13px] transition-colors"
-            :class="!selectedProfileId ? 'bg-[#4CAF50] text-white' : 'bg-[#F0F0F0] text-[#666] hover:bg-[#E0E0E0]'"
-            @click="selectedProfileId = null"
-          >
-            전체
-          </button>
-          <button
-            v-for="p in allProfiles()"
-            :key="p.profile_id"
-            class="px-3 py-1.5 rounded-[8px] text-[13px] transition-colors"
-            :class="selectedProfileId === p.profile_id ? 'bg-[#4CAF50] text-white' : 'bg-[#F0F0F0] text-[#666] hover:bg-[#E0E0E0]'"
-            @click="selectedProfileId = p.profile_id"
-          >
-            {{ profileName(p) }}
-            <span class="text-[11px] opacity-70">({{ p.user_type === 'PARENT' ? '보호자' : '학습자' }})</span>
-          </button>
+        <!-- 필터 영역 -->
+        <div class="flex flex-wrap gap-3">
+          <!-- 프로필 필터 -->
+          <div v-if="allProfiles().length > 1" class="flex gap-1.5 flex-wrap">
+            <button
+              class="px-3 py-1.5 rounded-[8px] text-[13px] transition-colors"
+              :class="!selectedProfileId ? 'bg-[#4CAF50] text-white' : 'bg-[#F0F0F0] text-[#666] hover:bg-[#E0E0E0]'"
+              @click="selectedProfileId = null"
+            >
+              전체
+            </button>
+            <button
+              v-for="p in allProfiles()"
+              :key="p.profile_id"
+              class="px-3 py-1.5 rounded-[8px] text-[13px] transition-colors"
+              :class="selectedProfileId === p.profile_id ? 'bg-[#4CAF50] text-white' : 'bg-[#F0F0F0] text-[#666] hover:bg-[#E0E0E0]'"
+              @click="selectedProfileId = p.profile_id"
+            >
+              {{ profileName(p) }}
+              <span class="text-[11px] opacity-70">({{ p.user_type === 'PARENT' ? '보호자' : '학습자' }})</span>
+            </button>
+          </div>
+
+          <!-- 유형 필터 -->
+          <div class="flex gap-1.5 ml-auto">
+            <button
+              class="px-2.5 py-1.5 rounded-[8px] text-[12px] transition-colors"
+              :class="!assignmentTypeFilter ? 'bg-[#333] text-white' : 'bg-[#F0F0F0] text-[#666] hover:bg-[#E0E0E0]'"
+              @click="assignmentTypeFilter = null"
+            >전체</button>
+            <button
+              class="px-2.5 py-1.5 rounded-[8px] text-[12px] transition-colors"
+              :class="assignmentTypeFilter === 'challenge' ? 'bg-orange-500 text-white' : 'bg-[#F0F0F0] text-[#666] hover:bg-[#E0E0E0]'"
+              @click="assignmentTypeFilter = 'challenge'"
+            >챌린지</button>
+            <button
+              class="px-2.5 py-1.5 rounded-[8px] text-[12px] transition-colors"
+              :class="assignmentTypeFilter === 'learning_content' ? 'bg-green-500 text-white' : 'bg-[#F0F0F0] text-[#666] hover:bg-[#E0E0E0]'"
+              @click="assignmentTypeFilter = 'learning_content'"
+            >학습</button>
+            <button
+              class="px-2.5 py-1.5 rounded-[8px] text-[12px] transition-colors"
+              :class="assignmentTypeFilter === 'screening_test' ? 'bg-blue-500 text-white' : 'bg-[#F0F0F0] text-[#666] hover:bg-[#E0E0E0]'"
+              @click="assignmentTypeFilter = 'screening_test'"
+            >진단</button>
+          </div>
         </div>
 
         <div class="bg-white rounded-[16px] border border-[#E8E8E8] overflow-hidden">
           <div v-if="filteredAssignments().length === 0" class="p-6 text-center text-[#888]">할당된 콘텐츠가 없습니다.</div>
-          <table v-else class="w-full text-[14px]">
+          <p v-if="assignmentTypeFilter === 'challenge'" class="px-4 py-2 text-[12px] text-[#888] bg-[#FAFAFA] border-b border-[#E8E8E8]">
+            ↕ 화살표 버튼으로 챌린지 순서를 변경할 수 있습니다 (학습자 레벨맵에 반영됨)
+          </p>
+          <table v-else-if="filteredAssignments().length > 0" class="hidden"></table>
+          <table v-if="filteredAssignments().length > 0" class="w-full text-[14px]">
             <thead>
               <tr class="bg-[#F8F8F8] text-[#666]">
+                <th v-if="assignmentTypeFilter === 'challenge'" class="text-center px-2 py-3 font-medium w-[70px]">순서</th>
                 <th class="text-left px-4 py-3 font-medium">유형</th>
                 <th class="text-left px-4 py-3 font-medium">콘텐츠명</th>
                 <th v-if="allProfiles().length > 1 && !selectedProfileId" class="text-left px-4 py-3 font-medium">프로필</th>
@@ -347,7 +419,26 @@ onMounted(fetchUser)
               </tr>
             </thead>
             <tbody>
-              <tr v-for="a in filteredAssignments()" :key="a.assignment_id" class="border-t border-[#F0F0F0]">
+              <tr v-for="(a, idx) in filteredAssignments()" :key="a.assignment_id" class="border-t border-[#F0F0F0]">
+                <td v-if="assignmentTypeFilter === 'challenge'" class="px-2 py-3 text-center">
+                  <div class="flex flex-col items-center gap-0.5">
+                    <button
+                      :disabled="idx === 0 || reordering"
+                      @click.stop="moveAssignment(a.assignment_id, 'up')"
+                      class="w-6 h-6 rounded flex items-center justify-center text-[#999] hover:bg-[#F0F0F0] disabled:opacity-30 transition-colors"
+                    >
+                      <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" /></svg>
+                    </button>
+                    <span class="text-[11px] text-[#BBB] font-mono">{{ idx + 1 }}</span>
+                    <button
+                      :disabled="idx === filteredAssignments().length - 1 || reordering"
+                      @click.stop="moveAssignment(a.assignment_id, 'down')"
+                      class="w-6 h-6 rounded flex items-center justify-center text-[#999] hover:bg-[#F0F0F0] disabled:opacity-30 transition-colors"
+                    >
+                      <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+                    </button>
+                  </div>
+                </td>
                 <td class="px-4 py-3">
                   <span class="px-2 py-0.5 rounded-full text-[11px] font-medium" :class="{
                     'bg-blue-50 text-blue-600': a.assignable_type === 'screening_test',

@@ -21,13 +21,20 @@ class ChallengeController extends Controller
 
         $profileId = $profile->profile_id;
 
-        $assignedIds = ContentAssignment::where('profile_id', $profileId)
+        $assignments = ContentAssignment::where('profile_id', $profileId)
             ->where('assignable_type', 'challenge')
-            ->pluck('assignable_id');
+            ->orderBy('sort_order')
+            ->orderBy('assignment_id')
+            ->get();
+
+        $assignedIds = $assignments->pluck('assignable_id');
+        $sortMap = $assignments->pluck('sort_order', 'assignable_id');
 
         $challenges = Challenge::with(['category'])
             ->whereIn('challenge_id', $assignedIds)
-            ->get();
+            ->get()
+            ->sortBy(fn ($c) => $sortMap->get($c->challenge_id, 0))
+            ->values();
 
         // 프로필의 latest_attempt를 각 챌린지에 추가
         $latestAttempts = ChallengeAttempt::where('profile_id', $profileId)

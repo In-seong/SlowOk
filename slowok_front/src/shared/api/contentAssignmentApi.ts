@@ -25,6 +25,10 @@ export const contentAssignmentApi = {
     return api.post<ApiResponse<null>>('/admin/content-assignments/bulk', data)
   },
 
+  reorder(orders: { assignment_id: number; sort_order: number }[]) {
+    return api.post<ApiResponse<null>>('/admin/content-assignments/reorder', { orders })
+  },
+
   deleteAssignment(id: number) {
     return api.delete<ApiResponse<null>>(`/admin/content-assignments/${id}`)
   },

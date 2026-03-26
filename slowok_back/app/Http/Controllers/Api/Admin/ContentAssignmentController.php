@@ -148,6 +148,25 @@ class ContentAssignmentController extends BaseAdminController
         ], 201);
     }
 
+    public function reorder(Request $request): JsonResponse
+    {
+        $request->validate([
+            'orders' => 'required|array',
+            'orders.*.assignment_id' => 'required|integer|exists:content_assignment,assignment_id',
+            'orders.*.sort_order' => 'required|integer|min:0',
+        ]);
+
+        foreach ($request->orders as $item) {
+            ContentAssignment::where('assignment_id', $item['assignment_id'])
+                ->update(['sort_order' => $item['sort_order']]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => '순서가 변경되었습니다.',
+        ]);
+    }
+
     public function destroy(Request $request, int $id): JsonResponse
     {
         $assignment = ContentAssignment::with('profile.account')->findOrFail($id);

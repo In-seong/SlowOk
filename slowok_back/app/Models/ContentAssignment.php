@@ -18,6 +18,7 @@ class ContentAssignment extends Model
         'due_date',
         'note',
         'status',
+        'sort_order',
     ];
 
     protected $casts = [
