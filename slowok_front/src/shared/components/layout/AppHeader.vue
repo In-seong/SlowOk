@@ -5,7 +5,7 @@ const router = useRouter()
 </script>
 
 <template>
-  <header class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[402px] h-[66px] bg-white z-40 flex justify-between items-center px-5">
+  <header class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[402px] h-[66px] bg-[#E8F5E9] z-40 flex justify-between items-center px-5 border-b border-[#C8E6C9]">
     <div class="flex items-center gap-2">
       <img :src="'/images/logo.png'" alt="느려도 괜찮아" class="w-9 h-9 rounded-xl" />
       <span class="text-[17px] font-bold text-[#333]">느려도 괜찮아</span>
