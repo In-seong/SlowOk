@@ -4,7 +4,7 @@ import api from '@shared/api'
 import { contentAssignmentApi } from '@shared/api/contentAssignmentApi'
 import { contentPackageApi } from '@shared/api/contentPackageApi'
 import { adminApi } from '@shared/api/adminApi'
-import type { Account, ApiResponse, ContentAssignment, ContentPackage, LearningContent, ScreeningTest, Challenge } from '@shared/types'
+import type { Account, ApiResponse, ContentAssignment, ContentPackage, LearningContent, ScreeningTest, Challenge, UserProfile } from '@shared/types'
 import { useToastStore } from '@shared/stores/toastStore'
 
 const toast = useToastStore()
@@ -25,11 +25,45 @@ const loading = ref(true)
 const assigning = ref(false)
 const loadingAssignments = ref(false)
 
-const filteredUsers = computed(() => {
-  if (!userSearch.value.trim()) return users.value.filter((u) => u.role === 'USER')
+// Account별 profiles를 플랫하게 펼친 목록 (프로필 단위 선택)
+interface ProfileItem {
+  profileId: number
+  name: string
+  username: string
+  userType: string
+}
+
+const allProfiles = computed<ProfileItem[]>(() => {
+  const result: ProfileItem[] = []
+  for (const u of users.value) {
+    if (u.role !== 'USER') continue
+    const profiles = (u as any).profiles as UserProfile[] | undefined
+    if (profiles && profiles.length > 0) {
+      for (const p of profiles) {
+        result.push({
+          profileId: p.profile_id,
+          name: (p as any).decrypted_name ?? p.name ?? u.username,
+          username: u.username,
+          userType: p.user_type ?? '',
+        })
+      }
+    } else if (u.profile) {
+      result.push({
+        profileId: u.profile.profile_id,
+        name: u.profile.decrypted_name ?? u.profile.name ?? u.username,
+        username: u.username,
+        userType: u.profile.user_type ?? '',
+      })
+    }
+  }
+  return result
+})
+
+const filteredProfiles = computed(() => {
+  if (!userSearch.value.trim()) return allProfiles.value
   const q = userSearch.value.toLowerCase()
-  return users.value.filter(
-    (u) => u.role === 'USER' && (u.username.toLowerCase().includes(q) || (u.profile?.decrypted_name ?? u.profile?.name ?? '').toLowerCase().includes(q)),
+  return allProfiles.value.filter(
+    (p) => p.name.toLowerCase().includes(q) || p.username.toLowerCase().includes(q),
   )
 })
 
@@ -245,20 +279,25 @@ onMounted(fetchData)
         />
         <div class="max-h-[400px] overflow-y-auto space-y-1">
           <label
-            v-for="u in filteredUsers"
-            :key="u.account_id"
+            v-for="p in filteredProfiles"
+            :key="p.profileId"
             class="flex items-center gap-2 px-3 py-2 rounded-[8px] cursor-pointer transition-colors"
-            :class="u.profile && selectedUserIds.has(u.profile.profile_id) ? 'bg-[#E8F5E9]' : 'hover:bg-[#F5F5F5]'"
+            :class="selectedUserIds.has(p.profileId) ? 'bg-[#E8F5E9]' : 'hover:bg-[#F5F5F5]'"
           >
             <input
-              v-if="u.profile"
               type="checkbox"
-              :checked="selectedUserIds.has(u.profile.profile_id)"
-              @change="u.profile && toggleUser(u.profile.profile_id)"
+              :checked="selectedUserIds.has(p.profileId)"
+              @change="toggleUser(p.profileId)"
               class="w-4 h-4 accent-[#4CAF50]"
             />
-            <span class="text-[14px]">{{ u.profile?.decrypted_name ?? u.profile?.name ?? u.username }}</span>
-            <span class="text-[12px] text-[#888]">({{ u.username }})</span>
+            <span class="text-[14px]">{{ p.name }}</span>
+            <span
+              class="text-[11px] px-1.5 py-0.5 rounded-full"
+              :class="p.userType === 'PARENT' ? 'bg-[#E3F2FD] text-[#1976D2]' : 'bg-[#E8F5E9] text-[#4CAF50]'"
+            >
+              {{ p.userType === 'PARENT' ? '학부모' : '학습자' }}
+            </span>
+            <span class="text-[12px] text-[#888]">({{ p.username }})</span>
           </label>
         </div>
         <p class="text-[12px] text-[#888] mt-2">{{ selectedUserIds.size }}명 선택됨</p>

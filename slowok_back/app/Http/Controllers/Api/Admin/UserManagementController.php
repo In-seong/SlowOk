@@ -21,7 +21,7 @@ class UserManagementController extends BaseAdminController
 
         $users = Account::where('role', 'USER')
             ->when($instId, fn ($q) => $q->where('institution_id', $instId))
-            ->with('profile')
+            ->with(['profile', 'profiles'])
             ->latest()
             ->get();
 
