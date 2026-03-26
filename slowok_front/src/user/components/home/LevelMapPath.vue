@@ -104,7 +104,7 @@ function getConnectorPath(fromIndex: number, toIndex: number): string {
     >
       <!-- Category Header -->
       <div class="flex items-center justify-center mb-5">
-        <div class="bg-[#4CAF50] text-white text-[12px] font-bold px-4 py-1.5 rounded-full shadow-[0_2px_0_#388E3C]">
+        <div class="bg-white text-[#4CAF50] text-[12px] font-bold px-5 py-2 rounded-full shadow-[0_2px_8px_rgba(0,0,0,0.1)]">
           {{ group.name }}
         </div>
       </div>
@@ -128,7 +128,7 @@ function getConnectorPath(fromIndex: number, toIndex: number): string {
             <path
               :d="getConnectorPath(group.startIndex + idx - 1, group.startIndex + idx)"
               fill="none"
-              :stroke="getStatus(group.startIndex + idx - 1) === 'completed' ? '#4CAF50' : '#E0E0E0'"
+              :stroke="getStatus(group.startIndex + idx - 1) === 'completed' ? '#FFC107' : 'rgba(255,255,255,0.3)'"
               stroke-width="3"
               stroke-dasharray="8 6"
               stroke-linecap="round"

@@ -20,10 +20,10 @@ const emit = defineEmits<{
       class="relative w-16 h-16 rounded-full flex items-center justify-center transition-all"
       :class="[
         status === 'completed'
-          ? 'bg-[#4CAF50] shadow-[0_4px_0_#388E3C] active:shadow-[0_2px_0_#388E3C] active:translate-y-[2px]'
+          ? 'bg-[#FFC107] shadow-[0_4px_0_#FFA000] active:shadow-[0_2px_0_#FFA000] active:translate-y-[2px]'
           : status === 'current'
-            ? 'bg-[#4CAF50] shadow-[0_4px_0_#388E3C] active:shadow-[0_2px_0_#388E3C] active:translate-y-[2px] animate-bounce-gentle'
-            : 'bg-[#E0E0E0] shadow-[0_4px_0_#BDBDBD] cursor-not-allowed'
+            ? 'bg-white shadow-[0_4px_0_#E0E0E0] active:shadow-[0_2px_0_#E0E0E0] active:translate-y-[2px] animate-bounce-gentle ring-4 ring-white/40'
+            : 'bg-white/30 shadow-[0_4px_0_rgba(0,0,0,0.1)] cursor-not-allowed'
       ]"
       @click="status !== 'locked' && emit('play', challenge.challenge_id)"
     >
@@ -33,12 +33,12 @@ const emit = defineEmits<{
       </svg>
 
       <!-- Current: Star icon -->
-      <svg v-else-if="status === 'current'" class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="currentColor">
+      <svg v-else-if="status === 'current'" class="w-7 h-7 text-[#4CAF50]" viewBox="0 0 24 24" fill="currentColor">
         <path d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
       </svg>
 
       <!-- Locked: Lock -->
-      <svg v-else class="w-6 h-6 text-[#9E9E9E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg v-else class="w-6 h-6 text-white/50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
         <path d="M7 11V7a5 5 0 0110 0v4" />
       </svg>
@@ -50,7 +50,7 @@ const emit = defineEmits<{
         v-for="i in 3"
         :key="i"
         class="w-3.5 h-3.5"
-        :class="i <= stars ? 'text-[#FFC107]' : 'text-[#E0E0E0]'"
+        :class="i <= stars ? 'text-[#FFC107]' : 'text-white/30'"
         viewBox="0 0 24 24"
         fill="currentColor"
       >
@@ -62,7 +62,7 @@ const emit = defineEmits<{
     <!-- Title -->
     <span
       class="text-[11px] leading-tight text-center truncate w-full"
-      :class="status === 'locked' ? 'text-[#BDBDBD]' : 'text-[#555]'"
+      :class="status === 'locked' ? 'text-white/40' : 'text-white font-medium'"
     >
       {{ challenge.title }}
     </span>
