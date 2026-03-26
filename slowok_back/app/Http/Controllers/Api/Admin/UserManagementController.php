@@ -197,7 +197,10 @@ class UserManagementController extends BaseAdminController
         }
         $account = $query->findOrFail($id);
 
-        $tempPassword = Str::random(10);
+        // 대문자 4자 + 숫자 4자 (예: ABCD1234)
+        $letters = collect(range('A', 'Z'))->random(4)->implode('');
+        $numbers = collect(range(0, 9))->random(4)->implode('');
+        $tempPassword = $letters . $numbers;
         $account->update(['password_hash' => Hash::make($tempPassword)]);
 
         return response()->json([
