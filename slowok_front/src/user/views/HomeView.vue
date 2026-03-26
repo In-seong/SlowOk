@@ -33,8 +33,10 @@ const isLearner = computed(() => !authStore.isParent)
 
 onMounted(async () => {
   try {
+    // fetchUser 먼저 완료해야 isParent 판단 가능
+    await authStore.fetchUser()
+
     const promises: Promise<any>[] = [
-      authStore.fetchUser(),
       challengeStore.fetchChallenges(),
       challengeStore.fetchRewardCards(),
       notificationStore.fetchNotifications(),
