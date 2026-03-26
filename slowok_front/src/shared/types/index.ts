@@ -261,11 +261,12 @@ export interface UserDetailData {
   is_active: boolean
   last_login_at: string | null
   profile?: UserProfile
+  profiles?: UserProfile[]
   screening_results?: ScreeningResult[]
   learning_progress?: (LearningProgress & { content?: LearningContent })[]
   challenge_attempts?: (ChallengeAttempt & { challenge?: Challenge })[]
   assessments?: Assessment[]
-  assignments?: ContentAssignment[]
+  assignments?: (ContentAssignment & { assignable_title?: string })[]
 }
 
 export interface RecordingFeedback {

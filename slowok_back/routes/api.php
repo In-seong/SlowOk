@@ -149,6 +149,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // 사용자 관리
         Route::middleware('perm:user_manage')->group(function () {
             Route::get('/users', [UserManagementController::class, 'index']);
+            Route::post('/users', [UserManagementController::class, 'store']);
             Route::get('/users/{id}', [UserManagementController::class, 'show']);
             Route::put('/users/{id}', [UserManagementController::class, 'update']);
             Route::delete('/users/{id}', [UserManagementController::class, 'destroy']);

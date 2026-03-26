@@ -17,6 +17,24 @@ const loading = ref(true)
 const error = ref('')
 const activeTab = ref('info')
 
+// 프로필별 할당 필터
+const selectedProfileId = ref<number | null>(null)
+
+function allProfiles(): import('@shared/types').UserProfile[] {
+  if (!user.value) return []
+  return user.value.profiles ?? (user.value.profile ? [user.value.profile] : [])
+}
+
+function profileName(p: import('@shared/types').UserProfile): string {
+  return p.decrypted_name ?? p.name ?? '-'
+}
+
+function filteredAssignments() {
+  const all = user.value?.assignments ?? []
+  if (!selectedProfileId.value) return all
+  return all.filter(a => a.profile_id === selectedProfileId.value)
+}
+
 // 수정 모달
 const showEditModal = ref(false)
 const editForm = ref({ name: '', phone: '', email: '' })
@@ -243,70 +261,120 @@ onMounted(fetchUser)
       </div>
 
       <!-- 기본정보 탭 -->
-      <div v-if="activeTab === 'info'" class="bg-white rounded-[16px] border border-[#E8E8E8] p-6">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-[14px]">
-          <div><span class="text-[#888]">아이디:</span> <span class="ml-2 text-[#333]">{{ user.username }}</span></div>
-          <div><span class="text-[#888]">이름:</span> <span class="ml-2 text-[#333]">{{ user.profile?.decrypted_name || user.profile?.name || '-' }}</span></div>
-          <div><span class="text-[#888]">연락처:</span> <span class="ml-2 text-[#333]">{{ user.profile?.decrypted_phone || user.profile?.phone || '-' }}</span></div>
-          <div><span class="text-[#888]">이메일:</span> <span class="ml-2 text-[#333]">{{ user.profile?.decrypted_email || user.profile?.email || '-' }}</span></div>
-          <div><span class="text-[#888]">유형:</span> <span class="ml-2 text-[#333]">{{ user.profile?.user_type || '-' }}</span></div>
-          <div><span class="text-[#888]">상태:</span>
-            <span class="ml-2 px-2 py-0.5 rounded-full text-[12px] font-medium" :class="user.is_active ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'">
-              {{ user.is_active ? '활성' : '비활성' }}
-            </span>
+      <div v-if="activeTab === 'info'" class="space-y-4">
+        <div class="bg-white rounded-[16px] border border-[#E8E8E8] p-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-[14px]">
+            <div><span class="text-[#888]">아이디:</span> <span class="ml-2 text-[#333]">{{ user.username }}</span></div>
+            <div><span class="text-[#888]">상태:</span>
+              <span class="ml-2 px-2 py-0.5 rounded-full text-[12px] font-medium" :class="user.is_active ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'">
+                {{ user.is_active ? '활성' : '비활성' }}
+              </span>
+            </div>
+            <div><span class="text-[#888]">마지막 로그인:</span> <span class="ml-2 text-[#333]">{{ formatDate(user.last_login_at) }}</span></div>
           </div>
-          <div><span class="text-[#888]">마지막 로그인:</span> <span class="ml-2 text-[#333]">{{ formatDate(user.last_login_at) }}</span></div>
+
+          <!-- 액션 버튼 -->
+          <div class="flex gap-3 mt-6 pt-4 border-t border-[#F0F0F0]">
+            <button class="px-4 py-2 rounded-[10px] text-[13px] font-medium bg-[#4CAF50] text-white hover:bg-[#388E3C] transition-colors" @click="openEditModal">정보 수정</button>
+            <button class="px-4 py-2 rounded-[10px] text-[13px] font-medium bg-[#FF9800] text-white hover:bg-[#F57C00] transition-colors" @click="showResetPwModal = true; tempPassword = ''">비밀번호 초기화</button>
+          </div>
         </div>
 
-        <!-- 액션 버튼 -->
-        <div class="flex gap-3 mt-6 pt-4 border-t border-[#F0F0F0]">
-          <button
-            class="px-4 py-2 rounded-[10px] text-[13px] font-medium bg-[#4CAF50] text-white hover:bg-[#388E3C] transition-colors"
-            @click="openEditModal"
-          >
-            정보 수정
-          </button>
-          <button
-            class="px-4 py-2 rounded-[10px] text-[13px] font-medium bg-[#FF9800] text-white hover:bg-[#F57C00] transition-colors"
-            @click="showResetPwModal = true; tempPassword = ''"
-          >
-            비밀번호 초기화
-          </button>
+        <!-- 프로필 목록 -->
+        <div class="bg-white rounded-[16px] border border-[#E8E8E8] p-6">
+          <h3 class="text-[15px] font-bold text-[#333] mb-4">프로필 ({{ allProfiles().length }}개)</h3>
+          <div class="space-y-3">
+            <div
+              v-for="p in allProfiles()"
+              :key="p.profile_id"
+              class="flex items-center gap-3 p-3 rounded-[10px] bg-[#FAFAFA]"
+            >
+              <div class="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-bold text-white" :class="p.user_type === 'PARENT' ? 'bg-purple-400' : 'bg-blue-400'">
+                {{ profileName(p).charAt(0) }}
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="text-[14px] font-medium text-[#333]">{{ profileName(p) }}</span>
+                  <span class="px-2 py-0.5 rounded-full text-[11px] font-medium" :class="p.user_type === 'PARENT' ? 'bg-purple-50 text-purple-600' : 'bg-blue-50 text-blue-600'">
+                    {{ p.user_type === 'PARENT' ? '보호자' : '학습자' }}
+                  </span>
+                </div>
+                <div class="text-[12px] text-[#888] mt-0.5">
+                  {{ p.decrypted_phone ?? p.phone ?? '' }}
+                  {{ p.decrypted_email ?? p.email ?? '' }}
+                </div>
+              </div>
+            </div>
+            <div v-if="allProfiles().length === 0" class="text-center text-[13px] text-[#888] py-3">프로필이 없습니다.</div>
+          </div>
         </div>
       </div>
 
       <!-- 할당 콘텐츠 탭 -->
-      <div v-if="activeTab === 'assignments'" class="bg-white rounded-[16px] border border-[#E8E8E8] overflow-hidden">
-        <div v-if="!user.assignments?.length" class="p-6 text-center text-[#888]">할당된 콘텐츠가 없습니다.</div>
-        <table v-else class="w-full text-[14px]">
-          <thead>
-            <tr class="bg-[#F8F8F8] text-[#666]">
-              <th class="text-left px-4 py-3 font-medium">유형</th>
-              <th class="text-left px-4 py-3 font-medium">콘텐츠명</th>
-              <th class="text-left px-4 py-3 font-medium">상태</th>
-              <th class="text-left px-4 py-3 font-medium">할당일</th>
-              <th class="text-left px-4 py-3 font-medium">마감일</th>
-              <th class="text-center px-4 py-3 font-medium">관리</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="a in user.assignments" :key="a.assignment_id" class="border-t border-[#F0F0F0]">
-              <td class="px-4 py-3">{{ assignableTypeLabel(a.assignable_type) }}</td>
-              <td class="px-4 py-3">{{ a.assignable_title || `#${a.assignable_id}` }}</td>
-              <td class="px-4 py-3">
-                <span class="px-2 py-0.5 rounded-full text-[12px]"
-                  :class="a.status === 'COMPLETED' ? 'bg-green-50 text-green-600' : a.status === 'IN_PROGRESS' ? 'bg-blue-50 text-blue-600' : 'bg-gray-100 text-gray-600'">
-                  {{ a.status }}
-                </span>
-              </td>
-              <td class="px-4 py-3">{{ formatDate(a.assigned_at) }}</td>
-              <td class="px-4 py-3">{{ formatDate(a.due_date) }}</td>
-              <td class="px-4 py-3 text-center">
-                <button @click="removeAssignment(a.assignment_id)" class="text-red-500 hover:underline text-[13px]">해제</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div v-if="activeTab === 'assignments'" class="space-y-3">
+        <!-- 프로필 필터 -->
+        <div v-if="allProfiles().length > 1" class="flex gap-2 flex-wrap">
+          <button
+            class="px-3 py-1.5 rounded-[8px] text-[13px] transition-colors"
+            :class="!selectedProfileId ? 'bg-[#4CAF50] text-white' : 'bg-[#F0F0F0] text-[#666] hover:bg-[#E0E0E0]'"
+            @click="selectedProfileId = null"
+          >
+            전체
+          </button>
+          <button
+            v-for="p in allProfiles()"
+            :key="p.profile_id"
+            class="px-3 py-1.5 rounded-[8px] text-[13px] transition-colors"
+            :class="selectedProfileId === p.profile_id ? 'bg-[#4CAF50] text-white' : 'bg-[#F0F0F0] text-[#666] hover:bg-[#E0E0E0]'"
+            @click="selectedProfileId = p.profile_id"
+          >
+            {{ profileName(p) }}
+            <span class="text-[11px] opacity-70">({{ p.user_type === 'PARENT' ? '보호자' : '학습자' }})</span>
+          </button>
+        </div>
+
+        <div class="bg-white rounded-[16px] border border-[#E8E8E8] overflow-hidden">
+          <div v-if="filteredAssignments().length === 0" class="p-6 text-center text-[#888]">할당된 콘텐츠가 없습니다.</div>
+          <table v-else class="w-full text-[14px]">
+            <thead>
+              <tr class="bg-[#F8F8F8] text-[#666]">
+                <th class="text-left px-4 py-3 font-medium">유형</th>
+                <th class="text-left px-4 py-3 font-medium">콘텐츠명</th>
+                <th v-if="allProfiles().length > 1 && !selectedProfileId" class="text-left px-4 py-3 font-medium">프로필</th>
+                <th class="text-left px-4 py-3 font-medium">상태</th>
+                <th class="text-left px-4 py-3 font-medium">할당일</th>
+                <th class="text-center px-4 py-3 font-medium">관리</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="a in filteredAssignments()" :key="a.assignment_id" class="border-t border-[#F0F0F0]">
+                <td class="px-4 py-3">
+                  <span class="px-2 py-0.5 rounded-full text-[11px] font-medium" :class="{
+                    'bg-blue-50 text-blue-600': a.assignable_type === 'screening_test',
+                    'bg-green-50 text-green-600': a.assignable_type === 'learning_content',
+                    'bg-orange-50 text-orange-600': a.assignable_type === 'challenge',
+                  }">
+                    {{ assignableTypeLabel(a.assignable_type) }}
+                  </span>
+                </td>
+                <td class="px-4 py-3 font-medium text-[#333]">{{ a.assignable_title || `#${a.assignable_id}` }}</td>
+                <td v-if="allProfiles().length > 1 && !selectedProfileId" class="px-4 py-3 text-[12px] text-[#888]">
+                  {{ a.profile ? (a.profile.decrypted_name ?? a.profile.name ?? '-') : '-' }}
+                </td>
+                <td class="px-4 py-3">
+                  <span class="px-2 py-0.5 rounded-full text-[12px]"
+                    :class="a.status === 'COMPLETED' ? 'bg-green-50 text-green-600' : a.status === 'IN_PROGRESS' ? 'bg-blue-50 text-blue-600' : 'bg-gray-100 text-gray-600'">
+                    {{ a.status ?? 'ASSIGNED' }}
+                  </span>
+                </td>
+                <td class="px-4 py-3 text-[#888]">{{ formatDate(a.assigned_at) }}</td>
+                <td class="px-4 py-3 text-center">
+                  <button @click="removeAssignment(a.assignment_id)" class="text-red-500 hover:underline text-[13px]">해제</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <!-- 진단결과 탭 -->

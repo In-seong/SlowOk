@@ -4,7 +4,7 @@ import api from '@shared/api'
 import { contentAssignmentApi } from '@shared/api/contentAssignmentApi'
 import { contentPackageApi } from '@shared/api/contentPackageApi'
 import { adminApi } from '@shared/api/adminApi'
-import type { Account, ApiResponse, ContentAssignment, ContentPackage, LearningContent, ScreeningTest, Challenge, UserProfile } from '@shared/types'
+import type { Account, ApiResponse, ContentAssignment, ContentPackage, LearningContent, ScreeningTest, Challenge } from '@shared/types'
 import { useToastStore } from '@shared/stores/toastStore'
 
 const toast = useToastStore()
@@ -16,7 +16,7 @@ const screenings = ref<ScreeningTest[]>([])
 const challenges = ref<Challenge[]>([])
 const packages = ref<ContentPackage[]>([])
 
-const selectedUserIds = ref<Set<number>>(new Set())
+const selectedProfileIds = ref<Set<number>>(new Set())
 const selectedItemIds = ref<Set<number>>(new Set())
 const selectedPackageIds = ref<Set<number>>(new Set())
 const existingAssignments = ref<ContentAssignment[]>([])
@@ -25,45 +25,67 @@ const loading = ref(true)
 const assigning = ref(false)
 const loadingAssignments = ref(false)
 
-// Account별 profiles를 플랫하게 펼친 목록 (프로필 단위 선택)
+// Account별 profiles를 부모-자녀 그룹으로 정리
 interface ProfileItem {
   profileId: number
   name: string
   username: string
   userType: string
+  isChild: boolean
 }
 
-const allProfiles = computed<ProfileItem[]>(() => {
-  const result: ProfileItem[] = []
+interface AccountGroup {
+  accountId: number
+  username: string
+  profiles: ProfileItem[]
+}
+
+const accountGroups = computed<AccountGroup[]>(() => {
+  const result: AccountGroup[] = []
   for (const u of users.value) {
     if (u.role !== 'USER') continue
-    const profiles = (u as any).profiles as UserProfile[] | undefined
-    if (profiles && profiles.length > 0) {
-      for (const p of profiles) {
-        result.push({
-          profileId: p.profile_id,
-          name: (p as any).decrypted_name ?? p.name ?? u.username,
-          username: u.username,
-          userType: p.user_type ?? '',
-        })
-      }
-    } else if (u.profile) {
-      result.push({
-        profileId: u.profile.profile_id,
-        name: u.profile.decrypted_name ?? u.profile.name ?? u.username,
+    const profiles = u.profiles ?? (u.profile ? [u.profile] : [])
+    if (profiles.length === 0) continue
+
+    const items: ProfileItem[] = []
+    // 부모 먼저, 자녀 나중에
+    const parents = profiles.filter(p => p.user_type === 'PARENT')
+    const children = profiles.filter(p => p.user_type === 'LEARNER')
+
+    for (const p of parents) {
+      items.push({
+        profileId: p.profile_id,
+        name: (p as any).decrypted_name ?? p.name ?? u.username,
         username: u.username,
-        userType: u.profile.user_type ?? '',
+        userType: p.user_type ?? '',
+        isChild: false,
       })
     }
+    for (const p of children) {
+      items.push({
+        profileId: p.profile_id,
+        name: (p as any).decrypted_name ?? p.name ?? '학습자',
+        username: u.username,
+        userType: p.user_type ?? '',
+        isChild: parents.length > 0,
+      })
+    }
+    // 부모가 없는 경우 (학습자만 있는 계정)
+    if (parents.length === 0) {
+      items.forEach(item => item.isChild = false)
+    }
+
+    result.push({ accountId: u.account_id, username: u.username, profiles: items })
   }
   return result
 })
 
-const filteredProfiles = computed(() => {
-  if (!userSearch.value.trim()) return allProfiles.value
+const filteredGroups = computed(() => {
+  if (!userSearch.value.trim()) return accountGroups.value
   const q = userSearch.value.toLowerCase()
-  return allProfiles.value.filter(
-    (p) => p.name.toLowerCase().includes(q) || p.username.toLowerCase().includes(q),
+  return accountGroups.value.filter((g) =>
+    g.username.toLowerCase().includes(q) ||
+    g.profiles.some(p => p.name.toLowerCase().includes(q))
   )
 })
 
@@ -79,12 +101,12 @@ const alreadyAssignedIds = computed(() => {
 })
 
 function toggleUser(profileId: number) {
-  if (selectedUserIds.value.has(profileId)) {
-    selectedUserIds.value.delete(profileId)
+  if (selectedProfileIds.value.has(profileId)) {
+    selectedProfileIds.value.delete(profileId)
   } else {
-    selectedUserIds.value.add(profileId)
+    selectedProfileIds.value.add(profileId)
   }
-  selectedUserIds.value = new Set(selectedUserIds.value)
+  selectedProfileIds.value = new Set(selectedProfileIds.value)
 }
 
 function toggleItem(id: number) {
@@ -97,7 +119,7 @@ function toggleItem(id: number) {
 }
 
 // 선택된 사용자 변경 시 기존 할당 조회
-watch(selectedUserIds, async (ids) => {
+watch(selectedProfileIds, async (ids) => {
   if (ids.size === 0) {
     existingAssignments.value = []
     return
@@ -157,13 +179,13 @@ async function fetchData() {
 
 async function handleAssign() {
   if (activeTab.value === 'package') {
-    if (selectedUserIds.value.size === 0 || selectedPackageIds.value.size === 0) {
+    if (selectedProfileIds.value.size === 0 || selectedPackageIds.value.size === 0) {
       toast.warning('사용자와 패키지를 각각 1개 이상 선택해주세요.')
       return
     }
     assigning.value = true
     try {
-      const profileIds = Array.from(selectedUserIds.value)
+      const profileIds = Array.from(selectedProfileIds.value)
       for (const packageId of selectedPackageIds.value) {
         await contentPackageApi.assignPackage(packageId, { profile_ids: profileIds })
       }
@@ -177,14 +199,14 @@ async function handleAssign() {
     return
   }
 
-  if (selectedUserIds.value.size === 0 || selectedItemIds.value.size === 0) {
+  if (selectedProfileIds.value.size === 0 || selectedItemIds.value.size === 0) {
     toast.warning('사용자와 콘텐츠를 각각 1개 이상 선택해주세요.')
     return
   }
   assigning.value = true
   try {
     await contentAssignmentApi.bulkAssign({
-      profile_ids: Array.from(selectedUserIds.value),
+      profile_ids: Array.from(selectedProfileIds.value),
       assignments: Array.from(selectedItemIds.value).map((id) => ({
         assignable_type: activeTab.value,
         assignable_id: id,
@@ -193,7 +215,7 @@ async function handleAssign() {
     toast.success('할당이 완료되었습니다.')
     selectedItemIds.value = new Set()
     // 할당 후 기존 할당 목록 새로고침
-    const ids = selectedUserIds.value
+    const ids = selectedProfileIds.value
     if (ids.size > 0) {
       const allAssignments: ContentAssignment[] = []
       const promises = Array.from(ids).map((profileId) =>
@@ -277,30 +299,36 @@ onMounted(fetchData)
           placeholder="이름 또는 아이디 검색..."
           class="w-full bg-[#F8F8F8] border border-[#E8E8E8] rounded-[10px] px-3 py-2 text-[14px] focus:border-[#4CAF50] focus:outline-none mb-3"
         />
-        <div class="max-h-[400px] overflow-y-auto space-y-1">
-          <label
-            v-for="p in filteredProfiles"
-            :key="p.profileId"
-            class="flex items-center gap-2 px-3 py-2 rounded-[8px] cursor-pointer transition-colors"
-            :class="selectedUserIds.has(p.profileId) ? 'bg-[#E8F5E9]' : 'hover:bg-[#F5F5F5]'"
-          >
-            <input
-              type="checkbox"
-              :checked="selectedUserIds.has(p.profileId)"
-              @change="toggleUser(p.profileId)"
-              class="w-4 h-4 accent-[#4CAF50]"
-            />
-            <span class="text-[14px]">{{ p.name }}</span>
-            <span
-              class="text-[11px] px-1.5 py-0.5 rounded-full"
-              :class="p.userType === 'PARENT' ? 'bg-[#E3F2FD] text-[#1976D2]' : 'bg-[#E8F5E9] text-[#4CAF50]'"
+        <div class="max-h-[400px] overflow-y-auto space-y-0.5">
+          <template v-for="group in filteredGroups" :key="group.accountId">
+            <div
+              v-for="p in group.profiles"
+              :key="p.profileId"
+              class="flex items-center gap-2 px-3 py-2 rounded-[8px] cursor-pointer transition-colors"
+              :class="[
+                selectedProfileIds.has(p.profileId) ? 'bg-[#E8F5E9]' : 'hover:bg-[#F5F5F5]',
+                p.isChild ? 'ml-6' : ''
+              ]"
+              @click="toggleUser(p.profileId)"
             >
-              {{ p.userType === 'PARENT' ? '학부모' : '학습자' }}
-            </span>
-            <span class="text-[12px] text-[#888]">({{ p.username }})</span>
-          </label>
+              <input
+                type="checkbox"
+                :checked="selectedProfileIds.has(p.profileId)"
+                class="w-4 h-4 accent-[#4CAF50] pointer-events-none"
+              />
+              <span v-if="p.isChild" class="text-[#BDBDBD] text-[12px]">└</span>
+              <span class="text-[14px]">{{ p.name }}</span>
+              <span
+                class="text-[11px] px-1.5 py-0.5 rounded-full"
+                :class="p.userType === 'PARENT' ? 'bg-purple-50 text-purple-600' : 'bg-blue-50 text-blue-600'"
+              >
+                {{ p.userType === 'PARENT' ? '보호자' : '학습자' }}
+              </span>
+              <span v-if="!p.isChild" class="text-[12px] text-[#888]">({{ p.username }})</span>
+            </div>
+          </template>
         </div>
-        <p class="text-[12px] text-[#888] mt-2">{{ selectedUserIds.size }}명 선택됨</p>
+        <p class="text-[12px] text-[#888] mt-2">{{ selectedProfileIds.size }}명 선택됨</p>
       </div>
 
       <!-- 우측: 콘텐츠 선택 -->
@@ -374,15 +402,15 @@ onMounted(fetchData)
     <div class="mt-4 flex items-center gap-3">
       <button
         @click="handleAssign"
-        :disabled="assigning || selectedUserIds.size === 0 || (activeTab === 'package' ? selectedPackageIds.size === 0 : selectedItemIds.size === 0)"
+        :disabled="assigning || selectedProfileIds.size === 0 || (activeTab === 'package' ? selectedPackageIds.size === 0 : selectedItemIds.size === 0)"
         class="px-6 py-2.5 bg-[#4CAF50] text-white rounded-[10px] text-[14px] font-medium hover:bg-[#43A047] transition-colors disabled:opacity-50"
       >
-        {{ assigning ? '할당 중...' : activeTab === 'package' ? `선택한 사용자(${selectedUserIds.size}명)에게 패키지(${selectedPackageIds.size}개) 할당` : `선택한 사용자(${selectedUserIds.size}명)에게 콘텐츠(${selectedItemIds.size}개) 할당` }}
+        {{ assigning ? '할당 중...' : activeTab === 'package' ? `선택한 사용자(${selectedProfileIds.size}명)에게 패키지(${selectedPackageIds.size}개) 할당` : `선택한 사용자(${selectedProfileIds.size}명)에게 콘텐츠(${selectedItemIds.size}개) 할당` }}
       </button>
     </div>
 
     <!-- 기존 할당 목록 -->
-    <div v-if="activeTab !== 'package' && selectedUserIds.size > 0 && currentTabAssignments.length > 0" class="mt-6">
+    <div v-if="activeTab !== 'package' && selectedProfileIds.size > 0 && currentTabAssignments.length > 0" class="mt-6">
       <h3 class="text-[15px] font-semibold text-[#333] mb-3">현재 {{ assignableTypeLabel(activeTab) }} 할당 목록</h3>
       <div class="bg-white rounded-[16px] border border-[#E8E8E8] overflow-hidden">
         <table class="w-full text-[14px]">

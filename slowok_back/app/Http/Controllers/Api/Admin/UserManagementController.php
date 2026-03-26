@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Models\Account;
+use App\Models\UserProfile;
 use App\Models\ContentAssignment;
 use App\Models\ScreeningResult;
 use App\Models\LearningProgress;
@@ -21,7 +22,7 @@ class UserManagementController extends BaseAdminController
 
         $users = Account::where('role', 'USER')
             ->when($instId, fn ($q) => $q->where('institution_id', $instId))
-            ->with(['profile', 'profiles'])
+            ->with(['profiles.children'])
             ->latest()
             ->get();
 
@@ -36,38 +37,94 @@ class UserManagementController extends BaseAdminController
         if ($instId) {
             $query->where('institution_id', $instId);
         }
-        $user = $query->with('profile')->findOrFail($id);
+        $user = $query->with(['profiles.children'])->findOrFail($id);
 
-        $profileId = $user->profile?->profile_id;
         $detail = $user->toArray();
 
-        if ($profileId) {
-            $detail['screening_results'] = ScreeningResult::where('profile_id', $profileId)
+        // 모든 프로필의 데이터를 수집 (부모 + 자녀)
+        $profileIds = $user->profiles->pluck('profile_id')->toArray();
+
+        if (!empty($profileIds)) {
+            $detail['screening_results'] = ScreeningResult::whereIn('profile_id', $profileIds)
                 ->with('test')
                 ->latest()
                 ->get();
 
-            $detail['learning_progress'] = LearningProgress::where('profile_id', $profileId)
+            $detail['learning_progress'] = LearningProgress::whereIn('profile_id', $profileIds)
                 ->with('content')
                 ->get();
 
-            $detail['challenge_attempts'] = ChallengeAttempt::where('profile_id', $profileId)
+            $detail['challenge_attempts'] = ChallengeAttempt::whereIn('profile_id', $profileIds)
                 ->with('challenge')
                 ->latest()
                 ->get();
 
-            $detail['assessments'] = Assessment::where('profile_id', $profileId)
+            $detail['assessments'] = Assessment::whereIn('profile_id', $profileIds)
                 ->with('category')
                 ->latest()
                 ->get();
 
-            $detail['assignments'] = ContentAssignment::where('profile_id', $profileId)
-                ->with(['assigner', 'screeningTest', 'learningContent', 'challenge'])
+            $detail['assignments'] = ContentAssignment::whereIn('profile_id', $profileIds)
+                ->with(['profile', 'assigner', 'screeningTest', 'learningContent', 'challenge'])
                 ->latest()
-                ->get();
+                ->get()
+                ->map(function ($a) {
+                    $a->assignable_title = $a->assignable_title;
+                    return $a;
+                });
         }
 
         return response()->json(['success' => true, 'data' => $detail]);
+    }
+
+    public function store(Request $request, EncryptionService $encryptionService): JsonResponse
+    {
+        $request->validate([
+            'username' => 'required|string|max:50|unique:account,username',
+            'password' => 'required|string|min:6',
+            'name' => 'required|string|max:100',
+            'user_type' => 'required|in:LEARNER,PARENT',
+            'phone' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:100',
+        ]);
+
+        $instId = $this->getInstitutionId($request);
+
+        $account = Account::create([
+            'username' => $request->username,
+            'password_hash' => Hash::make($request->password),
+            'role' => 'USER',
+            'institution_id' => $instId,
+            'is_active' => true,
+        ]);
+
+        $profileData = [
+            'account_id' => $account->account_id,
+            'name' => $request->name,
+            'user_type' => $request->user_type,
+            'phone' => $request->phone,
+            'email' => $request->email,
+        ];
+
+        // 암호화
+        $profileData['encrypted_name'] = $encryptionService->encrypt($request->name);
+        if ($request->phone) {
+            $profileData['encrypted_phone'] = $encryptionService->encrypt($request->phone);
+        }
+        if ($request->email) {
+            $profileData['encrypted_email'] = $encryptionService->encrypt($request->email);
+        }
+        $profileData['is_encrypted'] = true;
+
+        UserProfile::create($profileData);
+
+        $account->load('profiles');
+
+        return response()->json([
+            'success' => true,
+            'data' => $account,
+            'message' => '사용자가 생성되었습니다.',
+        ], 201);
     }
 
     public function update(Request $request, int $id, EncryptionService $encryptionService): JsonResponse

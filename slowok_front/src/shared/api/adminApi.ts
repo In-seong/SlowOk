@@ -136,6 +136,11 @@ export const adminApi = {
     return api.delete<ApiResponse<null>>(`/admin/reward-cards/${id}`)
   },
 
+  // 사용자(고객) 생성
+  createUser(data: { username: string; password: string; name: string; user_type: 'LEARNER' | 'PARENT'; phone?: string; email?: string }) {
+    return api.post<ApiResponse<Account>>('/admin/users', data)
+  },
+
   // MASTER 전용 - 관리자 관리
   getAdmins() {
     return api.get<ApiResponse<Account[]>>('/admin/master/admins')
