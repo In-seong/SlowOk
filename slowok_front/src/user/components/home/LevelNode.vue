@@ -13,7 +13,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="flex flex-col items-center gap-1.5" style="width: 80px;">
+  <div class="flex flex-col items-center gap-1.5" style="width: 120px;">
     <!-- Node Button -->
     <button
       :disabled="status === 'locked'"
@@ -61,7 +61,7 @@ const emit = defineEmits<{
 
     <!-- Title -->
     <span
-      class="text-[11px] leading-tight text-center truncate w-full"
+      class="text-[11px] leading-snug text-center w-full line-clamp-2"
       :class="status === 'locked' ? 'text-[#BDBDBD]' : 'text-[#555] font-medium'"
     >
       {{ challenge.title }}
