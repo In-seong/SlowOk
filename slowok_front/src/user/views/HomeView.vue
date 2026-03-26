@@ -8,13 +8,13 @@ import AppHeader from '@shared/components/layout/AppHeader.vue'
 import BottomNav from '@shared/components/layout/BottomNav.vue'
 import LevelMapPath from '@user/components/home/LevelMapPath.vue'
 import { useToastStore } from '@shared/stores/toastStore'
+import api from '@shared/api'
+import type { ChildDashboardData } from '@shared/types'
 
 // Parent dashboard imports (lazy)
 import CardSection from '@shared/components/ui/CardSection.vue'
 import SectionTitle from '@shared/components/ui/SectionTitle.vue'
-import StatusBadge from '@shared/components/ui/StatusBadge.vue'
-import ProgressBar from '@shared/components/ui/ProgressBar.vue'
-// ActionButton available if needed for parent dashboard
+// ProgressBar available if needed
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -31,23 +31,29 @@ const currentProfileName = computed(() => {
 const hasMultipleProfiles = computed(() => authStore.profiles.length > 1)
 const isLearner = computed(() => !authStore.isParent)
 
+// === PARENT: 자녀 대시보드 데이터 ===
+const childrenData = ref<ChildDashboardData[]>([])
+
 onMounted(async () => {
   try {
-    // fetchUser 먼저 완료해야 isParent 판단 가능
     await authStore.fetchUser()
 
-    const promises: Promise<any>[] = [
-      challengeStore.fetchChallenges(),
-      challengeStore.fetchRewardCards(),
-      notificationStore.fetchNotifications(),
-    ]
-    // Parent needs learning data for dashboard
     if (authStore.isParent) {
-      const { useLearningStore } = await import('../stores/learningStore')
-      const learningStore = useLearningStore()
-      promises.push(learningStore.fetchContents())
+      // 학부모: 자녀 대시보드 + 알림
+      const [dashRes] = await Promise.all([
+        api.get('/user/parent-dashboard'),
+        notificationStore.fetchNotifications(),
+      ])
+      if (dashRes.data.success) {
+        childrenData.value = dashRes.data.data
+      }
+    } else {
+      // 학습자: 챌린지 + 보상카드
+      await Promise.all([
+        challengeStore.fetchChallenges(),
+        challengeStore.fetchRewardCards(),
+      ])
     }
-    await Promise.all(promises)
   } catch (e: any) {
     toast.error(e.response?.data?.message || '데이터를 불러오지 못했습니다.')
   } finally {
@@ -225,36 +231,42 @@ const quickMenusParent = [
               </div>
             </CardSection>
 
-            <!-- Weekly Challenges (Parent view) -->
+            <!-- 자녀 현황 -->
             <section class="flex flex-col gap-3">
-              <SectionTitle title="자녀 챌린지 현황" />
+              <SectionTitle title="자녀 학습 현황" actionLabel="상세보기" actionTo="/parent-dashboard" />
               <CardSection>
-                <div v-if="challengeStore.challenges.length === 0" class="py-6 text-center">
-                  <p class="text-[13px] text-[#888]">등록된 챌린지가 없습니다</p>
+                <div v-if="childrenData.length === 0" class="py-6 text-center">
+                  <p class="text-[13px] text-[#888]">등록된 자녀가 없습니다</p>
+                  <button class="mt-2 text-[13px] text-[#4CAF50] font-medium" @click="router.push({ name: 'add-child' })">자녀 추가하기</button>
                 </div>
                 <div
-                  v-for="(challenge, index) in challengeStore.challenges.slice(0, 5)"
-                  :key="challenge.challenge_id"
-                  class="flex items-center gap-3 py-3"
-                  :class="index < Math.min(challengeStore.challenges.length, 5) - 1 ? 'border-b border-[#F5F5F5]' : ''"
+                  v-for="(child, index) in childrenData"
+                  :key="child.profile_id"
+                  class="py-3"
+                  :class="index < childrenData.length - 1 ? 'border-b border-[#F5F5F5]' : ''"
                 >
-                  <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-0.5">
-                      <h3 class="text-[14px] font-semibold text-[#333] truncate">{{ challenge.title }}</h3>
-                      <StatusBadge
-                        v-if="challenge.latest_attempt?.is_passed"
-                        label="통과"
-                        variant="success"
-                      />
+                  <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-2">
+                      <div class="w-8 h-8 rounded-full bg-[#E8F5E9] flex items-center justify-center">
+                        <span class="text-[13px] font-bold text-[#4CAF50]">{{ (child.decrypted_name ?? child.name).charAt(0) }}</span>
+                      </div>
+                      <span class="text-[14px] font-semibold text-[#333]">{{ child.decrypted_name ?? child.name }}</span>
                     </div>
-                    <p class="text-[12px] text-[#888]">{{ challenge.category?.name ?? '기타' }}</p>
                   </div>
-                  <ProgressBar
-                    v-if="challenge.latest_attempt"
-                    :value="challenge.latest_attempt.score"
-                    variant="success"
-                    class="w-16"
-                  />
+                  <div class="grid grid-cols-3 gap-2 text-center">
+                    <div class="bg-[#F8F8F8] rounded-[8px] py-2">
+                      <p class="text-[16px] font-bold text-[#4CAF50]">{{ child.learning.completed }}</p>
+                      <p class="text-[10px] text-[#888]">학습 완료</p>
+                    </div>
+                    <div class="bg-[#F8F8F8] rounded-[8px] py-2">
+                      <p class="text-[16px] font-bold text-[#FF9800]">{{ child.challenge.passed }}</p>
+                      <p class="text-[10px] text-[#888]">챌린지 통과</p>
+                    </div>
+                    <div class="bg-[#F8F8F8] rounded-[8px] py-2">
+                      <p class="text-[16px] font-bold text-[#2196F3]">{{ child.latest_screening?.score ?? '-' }}</p>
+                      <p class="text-[10px] text-[#888]">진단 점수</p>
+                    </div>
+                  </div>
                 </div>
               </CardSection>
             </section>
