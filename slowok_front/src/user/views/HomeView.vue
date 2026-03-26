@@ -80,7 +80,7 @@ const quickMenusParent = [
 
 <template>
   <div class="min-h-screen flex justify-center bg-white">
-    <div class="w-full max-w-[402px] min-h-screen relative bg-white"
+    <div class="w-full max-w-[402px] min-h-screen relative bg-white">
       <!-- Header -->
       <AppHeader>
         <template #badge>
