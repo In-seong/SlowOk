@@ -77,8 +77,8 @@ const quickMenusParent = [
 </script>
 
 <template>
-  <div class="min-h-screen flex justify-center" :class="isLearner ? 'bg-gradient-to-b from-[#4CAF50] via-[#66BB6A] to-[#81C784]' : 'bg-[#F5F5F5]'">
-    <div class="w-full max-w-[402px] min-h-screen relative" :class="isLearner ? '' : 'bg-[#F5F5F5]'"
+  <div class="min-h-screen flex justify-center bg-white">
+    <div class="w-full max-w-[402px] min-h-screen relative bg-white"
       <!-- Header -->
       <AppHeader>
         <template #badge>
@@ -103,24 +103,22 @@ const quickMenusParent = [
           <!-- 0. Profile Banner -->
           <div
             v-if="hasMultipleProfiles"
-            class="flex items-center justify-between rounded-[12px] px-4 py-3"
-            :class="isLearner ? 'bg-white/20 backdrop-blur-sm' : 'bg-white shadow-[0_0_6px_rgba(0,0,0,0.06)]'"
+            class="flex items-center justify-between bg-[#F8F8F8] rounded-[12px] px-4 py-3"
           >
             <div class="flex items-center gap-2">
-              <div class="w-7 h-7 rounded-full flex items-center justify-center" :class="isLearner ? 'bg-white/30' : 'bg-[#4CAF50]'">
+              <div class="w-7 h-7 rounded-full bg-[#4CAF50] flex items-center justify-center">
                 <span class="text-[12px] font-bold text-white">{{ currentProfileName.charAt(0) }}</span>
               </div>
-              <span class="text-[13px] font-semibold" :class="isLearner ? 'text-white' : 'text-[#333]'">{{ currentProfileName }}</span>
+              <span class="text-[13px] font-semibold text-[#333]">{{ currentProfileName }}</span>
               <span
                 class="text-[10px] px-2 py-0.5 rounded-full"
-                :class="isLearner ? 'bg-white/20 text-white' : (authStore.isParent ? 'bg-[#E3F2FD] text-[#1976D2]' : 'bg-[#E8F5E9] text-[#4CAF50]')"
+                :class="authStore.isParent ? 'bg-[#E3F2FD] text-[#1976D2]' : 'bg-[#E8F5E9] text-[#4CAF50]'"
               >
                 {{ authStore.isParent ? '학부모' : '학습자' }}
               </span>
             </div>
             <button
-              class="text-[12px] font-medium"
-              :class="isLearner ? 'text-white/80' : 'text-[#4CAF50]'"
+              class="text-[12px] font-medium text-[#4CAF50]"
               @click="router.push({ name: 'profile-select' })"
             >
               전환
@@ -130,8 +128,7 @@ const quickMenusParent = [
           <!-- 0.5. Institution Not Connected Banner -->
           <div
             v-if="!authStore.hasInstitution"
-            class="rounded-[12px] p-4"
-            :class="isLearner ? 'bg-white/20 backdrop-blur-sm' : 'bg-[#FFF3E0]'"
+            class="bg-[#FFF3E0] rounded-[12px] p-4"
           >
             <div class="flex items-start gap-3">
               <svg class="w-5 h-5 text-[#FF9800] shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -155,16 +152,15 @@ const quickMenusParent = [
           <!-- 1. Notification Banner -->
           <button
             v-if="unreadNotifications > 0"
-            class="w-full rounded-[12px] p-3.5 flex items-center gap-3"
-            :class="isLearner ? 'bg-white/20 backdrop-blur-sm' : 'bg-[#E8F5E9]'"
+            class="w-full bg-[#E8F5E9] rounded-[12px] p-3.5 flex items-center gap-3"
             @click="router.push({ name: 'notifications' })"
           >
-            <svg class="w-5 h-5 shrink-0" :class="isLearner ? 'text-white' : 'text-[#4CAF50]'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="w-5 h-5 text-[#4CAF50] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
               <path d="M13.73 21a2 2 0 01-3.46 0" />
             </svg>
-            <span class="flex-1 text-[13px] font-medium text-left" :class="isLearner ? 'text-white' : 'text-[#4CAF50]'">새로운 알림 {{ unreadNotifications }}건</span>
-            <svg class="w-4 h-4 shrink-0" :class="isLearner ? 'text-white/70' : 'text-[#4CAF50]'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <span class="flex-1 text-[13px] text-[#4CAF50] font-medium text-left">새로운 알림 {{ unreadNotifications }}건</span>
+            <svg class="w-4 h-4 text-[#4CAF50] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M9 18l6-6-6-6" />
             </svg>
           </button>
@@ -172,40 +168,34 @@ const quickMenusParent = [
           <!-- ========== LEARNER: Level Map ========== -->
           <template v-if="isLearner">
             <!-- Progress Summary Bar -->
-            <div class="bg-white/20 backdrop-blur-sm rounded-[16px] p-4">
+            <div class="bg-[#F0F7F0] rounded-[16px] p-4">
               <div class="flex items-center justify-between mb-2">
-                <span class="text-[13px] font-semibold text-white">학습 진행률</span>
-                <span class="text-[13px] font-bold text-white">{{ completedChallenges }}/{{ totalChallenges }}</span>
+                <span class="text-[13px] font-semibold text-[#333]">학습 진행률</span>
+                <span class="text-[13px] font-bold text-[#4CAF50]">{{ completedChallenges }}/{{ totalChallenges }}</span>
               </div>
-              <div class="w-full h-[8px] rounded-full bg-white/30 overflow-hidden">
+              <div class="w-full h-[8px] rounded-full bg-[#E0E0E0] overflow-hidden">
                 <div
-                  class="h-full rounded-full bg-white transition-all duration-500"
+                  class="h-full rounded-full bg-[#4CAF50] transition-all duration-500"
                   :style="{ width: progressPercent + '%' }"
                 />
               </div>
             </div>
 
             <!-- Level Map -->
-            <div v-if="challengeStore.challenges.length > 0" class="pb-4 relative">
-              <!-- 장식 요소들 -->
-              <div class="absolute top-10 left-2 w-8 h-8 bg-white/10 rounded-full"></div>
-              <div class="absolute top-40 right-4 w-12 h-12 bg-white/8 rounded-full"></div>
-              <div class="absolute top-72 left-6 w-6 h-6 bg-white/10 rounded-full"></div>
-              <div class="absolute bottom-20 right-8 w-10 h-10 bg-white/8 rounded-full"></div>
-
+            <div v-if="challengeStore.challenges.length > 0" class="pb-4">
               <LevelMapPath
                 :challenges="challengeStore.challenges"
                 @play="onPlayChallenge"
               />
             </div>
             <div v-else class="py-12 text-center">
-              <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                <svg class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <div class="w-16 h-16 bg-[#E8F5E9] rounded-full flex items-center justify-center mx-auto mb-3">
+                <svg class="w-8 h-8 text-[#4CAF50]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M6 9H4a2 2 0 01-2-2V5a2 2 0 012-2h2M18 9h2a2 2 0 002-2V5a2 2 0 00-2-2h-2M6 3h12v6a6 6 0 01-12 0V3zM12 15v3M8 21h8M10 18h4" />
                 </svg>
               </div>
-              <p class="text-[14px] font-semibold text-white mb-1">아직 챌린지가 없어요</p>
-              <p class="text-[12px] text-white/70">기관에서 챌린지를 배정하면 여기에 표시됩니다</p>
+              <p class="text-[14px] font-semibold text-[#333] mb-1">아직 챌린지가 없어요</p>
+              <p class="text-[12px] text-[#888]">기관에서 챌린지를 배정하면 여기에 표시됩니다</p>
             </div>
           </template>
 
