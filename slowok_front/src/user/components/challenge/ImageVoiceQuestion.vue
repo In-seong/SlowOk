@@ -52,7 +52,6 @@ async function startRecording() {
   interimText.value = ''
   showResult.value = false
 
-  // STT 시작
   const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition
   recognition = new SpeechRecognitionCtor()
   recognition.lang = 'ko-KR'
@@ -96,7 +95,6 @@ async function startRecording() {
 
   recognition.start()
 
-  // MediaRecorder 동시 시작 (서버 저장용)
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
     const recorder = new MediaRecorder(stream, { mimeType: 'audio/webm' })
@@ -144,7 +142,6 @@ function submitAnswer() {
   showResult.value = true
   emit('answered', { correct: isCorrect.value, sttText: text, confidence: confidence.value })
 
-  // 녹음 파일 서버 저장 (비동기)
   uploadRecording(text)
 }
 
@@ -178,19 +175,19 @@ onBeforeUnmount(() => {
 <template>
   <div>
     <!-- 문항 내용 -->
-    <p class="text-[16px] font-bold text-[#333] mb-4 leading-relaxed">{{ question.content }}</p>
+    <p class="text-[20px] font-bold text-[#333] mb-4 leading-relaxed">{{ question.content }}</p>
 
     <!-- 이미지 -->
     <div v-if="question.image_url" class="mb-5">
       <img
         :src="question.image_url"
         :alt="question.content"
-        class="w-full rounded-[16px] object-cover max-h-[240px] border border-[#E8E8E8]"
+        class="w-full rounded-2xl object-cover max-h-[240px] border border-[#E8E8E8]"
       />
     </div>
 
     <!-- 미지원 -->
-    <div v-if="!isSupported" class="bg-[#FFEBEE] rounded-[12px] p-4 text-center mb-4">
+    <div v-if="!isSupported" class="bg-[#FFEBEE] rounded-2xl p-4 text-center mb-4">
       <p class="text-[13px] text-[#F44336]">음성 인식을 지원하지 않는 브라우저입니다.</p>
     </div>
 
@@ -200,7 +197,7 @@ onBeforeUnmount(() => {
         <button
           v-if="!isListening && !showResult"
           @click="startRecording"
-          class="w-20 h-20 rounded-full bg-[#F44336] text-white flex items-center justify-center shadow-lg transition-all active:scale-95"
+          class="w-20 h-20 rounded-full bg-[#F44336] text-white flex items-center justify-center shadow-[0_4px_0_#C62828] active:shadow-[0_2px_0_#C62828] active:translate-y-[2px] transition-all"
         >
           <svg class="w-9 h-9" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
@@ -211,7 +208,7 @@ onBeforeUnmount(() => {
         <button
           v-if="isListening"
           @click="stopRecording"
-          class="w-20 h-20 rounded-full bg-[#333] text-white flex items-center justify-center shadow-lg transition-all active:scale-95 animate-pulse"
+          class="w-20 h-20 rounded-full bg-[#333] text-white flex items-center justify-center shadow-[0_4px_0_#111] active:shadow-[0_2px_0_#111] active:translate-y-[2px] transition-all animate-pulse"
         >
           <svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor">
             <rect x="6" y="6" width="12" height="12" rx="2" />
@@ -226,15 +223,15 @@ onBeforeUnmount(() => {
       </div>
 
       <!-- 실시간 인식 텍스트 -->
-      <div v-if="interimText && isListening" class="bg-[#FFF8E1] rounded-[12px] p-3 mb-3">
+      <div v-if="interimText && isListening" class="bg-[#FFF8E1] rounded-2xl p-3 mb-3">
         <p class="text-[12px] text-[#999] mb-0.5">인식 중...</p>
-        <p class="text-[14px] text-[#FF9800]">{{ interimText }}</p>
+        <p class="text-[16px] text-[#FF9800]">{{ interimText }}</p>
       </div>
 
       <!-- 확정 텍스트 -->
-      <div v-if="sttText" class="bg-[#F8F8F8] rounded-[12px] p-4 mb-3">
+      <div v-if="sttText" class="bg-[#F8F8F8] rounded-2xl p-4 mb-3">
         <p class="text-[12px] text-[#999] mb-1">인식된 텍스트</p>
-        <p class="text-[15px] text-[#333] font-medium">{{ sttText }}</p>
+        <p class="text-[18px] text-[#333] font-medium">{{ sttText }}</p>
         <div v-if="confidence > 0" class="flex items-center gap-2 mt-2">
           <span class="text-[11px] text-[#888]">신뢰도</span>
           <div class="flex-1 bg-[#E8E8E8] rounded-full h-1.5">
@@ -248,27 +245,15 @@ onBeforeUnmount(() => {
       <button
         v-if="sttText && !showResult && !isListening"
         @click="submitAnswer"
-        class="w-full py-3.5 rounded-[14px] text-[15px] font-bold bg-[#FF9800] text-white transition-all active:scale-[0.98]"
+        class="w-full py-4 rounded-2xl text-[16px] font-bold bg-[#4CAF50] text-white shadow-[0_4px_0_#388E3C] active:shadow-[0_2px_0_#388E3C] active:translate-y-[2px] transition-all"
       >
         답변 제출
       </button>
 
       <!-- 에러 -->
-      <div v-if="errorMsg" class="mt-3 bg-[#FFEBEE] rounded-[12px] p-3 text-center">
+      <div v-if="errorMsg" class="mt-3 bg-[#FFEBEE] rounded-2xl p-3 text-center">
         <p class="text-[13px] text-[#F44336]">{{ errorMsg }}</p>
       </div>
     </template>
-
-    <!-- 결과 피드백 -->
-    <div v-if="showResult" class="mt-3 rounded-[12px] p-3.5 text-center" :class="isCorrect ? 'bg-[#E8F5E9]' : 'bg-[#FFEBEE]'">
-      <p class="text-[14px] font-bold" :class="isCorrect ? 'text-[#4CAF50]' : 'text-[#F44336]'">
-        {{ isCorrect ? '정답입니다!' : '틀렸습니다' }}
-      </p>
-      <p v-if="!isCorrect && question.accept_answers?.length" class="text-[12px] text-[#888] mt-1">
-        포함해야 할 단어: {{ question.accept_answers.join(', ') }}
-      </p>
-      <p v-if="uploading" class="text-[11px] text-[#999] mt-1">녹음 저장 중...</p>
-      <p v-else-if="uploaded" class="text-[11px] text-[#4CAF50] mt-1">녹음이 저장되었습니다</p>
-    </div>
   </div>
 </template>

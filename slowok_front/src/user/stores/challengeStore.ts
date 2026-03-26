@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { challengeApi } from '@shared/api/challengeApi'
 import type { Challenge, RewardCard } from '@shared/types'
 
@@ -9,6 +9,24 @@ export const useChallengeStore = defineStore('challenge', () => {
   const rewardCards = ref<RewardCard[]>([])
   const loading = ref(false)
   const error = ref<string | null>(null)
+
+  const completedCount = computed(() =>
+    challenges.value.filter(c => c.latest_attempt?.is_passed).length
+  )
+
+  const challengesByCategory = computed(() => {
+    const map = new Map<string, Challenge[]>()
+    for (const c of challenges.value) {
+      const catName = c.category?.name ?? '기타'
+      const list = map.get(catName)
+      if (list) {
+        list.push(c)
+      } else {
+        map.set(catName, [c])
+      }
+    }
+    return map
+  })
 
   async function fetchChallenges() {
     loading.value = true
@@ -52,5 +70,5 @@ export const useChallengeStore = defineStore('challenge', () => {
     } catch { /* ignore */ }
   }
 
-  return { challenges, currentChallenge, rewardCards, loading, error, fetchChallenges, fetchChallenge, submitAttempt, fetchRewardCards }
+  return { challenges, currentChallenge, rewardCards, loading, error, completedCount, challengesByCategory, fetchChallenges, fetchChallenge, submitAttempt, fetchRewardCards }
 })

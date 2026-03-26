@@ -63,7 +63,6 @@ function isSameRight(pair: MatchPair | undefined, card: RightCard | undefined): 
 }
 
 function selectRight(idx: number) {
-  // 이미 매칭된 right인지 확인
   const rightCard = shuffledRight.value[idx]
   const alreadyMatched = Array.from(matched.value).some(leftIdx => {
     return isSameRight(pairs.value[leftIdx], rightCard)
@@ -83,7 +82,6 @@ function tryMatch() {
   const rightCard = shuffledRight.value[rightIdx]
 
   if (isSameRight(pair, rightCard)) {
-    // 정답
     matched.value.add(leftIdx)
     correctCount.value++
     selectedLeft.value = null
@@ -94,7 +92,6 @@ function tryMatch() {
       emit('answered', { correct: correctCount.value, total: total.value })
     }
   } else {
-    // 오답
     wrongPair.value = { left: leftIdx, right: rightIdx }
     setTimeout(() => {
       wrongPair.value = null
@@ -115,17 +112,17 @@ function isRightMatched(idx: number): boolean {
 <template>
   <div>
     <!-- 문항 내용 -->
-    <p class="text-[16px] font-bold text-[#333] mb-5 leading-relaxed">{{ question.content }}</p>
+    <p class="text-[20px] font-bold text-[#333] mb-5 leading-relaxed">{{ question.content }}</p>
 
     <!-- 이미지 -->
     <div v-if="question.image_url" class="mb-5">
-      <img :src="question.image_url" :alt="question.content" class="w-full rounded-[12px] object-cover max-h-[180px]" />
+      <img :src="question.image_url" :alt="question.content" class="w-full rounded-2xl object-cover max-h-[180px]" />
     </div>
 
     <!-- 매칭 영역 -->
     <div class="flex gap-4">
       <!-- 좌측 카드 -->
-      <div class="flex-1 space-y-2.5">
+      <div class="flex-1 space-y-3">
         <p class="text-[11px] text-[#999] font-medium mb-1 text-center">멘트</p>
         <button
           v-for="(pair, idx) in pairs"
@@ -133,14 +130,14 @@ function isRightMatched(idx: number): boolean {
           @click="selectLeft(idx)"
           :disabled="matched.has(idx)"
           :class="[
-            'w-full py-3 px-3 rounded-[12px] text-[13px] font-medium border-2 transition-all text-center',
+            'w-full py-3.5 px-3 rounded-2xl text-[14px] font-medium border-2 transition-all text-center',
             matched.has(idx)
-              ? 'bg-[#E8F5E9] border-[#4CAF50] text-[#4CAF50] opacity-70'
+              ? 'bg-[#E8F5E9] border-[#4CAF50] text-[#4CAF50] shadow-[0_3px_0_#388E3C] opacity-70'
               : wrongPair?.left === idx
-                ? 'border-[#F44336] bg-[#FFEBEE] text-[#F44336] animate-shake'
+                ? 'border-[#F44336] bg-[#FFEBEE] text-[#F44336] animate-shake shadow-[0_3px_0_#C62828]'
                 : selectedLeft === idx
-                  ? 'border-[#FF9800] bg-[#FFF3E0] text-[#FF9800]'
-                  : 'border-[#E8E8E8] bg-white text-[#333] active:scale-[0.97]'
+                  ? 'border-[#4CAF50] bg-[#E8F5E9] text-[#4CAF50] shadow-[0_3px_0_#388E3C]'
+                  : 'border-[#E0E0E0] bg-white text-[#333] shadow-[0_3px_0_#E0E0E0] active:translate-y-[2px] active:shadow-none'
           ]"
         >
           {{ pair.left }}
@@ -148,7 +145,7 @@ function isRightMatched(idx: number): boolean {
       </div>
 
       <!-- 우측 카드 -->
-      <div class="flex-1 space-y-2.5">
+      <div class="flex-1 space-y-3">
         <p class="text-[11px] text-[#999] font-medium mb-1 text-center">답</p>
         <button
           v-for="(card, idx) in shuffledRight"
@@ -156,15 +153,15 @@ function isRightMatched(idx: number): boolean {
           @click="selectRight(idx)"
           :disabled="isRightMatched(idx)"
           :class="[
-            'w-full rounded-[12px] border-2 transition-all flex items-center justify-center',
-            card.image ? 'p-2' : 'py-3 px-3 text-[13px] font-medium text-center',
+            'w-full rounded-2xl border-2 transition-all flex items-center justify-center',
+            card.image ? 'p-2' : 'py-3.5 px-3 text-[14px] font-medium text-center',
             isRightMatched(idx)
-              ? 'bg-[#E8F5E9] border-[#4CAF50] text-[#4CAF50] opacity-70'
+              ? 'bg-[#E8F5E9] border-[#4CAF50] text-[#4CAF50] shadow-[0_3px_0_#388E3C] opacity-70'
               : wrongPair?.right === idx
-                ? 'border-[#F44336] bg-[#FFEBEE] text-[#F44336] animate-shake'
+                ? 'border-[#F44336] bg-[#FFEBEE] text-[#F44336] animate-shake shadow-[0_3px_0_#C62828]'
                 : selectedRight === idx
-                  ? 'border-[#FF9800] bg-[#FFF3E0] text-[#FF9800]'
-                  : 'border-[#E8E8E8] bg-white text-[#333] active:scale-[0.97]'
+                  ? 'border-[#4CAF50] bg-[#E8F5E9] text-[#4CAF50] shadow-[0_3px_0_#388E3C]'
+                  : 'border-[#E0E0E0] bg-white text-[#333] shadow-[0_3px_0_#E0E0E0] active:translate-y-[2px] active:shadow-none'
           ]"
         >
           <img v-if="card.image" :src="card.image" class="w-12 h-12 rounded-[8px] object-cover" />
@@ -175,12 +172,7 @@ function isRightMatched(idx: number): boolean {
 
     <!-- 진행 상태 -->
     <div class="mt-4 text-center">
-      <span class="text-[12px] text-[#888]">{{ matched.size }} / {{ total }} 매칭 완료</span>
-    </div>
-
-    <!-- 완료 메시지 -->
-    <div v-if="isFinished" class="mt-4 bg-[#E8F5E9] rounded-[12px] p-4 text-center">
-      <p class="text-[14px] font-bold text-[#4CAF50]">모든 매칭 완료!</p>
+      <span class="text-[13px] text-[#888]">{{ matched.size }} / {{ total }} 매칭 완료</span>
     </div>
   </div>
 </template>

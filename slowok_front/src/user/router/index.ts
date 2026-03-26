@@ -77,8 +77,7 @@ const router = createRouter({
     {
       path: '/challenges',
       name: 'challenge-list',
-      component: () => import('../views/challenge/ChallengeListView.vue'),
-      meta: { requiresAuth: true },
+      redirect: { name: 'home' },
     },
     {
       path: '/challenges/:id',

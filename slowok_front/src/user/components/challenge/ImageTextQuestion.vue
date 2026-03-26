@@ -36,14 +36,14 @@ function checkAnswer() {
 <template>
   <div>
     <!-- 문항 내용 -->
-    <p class="text-[16px] font-bold text-[#333] mb-4 leading-relaxed">{{ question.content }}</p>
+    <p class="text-[20px] font-bold text-[#333] mb-4 leading-relaxed">{{ question.content }}</p>
 
     <!-- 이미지 -->
     <div v-if="question.image_url" class="mb-5">
       <img
         :src="question.image_url"
         :alt="question.content"
-        class="w-full rounded-[16px] object-cover max-h-[240px] border border-[#E8E8E8]"
+        class="w-full rounded-2xl object-cover max-h-[240px] border border-[#E8E8E8]"
       />
     </div>
 
@@ -55,8 +55,10 @@ function checkAnswer() {
         placeholder="답을 입력하세요"
         :disabled="showResult"
         @keydown.enter="checkAnswer"
-        class="w-full bg-[#F8F8F8] border-2 border-[#E8E8E8] rounded-[14px] px-4 py-3.5 text-[15px] text-center font-medium focus:border-[#FF9800] focus:outline-none transition-colors disabled:opacity-60"
-        :class="showResult ? (isCorrect ? 'border-[#4CAF50] bg-[#E8F5E9]' : 'border-[#F44336] bg-[#FFEBEE]') : ''"
+        class="w-full bg-[#F8F8F8] border-2 rounded-2xl px-4 py-4 text-[18px] text-center font-medium focus:outline-none transition-colors disabled:opacity-60"
+        :class="showResult
+          ? (isCorrect ? 'border-[#4CAF50] bg-[#E8F5E9]' : 'border-[#F44336] bg-[#FFEBEE]')
+          : 'border-[#E0E0E0] focus:border-[#4CAF50]'"
       />
     </div>
 
@@ -65,20 +67,12 @@ function checkAnswer() {
       v-if="!showResult"
       @click="checkAnswer"
       :disabled="!userInput.trim()"
-      class="w-full py-3.5 rounded-[14px] text-[15px] font-bold transition-all active:scale-[0.98]"
-      :class="userInput.trim() ? 'bg-[#FF9800] text-white' : 'bg-[#E8E8E8] text-[#BBB] cursor-not-allowed'"
+      class="w-full py-4 rounded-2xl text-[16px] font-bold transition-all"
+      :class="userInput.trim()
+        ? 'bg-[#4CAF50] text-white shadow-[0_4px_0_#388E3C] active:shadow-[0_2px_0_#388E3C] active:translate-y-[2px]'
+        : 'bg-[#E0E0E0] text-[#9E9E9E] cursor-not-allowed'"
     >
       확인
     </button>
-
-    <!-- 결과 피드백 -->
-    <div v-if="showResult" class="mt-3 rounded-[12px] p-3.5 text-center" :class="isCorrect ? 'bg-[#E8F5E9]' : 'bg-[#FFEBEE]'">
-      <p class="text-[14px] font-bold" :class="isCorrect ? 'text-[#4CAF50]' : 'text-[#F44336]'">
-        {{ isCorrect ? '정답입니다!' : '틀렸습니다' }}
-      </p>
-      <p v-if="!isCorrect && question.accept_answers?.length" class="text-[12px] text-[#888] mt-1">
-        정답: {{ question.accept_answers.join(', ') }}
-      </p>
-    </div>
   </div>
 </template>

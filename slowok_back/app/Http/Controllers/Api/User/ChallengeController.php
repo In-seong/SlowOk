@@ -15,19 +15,32 @@ class ChallengeController extends Controller
     {
         $profile = $request->attributes->get('active_profile');
 
-        $query = Challenge::with('category');
-
         if (!$profile) {
             return response()->json(['success' => true, 'data' => []]);
         }
 
-        $assignedIds = ContentAssignment::where('profile_id', $profile->profile_id)
+        $profileId = $profile->profile_id;
+
+        $assignedIds = ContentAssignment::where('profile_id', $profileId)
             ->where('assignable_type', 'challenge')
             ->pluck('assignable_id');
 
-        $query->whereIn('challenge_id', $assignedIds);
+        $challenges = Challenge::with(['category'])
+            ->whereIn('challenge_id', $assignedIds)
+            ->get();
 
-        $challenges = $query->get();
+        // 프로필의 latest_attempt를 각 챌린지에 추가
+        $latestAttempts = ChallengeAttempt::where('profile_id', $profileId)
+            ->whereIn('challenge_id', $assignedIds)
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->unique('challenge_id')
+            ->keyBy('challenge_id');
+
+        $challenges->each(function ($challenge) use ($latestAttempts) {
+            $challenge->setAttribute('latest_attempt', $latestAttempts->get($challenge->challenge_id));
+        });
+
         return response()->json(['success' => true, 'data' => $challenges]);
     }
 
