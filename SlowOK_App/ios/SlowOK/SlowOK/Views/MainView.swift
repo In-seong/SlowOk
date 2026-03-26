@@ -28,6 +28,8 @@ struct MainView: View {
 
     var body: some View {
         ZStack {
+            Color.white.ignoresSafeArea()
+
             WebViewContainer(
                 url: URL(string: WebURL),
                 webView: $webView,
@@ -55,6 +57,36 @@ struct MainView: View {
                         sendFCMTokenToWebView(token: token)
                     }
                 }
+            }
+
+            // 웹뷰 로드 에러 오버레이
+            if webViewError {
+                VStack(spacing: 16) {
+                    Image(systemName: "exclamationmark.triangle")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 50)
+                        .foregroundColor(.orange)
+                    Text("페이지를 불러올 수 없습니다")
+                        .font(.system(size: 16, weight: .semibold))
+                    Text(WebURL)
+                        .font(.system(size: 12))
+                        .foregroundColor(.gray)
+                    Button("다시 시도") {
+                        webViewError = false
+                        shouldReload = true
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 10)
+                    .background(Color(red: 0.3, green: 0.69, blue: 0.31))
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+                }
+                .padding(24)
+                .background(Color.white)
+                .cornerRadius(16)
+                .shadow(radius: 10)
+                .padding(.horizontal, 40)
             }
 
             // 네트워크 오류 오버레이
