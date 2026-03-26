@@ -225,7 +225,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.spoon.slowok.admin;
-				PRODUCT_NAME = "느려도 괜찮아 Admin";
+				PRODUCT_NAME = "SlowOK Admin";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = ADMIN;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -243,7 +243,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.spoon.slowok.admin;
-				PRODUCT_NAME = "느려도 괜찮아 Admin";
+				PRODUCT_NAME = "SlowOK Admin";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = ADMIN;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -327,7 +327,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.spoon.slowok.user;
-				PRODUCT_NAME = "느려도 괜찮아";
+				PRODUCT_NAME = SlowOK;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = USER;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -345,7 +345,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.spoon.slowok.user;
-				PRODUCT_NAME = "느려도 괜찮아";
+				PRODUCT_NAME = SlowOK;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = USER;
 				TARGETED_DEVICE_FAMILY = "1,2";

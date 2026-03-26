@@ -24,7 +24,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.spoon.slowok.user
         INFOPLIST_FILE: SlowOK/plist/Info-User.plist
-        PRODUCT_NAME: 느려도 괜찮아
+        PRODUCT_NAME: SlowOK
         SWIFT_ACTIVE_COMPILATION_CONDITIONS: USER
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
     scheme:
@@ -41,7 +41,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.spoon.slowok.admin
         INFOPLIST_FILE: SlowOK/plist/Info-Admin.plist
-        PRODUCT_NAME: 느려도 괜찮아 Admin
+        PRODUCT_NAME: SlowOK Admin
         SWIFT_ACTIVE_COMPILATION_CONDITIONS: ADMIN
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
     scheme:
