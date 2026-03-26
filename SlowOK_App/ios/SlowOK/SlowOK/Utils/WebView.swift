@@ -30,6 +30,24 @@ struct WebViewContainer: UIViewRepresentable {
         // JS -> Native 브릿지 등록
         config.userContentController.add(context.coordinator, name: "iOSBridge")
 
+        // JS console.log를 네이티브 콘솔로 출력
+        let consoleScript = WKUserScript(
+            source: """
+            (function() {
+                var origLog = console.log;
+                var origError = console.error;
+                var origWarn = console.warn;
+                console.log = function() { origLog.apply(console, arguments); window.webkit.messageHandlers.iOSBridge.postMessage({action:'consoleLog', message: Array.from(arguments).join(' ')}); };
+                console.error = function() { origError.apply(console, arguments); window.webkit.messageHandlers.iOSBridge.postMessage({action:'consoleError', message: Array.from(arguments).join(' ')}); };
+                console.warn = function() { origWarn.apply(console, arguments); window.webkit.messageHandlers.iOSBridge.postMessage({action:'consoleWarn', message: Array.from(arguments).join(' ')}); };
+                window.onerror = function(msg, url, line) { window.webkit.messageHandlers.iOSBridge.postMessage({action:'consoleError', message: msg + ' at ' + url + ':' + line}); };
+            })();
+            """,
+            injectionTime: .atDocumentStart,
+            forMainFrameOnly: true
+        )
+        config.userContentController.addUserScript(consoleScript)
+
         let wv = WKWebView(frame: .zero, configuration: config)
 
         wv.navigationDelegate = context.coordinator
@@ -101,11 +119,21 @@ extension WebViewCoordinator: WKNavigationDelegate {
 
     // 에러
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        print("[WebView] ❌ didFail: \(error.localizedDescription)")
         parent.isError = true
     }
 
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        print("[WebView] ❌ didFailProvisional: \(error.localizedDescription)")
         parent.isError = true
+    }
+
+    func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+        print("[WebView] 🔄 Loading: \(webView.url?.absoluteString ?? "nil")")
+    }
+
+    func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
+        print("[WebView] 📄 Committed: \(webView.url?.absoluteString ?? "nil")")
     }
 }
 

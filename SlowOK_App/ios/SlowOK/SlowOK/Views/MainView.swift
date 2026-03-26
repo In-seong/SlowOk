@@ -166,6 +166,13 @@ extension MainView {
             let data = body["data"] as? String ?? ""
             print("[DebugLog] [Step \(step)] \(msg) \(data)")
 
+        case "consoleLog":
+            print("[JS LOG] \(body["message"] as? String ?? "")")
+        case "consoleError":
+            print("[JS ERROR] \(body["message"] as? String ?? "")")
+        case "consoleWarn":
+            print("[JS WARN] \(body["message"] as? String ?? "")")
+
         default:
             print("[WebView] Unknown action: \(action)")
             break
