@@ -400,6 +400,12 @@ onMounted(fetchUser)
           </div>
         </div>
 
+        <!-- 순서 변경 안내 (전체 보기일 때) -->
+        <div v-if="!assignmentTypeFilter" class="flex items-center gap-2 px-4 py-2.5 bg-[#FFF8E1] rounded-[10px] text-[12px] text-[#E65100]">
+          <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
+          챌린지 순서를 변경하려면 위 필터에서 <button class="font-bold underline underline-offset-2" @click="assignmentTypeFilter = 'challenge'">"챌린지"</button>를 선택하세요
+        </div>
+
         <div class="bg-white rounded-[16px] border border-[#E8E8E8] overflow-hidden">
           <div v-if="filteredAssignments().length === 0" class="p-6 text-center text-[#888]">할당된 콘텐츠가 없습니다.</div>
           <p v-if="assignmentTypeFilter === 'challenge'" class="px-4 py-2 text-[12px] text-[#888] bg-[#FAFAFA] border-b border-[#E8E8E8]">
