@@ -70,6 +70,12 @@ const router = createRouter({
       meta: { requiresAuth: true, permissionKey: 'challenge_manage' },
     },
     {
+      path: '/challenges/:id/edit',
+      name: 'challenge-question-edit',
+      component: () => import('../views/challenge/ChallengeQuestionEditView.vue'),
+      meta: { requiresAuth: true, permissionKey: 'challenge_manage' },
+    },
+    {
       path: '/reward-cards',
       name: 'reward-cards',
       component: () => import('../views/reward/RewardCardManageView.vue'),
