@@ -54,6 +54,11 @@ class ContentAssignmentController extends BaseAdminController
                 ->firstOrFail();
         }
 
+        // sort_order: 기존 최대값 + 1
+        $maxSort = ContentAssignment::where('profile_id', $request->profile_id)
+            ->where('assignable_type', $request->assignable_type)
+            ->max('sort_order') ?? -1;
+
         $assignment = ContentAssignment::create([
             'profile_id' => $request->profile_id,
             'assignable_type' => $request->assignable_type,
@@ -62,6 +67,7 @@ class ContentAssignmentController extends BaseAdminController
             'assigned_at' => now(),
             'due_date' => $request->due_date,
             'note' => $request->note,
+            'sort_order' => $maxSort + 1,
         ]);
 
         $assignment->load(['profile', 'assigner']);
@@ -118,6 +124,10 @@ class ContentAssignmentController extends BaseAdminController
                     ->exists();
 
                 if (!$exists) {
+                    $maxSort = ContentAssignment::where('profile_id', $profileId)
+                        ->where('assignable_type', $item['assignable_type'])
+                        ->max('sort_order') ?? -1;
+
                     ContentAssignment::create([
                         'profile_id' => $profileId,
                         'assignable_type' => $item['assignable_type'],
@@ -126,6 +136,7 @@ class ContentAssignmentController extends BaseAdminController
                         'assigned_at' => now(),
                         'due_date' => $request->due_date,
                         'note' => $request->note,
+                        'sort_order' => $maxSort + 1,
                     ]);
                     $created++;
                 }
