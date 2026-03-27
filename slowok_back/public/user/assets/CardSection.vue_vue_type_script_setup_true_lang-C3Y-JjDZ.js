@@ -1,0 +1,1 @@
+import{d as e,c as a,n as o,p as r,o as n}from"./user-5iCLuU6g.js";const l=e({__name:"CardSection",props:{class:{}},setup(p){return(s,t)=>(n(),a("div",{class:o(["bg-white rounded-[16px] shadow-[0_0_10px_rgba(0,0,0,0.1)] p-5",s.$props.class])},[r(s.$slots,"default")],2))}});export{l as _};
