@@ -18,7 +18,7 @@ const emit = defineEmits<{
     <!-- Title (상단) -->
     <div
       class="text-[11px] leading-snug text-center w-full line-clamp-2 px-2 py-1 rounded-lg mb-0.5"
-      :class="status === 'locked' ? 'text-[#BDBDBD] font-medium bg-[#F5F5F5]/90 backdrop-blur-sm' : 'text-[#2E7D32] font-bold bg-white/85 backdrop-blur-sm shadow-sm'"
+      :class="status === 'locked' ? 'text-[#BDBDBD] font-medium bg-white/50 backdrop-blur-md' : 'text-[#2E7D32] font-bold bg-white/50 backdrop-blur-md shadow-sm'"
     >
       {{ challenge.title }}
     </div>
