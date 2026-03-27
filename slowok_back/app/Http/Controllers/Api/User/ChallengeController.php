@@ -31,6 +31,7 @@ class ChallengeController extends Controller
         $sortMap = $assignments->pluck('sort_order', 'assignable_id');
 
         $challenges = Challenge::with(['category'])
+            ->withCount('questions')
             ->whereIn('challenge_id', $assignedIds)
             ->get()
             ->sortBy(fn ($c) => $sortMap->get($c->challenge_id, 0))

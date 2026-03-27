@@ -44,9 +44,9 @@ function getStatus(index: number): 'completed' | 'current' | 'locked' {
 function getStars(challenge: Challenge): number {
   const attempt = challenge.latest_attempt
   if (!attempt?.is_passed) return 0
-  const questions = challenge.questions?.length
-  if (!questions || questions === 0) return 3
-  const ratio = attempt.score / questions
+  const total = (challenge as any).questions_count ?? challenge.questions?.length ?? 0
+  if (total === 0) return 3
+  const ratio = attempt.score / total
   if (ratio >= 1) return 3
   if (ratio >= 0.85) return 2
   return 1
