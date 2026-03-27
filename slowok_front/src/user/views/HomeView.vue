@@ -47,15 +47,15 @@ function onPlayChallenge(challengeId: number) {
 </script>
 
 <template>
-  <div class="min-h-screen flex justify-center bg-white">
-    <div class="w-full max-w-[402px] min-h-screen relative bg-white">
+  <div class="min-h-screen flex justify-center bg-gradient-to-b from-[#F1F8E9] to-[#C8E6C9]">
+    <div class="w-full max-w-[402px] min-h-screen relative">
       <!-- Header -->
       <AppHeader>
         <template #title>{{ profileName }}님, 반가워요!</template>
       </AppHeader>
 
       <!-- Progress Bar (sticky) -->
-      <div v-if="!pageLoading" class="sticky top-[66px] z-30 bg-white px-5 py-3 border-b border-[#F0F0F0]">
+      <div v-if="!pageLoading" class="sticky top-[66px] z-30 bg-[#F1F8E9] px-5 py-3 border-b border-[#C8E6C9]">
         <div class="flex items-center justify-between mb-1.5">
           <span class="text-[13px] font-semibold text-[#333]">학습 진행률</span>
           <span class="text-[13px] font-bold text-[#4CAF50]">{{ completedChallenges }}/{{ totalChallenges }}</span>
