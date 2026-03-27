@@ -90,15 +90,22 @@ const decorIcons = [
 
 const decorColors = ['text-[#A5D6A7]', 'text-[#FFC107]/40', 'text-[#EF9A9A]/50', 'text-[#81C784]/60', 'text-[#FFD54F]/40']
 
-// 노드 위치의 반대편에 장식 배치
-function getDecorPosition(index: number): string {
-  const pos = positions[index % positions.length]
-  switch (pos) {
-    case 'left': return 'right-8'
-    case 'right': return 'left-8'
-    case 'center': return index % 2 === 0 ? 'left-4' : 'right-4'
-    default: return 'right-8'
-  }
+// 이전 노드와 현재 노드 사이의 빈쪽에 배치
+function getDecorOppositePosition(index: number): string {
+  const prevPos = positions[(index - 1) % positions.length]
+  const curPos = positions[index % positions.length]
+
+  // 둘 다 같은 쪽이면 반대편
+  if (prevPos === 'left' && curPos === 'center') return 'right-6'
+  if (prevPos === 'center' && curPos === 'right') return 'left-6'
+  if (prevPos === 'right' && curPos === 'center') return 'left-6'
+  if (prevPos === 'center' && curPos === 'left') return 'right-6'
+
+  // 둘 다 한쪽에 몰려있으면 반대편
+  if (prevPos === 'left' || curPos === 'left') return 'right-6'
+  if (prevPos === 'right' || curPos === 'right') return 'left-6'
+
+  return index % 2 === 0 ? 'left-6' : 'right-6'
 }
 
 function getDecorIcon(index: number): string {
@@ -136,20 +143,13 @@ function getDecorColor(index: number): string {
         />
       </svg>
 
-      <!-- 장식 아이콘 (2개씩) -->
+      <!-- 장식 아이콘 (노드 사이 빈 공간에 1개) -->
       <div
         v-if="idx > 0"
-        class="absolute top-0 opacity-50"
-        :class="[getDecorPosition(idx), getDecorColor(idx), idx % decorIcons.length === 0 ? 'w-12 h-12' : 'w-5 h-5']"
-        style="z-index: 1; pointer-events: none;"
+        class="absolute opacity-50"
+        :class="[getDecorOppositePosition(idx), getDecorColor(idx), idx % decorIcons.length === 0 ? 'w-12 h-12' : 'w-5 h-5']"
+        style="z-index: 1; pointer-events: none; top: 30%;"
         v-html="getDecorIcon(idx)"
-      />
-      <div
-        v-if="idx > 0"
-        class="absolute opacity-40"
-        :class="[getDecorPosition(idx + 3), getDecorColor(idx + 2), (idx + 2) % decorIcons.length === 0 ? 'w-10 h-10' : 'w-4 h-4']"
-        style="z-index: 1; pointer-events: none; top: 50%;"
-        v-html="getDecorIcon(idx + 2)"
       />
 
       <!-- Node row -->
