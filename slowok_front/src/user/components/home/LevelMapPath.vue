@@ -146,6 +146,7 @@ function getDecorColor(index: number): string {
           fill="none"
           :stroke="getStatus(idx - 1) === 'completed' ? '#4CAF50' : '#D0D0D0'"
           :stroke-width="getStatus(idx - 1) === 'completed' ? 5 : 4"
+          stroke-dasharray="8 6"
           stroke-linecap="round"
           :stroke-opacity="getStatus(idx - 1) === 'completed' ? 1 : 0.5"
         />
