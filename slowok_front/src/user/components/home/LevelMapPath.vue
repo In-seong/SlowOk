@@ -82,8 +82,8 @@ const decorIcons = [
   `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>`,
   // 하트
   `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`,
-  // 나뭇잎
-  `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89-.82 1.31.82 1-2.5L9 21l1.45-.89L12 22l1.36-2.21L15 21l1.72-3.08 2.28.46.49-1.38C19.71 14.83 20 8 17 8z"/></svg>`,
+  // 클로버
+  `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a4 4 0 014 4 4 4 0 01-1.5 3.12A4 4 0 0118 13a4 4 0 01-4 4v5h-4v-5a4 4 0 01-4-4 4 4 0 013.5-3.88A4 4 0 018 6a4 4 0 014-4z"/></svg>`,
   // 왕관
   `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z"/><rect x="5" y="17" width="14" height="2" rx="1"/></svg>`,
 ]
@@ -139,15 +139,15 @@ function getDecorColor(index: number): string {
       <!-- 장식 아이콘 (2개씩) -->
       <div
         v-if="idx > 0"
-        class="absolute top-0 w-12 h-12 opacity-50"
-        :class="[getDecorPosition(idx), getDecorColor(idx)]"
+        class="absolute top-0 opacity-50"
+        :class="[getDecorPosition(idx), getDecorColor(idx), idx % decorIcons.length === 0 ? 'w-12 h-12' : 'w-5 h-5']"
         style="z-index: 1; pointer-events: none;"
         v-html="getDecorIcon(idx)"
       />
       <div
         v-if="idx > 0"
-        class="absolute w-10 h-10 opacity-40"
-        :class="[getDecorPosition(idx + 3), getDecorColor(idx + 2)]"
+        class="absolute opacity-40"
+        :class="[getDecorPosition(idx + 3), getDecorColor(idx + 2), (idx + 2) % decorIcons.length === 0 ? 'w-10 h-10' : 'w-4 h-4']"
         style="z-index: 1; pointer-events: none; top: 50%;"
         v-html="getDecorIcon(idx + 2)"
       />
