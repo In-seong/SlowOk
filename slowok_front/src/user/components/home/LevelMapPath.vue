@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+// no computed needed
 import type { Challenge } from '@shared/types'
 import LevelNode from './LevelNode.vue'
 
@@ -60,35 +60,7 @@ function getStars(challenge: Challenge): number {
   return 1
 }
 
-// Group challenges by category
-interface CategoryGroup {
-  name: string
-  challenges: Challenge[]
-  startIndex: number
-}
-
-const categoryGroups = computed<CategoryGroup[]>(() => {
-  const groups: CategoryGroup[] = []
-  let globalIndex = 0
-
-  for (const challenge of props.challenges) {
-    const catName = challenge.category?.name ?? '기타'
-    const lastGroup = groups[groups.length - 1]
-
-    if (lastGroup && lastGroup.name === catName) {
-      lastGroup.challenges.push(challenge)
-    } else {
-      groups.push({
-        name: catName,
-        challenges: [challenge],
-        startIndex: globalIndex,
-      })
-    }
-    globalIndex++
-  }
-
-  return groups
-})
+// 카테고리 구분 없이 단순 리스트
 
 // SVG connector path between two nodes
 function getConnectorPath(fromIndex: number, toIndex: number): string {
@@ -139,69 +111,53 @@ function getDecorColor(index: number): string {
 </script>
 
 <template>
-  <div class="w-full">
+  <div class="w-full relative">
     <div
-      v-for="group in categoryGroups"
-      :key="group.name + group.startIndex"
-      class="mb-6"
+      v-for="(challenge, idx) in props.challenges"
+      :key="challenge.challenge_id"
+      class="relative"
     >
-      <!-- Category Header -->
-      <div class="flex items-center justify-center mb-5">
-        <div class="bg-[#4CAF50] text-white text-[12px] font-bold px-4 py-1.5 rounded-full shadow-[0_2px_0_#388E3C]">
-          {{ group.name }}
-        </div>
-      </div>
+      <!-- SVG Connector -->
+      <svg
+        v-if="idx > 0"
+        class="w-full absolute -top-10 left-0"
+        height="80"
+        viewBox="0 0 360 80"
+        preserveAspectRatio="none"
+        style="z-index: 0; pointer-events: none;"
+      >
+        <path
+          :d="getConnectorPath(idx - 1, idx)"
+          fill="none"
+          :stroke="getStatus(idx - 1) === 'completed' ? '#4CAF50' : '#E0E0E0'"
+          stroke-width="3"
+          stroke-dasharray="8 6"
+          stroke-linecap="round"
+        />
+      </svg>
 
-      <!-- Nodes -->
-      <div class="relative">
-        <div
-          v-for="(challenge, idx) in group.challenges"
-          :key="challenge.challenge_id"
-          class="relative"
-        >
-          <!-- SVG Connector (dotted line between nodes) -->
-          <svg
-            v-if="idx > 0"
-            class="w-full absolute -top-10 left-0"
-            height="80"
-            viewBox="0 0 360 80"
-            preserveAspectRatio="none"
-            style="z-index: 0; pointer-events: none;"
-          >
-            <path
-              :d="getConnectorPath(group.startIndex + idx - 1, group.startIndex + idx)"
-              fill="none"
-              :stroke="getStatus(group.startIndex + idx - 1) === 'completed' ? '#4CAF50' : '#E0E0E0'"
-              stroke-width="3"
-              stroke-dasharray="8 6"
-              stroke-linecap="round"
-            />
-          </svg>
+      <!-- 장식 아이콘 -->
+      <div
+        v-if="idx > 0"
+        class="absolute top-0 w-6 h-6 opacity-60"
+        :class="[getDecorPosition(idx), getDecorColor(idx)]"
+        style="z-index: 1; pointer-events: none;"
+        v-html="getDecorIcon(idx)"
+      />
 
-          <!-- 장식 아이콘 (노드 사이 빈 공간) -->
-          <div
-            v-if="idx > 0"
-            class="absolute top-0 w-6 h-6 opacity-60"
-            :class="[getDecorPosition(group.startIndex + idx), getDecorColor(group.startIndex + idx)]"
-            style="z-index: 1; pointer-events: none;"
-            v-html="getDecorIcon(group.startIndex + idx)"
-          />
-
-          <!-- Node row -->
-          <div
-            class="flex w-full relative z-10"
-            :class="getNodePosition(group.startIndex + idx)"
-            :style="idx > 0 ? 'margin-top: 16px;' : ''"
-          >
-            <LevelNode
-              :challenge="challenge"
-              :status="getStatus(group.startIndex + idx)"
-              :stars="getStars(challenge)"
-              :retry-blocked="isRetryBlocked(challenge)"
-              @play="emit('play', $event)"
-            />
-          </div>
-        </div>
+      <!-- Node row -->
+      <div
+        class="flex w-full relative z-10"
+        :class="getNodePosition(idx)"
+        :style="idx > 0 ? 'margin-top: 16px;' : ''"
+      >
+        <LevelNode
+          :challenge="challenge"
+          :status="getStatus(idx)"
+          :stars="getStars(challenge)"
+          :retry-blocked="isRetryBlocked(challenge)"
+          @play="emit('play', $event)"
+        />
       </div>
     </div>
   </div>
