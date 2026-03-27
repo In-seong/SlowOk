@@ -7,7 +7,7 @@ const router = useRouter()
 <template>
   <header class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[402px] h-[66px] bg-[#E8F5E9] z-40 flex justify-between items-center px-5 border-b border-[#C8E6C9]">
     <div class="flex items-center gap-2">
-      <img :src="'/images/turtle.png'" alt="느려도 괜찮아" class="w-10 h-10" />
+      <img :src="'/images/turtle.png'" alt="느려도 괜찮아" class="w-[52px] h-[52px] -my-2" />
       <span class="text-[17px] font-bold text-[#333]"><slot name="title">느려도 괜찮아</slot></span>
     </div>
     <div class="flex items-center">
