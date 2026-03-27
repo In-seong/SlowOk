@@ -131,7 +131,7 @@ function goRetake() {
 
 <template>
   <div class="min-h-screen bg-[#F5F5F5] max-w-[402px] mx-auto">
-    <BackHeader title="진단 결과 상세" />
+    <BackHeader title="진단 결과 상세" :on-back="() => router.push({ name: 'screening-results' })" />
 
     <main class="px-5 pb-[80px] pt-4 space-y-4">
       <!-- 로딩 -->

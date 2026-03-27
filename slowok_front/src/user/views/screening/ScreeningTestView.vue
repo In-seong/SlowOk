@@ -146,7 +146,7 @@ async function submitTest(): Promise<void> {
 function goToResults(): void {
   showResultModal.value = false
   if (submitResult.value) {
-    router.push({ name: 'screening-result-detail', params: { resultId: submitResult.value.result_id } })
+    router.replace({ name: 'screening-result-detail', params: { resultId: submitResult.value.result_id } })
   } else {
     router.push({ name: 'screening-results' })
   }
