@@ -77,7 +77,7 @@ async function moveAssignment(assignmentId: number, direction: 'up' | 'down') {
 
 // 수정 모달
 const showEditModal = ref(false)
-const editForm = ref({ name: '', phone: '', email: '' })
+const editForm = ref({ username: '', password: '', name: '', phone: '', email: '' })
 const editLoading = ref(false)
 const editError = ref('')
 const editSuccess = ref('')
@@ -144,6 +144,8 @@ async function removeAssignment(assignmentId: number) {
 function openEditModal() {
   if (!user.value) return
   editForm.value = {
+    username: user.value.username || '',
+    password: '',
     name: user.value.profile?.decrypted_name || user.value.profile?.name || '',
     phone: user.value.profile?.decrypted_phone || user.value.profile?.phone || '',
     email: user.value.profile?.decrypted_email || user.value.profile?.email || '',
@@ -158,7 +160,9 @@ async function handleEditSubmit() {
   editError.value = ''
   editSuccess.value = ''
   try {
-    const res = await api.put(`/admin/users/${userId.value}`, editForm.value)
+    const payload: Record<string, any> = { ...editForm.value }
+    if (!payload.password) delete payload.password
+    const res = await api.put(`/admin/users/${userId.value}`, payload)
     if (res.data.success) {
       editSuccess.value = '사용자 정보가 수정되었습니다.'
       await fetchUser()
@@ -602,6 +606,14 @@ onMounted(fetchUser)
         <div v-if="editSuccess" class="bg-[#E8F5E9] rounded-[8px] p-2.5 text-[12px] text-[#4CAF50]">{{ editSuccess }}</div>
         <div v-if="editError" class="bg-[#FFE5E5] rounded-[8px] p-2.5 text-[12px] text-[#FF4444]">{{ editError }}</div>
         <form @submit.prevent="handleEditSubmit" class="space-y-3">
+          <div>
+            <label class="block text-[13px] font-medium text-[#555] mb-1">아이디</label>
+            <input v-model="editForm.username" type="text" class="w-full border border-[#E8E8E8] rounded-[10px] px-3 py-2.5 text-[14px] outline-none focus:border-[#4CAF50]" />
+          </div>
+          <div>
+            <label class="block text-[13px] font-medium text-[#555] mb-1">비밀번호 <span class="text-[11px] text-[#999] font-normal">(변경 시에만 입력)</span></label>
+            <input v-model="editForm.password" type="text" placeholder="변경하지 않으려면 비워두세요" class="w-full border border-[#E8E8E8] rounded-[10px] px-3 py-2.5 text-[14px] outline-none focus:border-[#4CAF50]" />
+          </div>
           <div>
             <label class="block text-[13px] font-medium text-[#555] mb-1">이름</label>
             <input v-model="editForm.name" type="text" class="w-full border border-[#E8E8E8] rounded-[10px] px-3 py-2.5 text-[14px] outline-none focus:border-[#4CAF50]" />

@@ -138,13 +138,25 @@ class UserManagementController extends BaseAdminController
 
         $request->validate([
             'is_active' => 'sometimes|boolean',
+            'username' => 'sometimes|string|max:50|unique:account,username,' . $id . ',account_id',
+            'password' => 'sometimes|string|min:4',
             'name' => 'sometimes|string|max:100',
             'phone' => 'sometimes|nullable|string|max:20',
             'email' => 'sometimes|nullable|email|max:100',
         ]);
 
+        $accountData = [];
         if ($request->has('is_active')) {
-            $account->update(['is_active' => $request->is_active]);
+            $accountData['is_active'] = $request->is_active;
+        }
+        if ($request->has('username')) {
+            $accountData['username'] = $request->username;
+        }
+        if ($request->has('password')) {
+            $accountData['password_hash'] = Hash::make($request->password);
+        }
+        if (!empty($accountData)) {
+            $account->update($accountData);
         }
 
         if ($account->profile && ($request->has('name') || $request->has('phone') || $request->has('email'))) {
