@@ -75,12 +75,19 @@ class AiContentController extends BaseAdminController
     public function save(Request $request): JsonResponse
     {
         $request->validate([
-            'package' => 'required|array',
-            'package.name' => 'required|string',
+            'package' => 'nullable|array',
+            'package.name' => 'nullable|string',
             'learning_contents' => 'nullable|array',
             'challenge' => 'nullable|array',
             'screening_test' => 'nullable|array',
         ]);
+
+        // package가 없으면 자동 생성
+        if (!$request->input('package.name')) {
+            $request->merge([
+                'package' => ['name' => 'AI 생성 패키지 (' . now()->format('Y-m-d H:i') . ')'],
+            ]);
+        }
 
         $instId = $this->getInstitutionId($request);
         if (!$instId) {
