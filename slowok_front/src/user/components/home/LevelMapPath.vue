@@ -144,10 +144,10 @@ function getDecorColor(index: number): string {
         <path
           :d="getConnectorPath(idx - 1, idx)"
           fill="none"
-          :stroke="getStatus(idx - 1) === 'completed' ? '#4CAF50' : '#E0E0E0'"
-          stroke-width="3"
-          stroke-dasharray="8 6"
+          :stroke="getStatus(idx - 1) === 'completed' ? '#4CAF50' : '#D0D0D0'"
+          :stroke-width="getStatus(idx - 1) === 'completed' ? 5 : 4"
           stroke-linecap="round"
+          :stroke-opacity="getStatus(idx - 1) === 'completed' ? 1 : 0.5"
         />
       </svg>
 
