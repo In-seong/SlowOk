@@ -36,6 +36,11 @@ const progressPercent = computed(() =>
   totalChallenges.value > 0 ? Math.round((completedChallenges.value / totalChallenges.value) * 100) : 0
 )
 
+const profileName = computed(() => {
+  const p = authStore.activeProfile
+  return p?.decrypted_name || p?.name || '학습자'
+})
+
 function onPlayChallenge(challengeId: number) {
   router.push({ name: 'challenge-play', params: { id: challengeId } })
 }
@@ -45,10 +50,26 @@ function onPlayChallenge(challengeId: number) {
   <div class="min-h-screen flex justify-center bg-white">
     <div class="w-full max-w-[402px] min-h-screen relative bg-white">
       <!-- Header -->
-      <AppHeader />
+      <AppHeader>
+        <template #title>{{ profileName }}님, 반가워요!</template>
+      </AppHeader>
+
+      <!-- Progress Bar (sticky) -->
+      <div v-if="!pageLoading" class="sticky top-[66px] z-30 bg-white px-5 py-3 border-b border-[#F0F0F0]">
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="text-[13px] font-semibold text-[#333]">학습 진행률</span>
+          <span class="text-[13px] font-bold text-[#4CAF50]">{{ completedChallenges }}/{{ totalChallenges }}</span>
+        </div>
+        <div class="w-full h-[8px] rounded-full bg-[#E0E0E0] overflow-hidden">
+          <div
+            class="h-full rounded-full bg-[#4CAF50] transition-all duration-500"
+            :style="{ width: progressPercent + '%' }"
+          />
+        </div>
+      </div>
 
       <!-- Main Content -->
-      <main class="px-5 pb-[80px] pt-[80px] space-y-[14px] overflow-y-auto" style="height: calc(100vh - 60px);">
+      <main class="px-5 pb-[80px] pt-4 space-y-[14px] overflow-y-auto">
         <!-- Loading State -->
         <div v-if="pageLoading" class="flex flex-col items-center justify-center py-20">
           <div class="w-8 h-8 border-3 border-[#4CAF50] border-t-transparent rounded-full animate-spin"></div>
@@ -77,20 +98,6 @@ function onPlayChallenge(challengeId: number) {
                   마이페이지에서 초대코드 입력하기 →
                 </button>
               </div>
-            </div>
-          </div>
-
-          <!-- Progress Summary Bar -->
-          <div class="bg-[#F0F7F0] rounded-[16px] p-4">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-[13px] font-semibold text-[#333]">학습 진행률</span>
-              <span class="text-[13px] font-bold text-[#4CAF50]">{{ completedChallenges }}/{{ totalChallenges }}</span>
-            </div>
-            <div class="w-full h-[8px] rounded-full bg-[#E0E0E0] overflow-hidden">
-              <div
-                class="h-full rounded-full bg-[#4CAF50] transition-all duration-500"
-                :style="{ width: progressPercent + '%' }"
-              />
             </div>
           </div>
 
