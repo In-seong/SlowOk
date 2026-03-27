@@ -197,6 +197,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/content-assignments/bulk', [ContentAssignmentController::class, 'bulkAssign']);
             Route::post('/content-assignments/reorder', [ContentAssignmentController::class, 'reorder']);
             Route::put('/content-assignments/{id}', [ContentAssignmentController::class, 'update']);
+            Route::post('/content-assignments/{id}/reset', [ContentAssignmentController::class, 'resetAttempts']);
             Route::delete('/content-assignments/{id}', [ContentAssignmentController::class, 'destroy']);
         });
 

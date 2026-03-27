@@ -198,6 +198,30 @@ class ContentAssignmentController extends BaseAdminController
         ]);
     }
 
+    public function resetAttempts(Request $request, int $id): JsonResponse
+    {
+        $assignment = ContentAssignment::with('profile.account')->findOrFail($id);
+
+        $instId = $this->getInstitutionId($request);
+        if ($instId && $assignment->profile?->account?->institution_id !== $instId) {
+            return response()->json(['success' => false, 'message' => '권한이 없습니다.'], 403);
+        }
+
+        if ($assignment->assignable_type !== 'challenge') {
+            return response()->json(['success' => false, 'message' => '챌린지 할당만 초기화할 수 있습니다.'], 400);
+        }
+
+        // 해당 프로필 + 챌린지의 시도 기록 전부 삭제
+        $deleted = \App\Models\ChallengeAttempt::where('profile_id', $assignment->profile_id)
+            ->where('challenge_id', $assignment->assignable_id)
+            ->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => "{$deleted}건의 시도 기록이 초기화되었습니다.",
+        ]);
+    }
+
     public function destroy(Request $request, int $id): JsonResponse
     {
         $assignment = ContentAssignment::with('profile.account')->findOrFail($id);

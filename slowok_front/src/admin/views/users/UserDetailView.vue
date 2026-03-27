@@ -75,6 +75,19 @@ async function moveAssignment(assignmentId: number, direction: 'up' | 'down') {
   }
 }
 
+async function resetAttempts(assignmentId: number, title: string) {
+  if (!confirm(`"${title}" 챌린지 결과를 초기화하시겠습니까?\n학습자의 모든 시도 기록이 삭제됩니다.`)) return
+  try {
+    const res = await api.post(`/admin/content-assignments/${assignmentId}/reset`)
+    if (res.data.success) {
+      toast.success(res.data.message || '초기화 완료')
+      await fetchUser()
+    }
+  } catch (e: any) {
+    toast.error(e.response?.data?.message || '초기화에 실패했습니다.')
+  }
+}
+
 async function toggleRetry(assignmentId: number, currentValue: boolean) {
   try {
     await api.put(`/admin/content-assignments/${assignmentId}`, { allow_retry: !currentValue })
@@ -467,7 +480,14 @@ onMounted(fetchUser)
                 </td>
                 <td v-else class="px-4 py-3"></td>
                 <td class="px-4 py-3 text-center">
-                  <button @click="removeAssignment(a.assignment_id)" class="text-red-500 hover:underline text-[13px]">해제</button>
+                  <div class="flex items-center justify-center gap-2">
+                    <button
+                      v-if="a.assignable_type === 'challenge'"
+                      @click="resetAttempts(a.assignment_id, a.assignable_title || `#${a.assignable_id}`)"
+                      class="text-orange-500 hover:underline text-[13px]"
+                    >초기화</button>
+                    <button @click="removeAssignment(a.assignment_id)" class="text-red-500 hover:underline text-[13px]">해제</button>
+                  </div>
                 </td>
               </tr>
             </tbody>
