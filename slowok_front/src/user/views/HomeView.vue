@@ -54,22 +54,8 @@ function onPlayChallenge(challengeId: number) {
         <template #title>{{ profileName }}님, 반가워요!</template>
       </AppHeader>
 
-      <!-- Progress Bar (sticky) -->
-      <div v-if="!pageLoading" class="sticky top-[66px] z-30 bg-transparent px-5 py-3">
-        <div class="flex items-center justify-between mb-1.5">
-          <span class="text-[13px] font-semibold text-[#333]">학습 진행률</span>
-          <span class="text-[13px] font-bold text-[#4CAF50]">{{ completedChallenges }}/{{ totalChallenges }}</span>
-        </div>
-        <div class="w-full h-[8px] rounded-full bg-[#E0E0E0] overflow-hidden">
-          <div
-            class="h-full rounded-full bg-[#4CAF50] transition-all duration-500"
-            :style="{ width: progressPercent + '%' }"
-          />
-        </div>
-      </div>
-
       <!-- Main Content -->
-      <main class="px-5 pb-[80px] pt-[80px] space-y-[14px] overflow-y-auto">
+      <main class="px-5 pb-[120px] pt-[74px] space-y-[14px] overflow-y-auto">
         <!-- Loading State -->
         <div v-if="pageLoading" class="flex flex-col items-center justify-center py-20">
           <div class="w-8 h-8 border-3 border-[#4CAF50] border-t-transparent rounded-full animate-spin"></div>
@@ -119,6 +105,20 @@ function onPlayChallenge(challengeId: number) {
           </div>
         </template>
       </main>
+
+      <!-- Progress Bar (하단 고정) -->
+      <div v-if="!pageLoading" class="fixed bottom-[60px] inset-x-0 mx-auto w-full max-w-[402px] z-30 bg-white/80 backdrop-blur-sm px-5 py-2.5 border-t border-[#E0E0E0]">
+        <div class="flex items-center justify-between mb-1">
+          <span class="text-[12px] font-semibold text-[#333]">학습 진행률</span>
+          <span class="text-[12px] font-bold text-[#4CAF50]">{{ completedChallenges }}/{{ totalChallenges }}</span>
+        </div>
+        <div class="w-full h-[6px] rounded-full bg-[#E0E0E0] overflow-hidden">
+          <div
+            class="h-full rounded-full bg-[#4CAF50] transition-all duration-500"
+            :style="{ width: progressPercent + '%' }"
+          />
+        </div>
+      </div>
 
       <!-- Bottom Navigation -->
       <BottomNav />
