@@ -206,7 +206,7 @@ onMounted(fetchResults)
                     <!-- 레이더 차트 -->
                     <p class="text-[13px] font-semibold text-[#333] mb-3">하위영역 분석</p>
                     <div class="flex justify-center mb-4">
-                      <svg viewBox="0 0 280 280" class="w-[260px] h-[260px]">
+                      <svg viewBox="0 0 280 280" class="w-[400px] h-[400px]">
                         <!-- 그리드 -->
                         <polygon
                           v-for="level in [1,2,3,4,5]"
