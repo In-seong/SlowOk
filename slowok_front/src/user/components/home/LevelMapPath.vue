@@ -136,13 +136,20 @@ function getDecorColor(index: number): string {
         />
       </svg>
 
-      <!-- 장식 아이콘 -->
+      <!-- 장식 아이콘 (2개씩) -->
       <div
         v-if="idx > 0"
-        class="absolute top-0 w-6 h-6 opacity-60"
+        class="absolute top-0 w-5 h-5 opacity-50"
         :class="[getDecorPosition(idx), getDecorColor(idx)]"
         style="z-index: 1; pointer-events: none;"
         v-html="getDecorIcon(idx)"
+      />
+      <div
+        v-if="idx > 0"
+        class="absolute w-4 h-4 opacity-40"
+        :class="[getDecorPosition(idx + 3), getDecorColor(idx + 2)]"
+        style="z-index: 1; pointer-events: none; top: 50%;"
+        v-html="getDecorIcon(idx + 2)"
       />
 
       <!-- Node row -->
