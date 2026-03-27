@@ -139,7 +139,7 @@ function getDecorColor(index: number): string {
         height="80"
         viewBox="0 0 360 80"
         preserveAspectRatio="none"
-        style="z-index: 0; pointer-events: none;"
+        style="z-index: 5; pointer-events: none;"
       >
         <path
           :d="getConnectorPath(idx - 1, idx)"
