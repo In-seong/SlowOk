@@ -101,6 +101,41 @@ function getConnectorPath(fromIndex: number, toIndex: number): string {
 
   return `M ${x1} 0 C ${x1} 40, ${x2} 40, ${x2} 80`
 }
+
+// 장식 아이콘들 (노드 사이 빈 공간에 배치)
+const decorIcons = [
+  // 거북이
+  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10c-2.21 0-4 1.79-4 4v1h8v-1c0-2.21-1.79-4-4-4z"/><circle cx="12" cy="8" r="2.5"/><path d="M7 15c-1.1 0-2 .45-2 1s.9 1 2 1"/><path d="M17 15c1.1 0 2 .45 2 1s-.9 1-2 1"/><path d="M10 17v1.5"/><path d="M14 17v1.5"/></svg>`,
+  // 별
+  `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>`,
+  // 하트
+  `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`,
+  // 나뭇잎
+  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89-.82L7 21l1-2.5L9 21l1.45-.89L12 22l1.36-2.21L15 21l1.72-3.08 2.28.46.49-1.38C19.71 14.83 20 8 17 8z"/><path d="M6 15s2-2 6-2 6 2 6 2"/></svg>`,
+  // 왕관
+  `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z"/><rect x="5" y="17" width="14" height="2" rx="1"/></svg>`,
+]
+
+const decorColors = ['text-[#A5D6A7]', 'text-[#FFC107]/40', 'text-[#EF9A9A]/50', 'text-[#81C784]/60', 'text-[#FFD54F]/40']
+
+// 노드 위치의 반대편에 장식 배치
+function getDecorPosition(index: number): string {
+  const pos = positions[index % positions.length]
+  switch (pos) {
+    case 'left': return 'right-8'
+    case 'right': return 'left-8'
+    case 'center': return index % 2 === 0 ? 'left-4' : 'right-4'
+    default: return 'right-8'
+  }
+}
+
+function getDecorIcon(index: number): string {
+  return decorIcons[index % decorIcons.length] ?? decorIcons[0]!
+}
+
+function getDecorColor(index: number): string {
+  return decorColors[index % decorColors.length] ?? decorColors[0]!
+}
 </script>
 
 <template>
@@ -142,6 +177,15 @@ function getConnectorPath(fromIndex: number, toIndex: number): string {
               stroke-linecap="round"
             />
           </svg>
+
+          <!-- 장식 아이콘 (노드 사이 빈 공간) -->
+          <div
+            v-if="idx > 0"
+            class="absolute top-0 w-6 h-6 opacity-60"
+            :class="[getDecorPosition(group.startIndex + idx), getDecorColor(group.startIndex + idx)]"
+            style="z-index: 1; pointer-events: none;"
+            v-html="getDecorIcon(group.startIndex + idx)"
+          />
 
           <!-- Node row -->
           <div
