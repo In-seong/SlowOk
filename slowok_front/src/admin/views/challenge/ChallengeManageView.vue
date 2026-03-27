@@ -25,6 +25,7 @@ const form = ref({
   category_id: '' as number | '',
   challenge_type: '',
   difficulty_level: 1,
+  allow_retry: true,
 })
 
 // 문항 관리 상태
@@ -63,6 +64,7 @@ function resetForm() {
     category_id: '',
     challenge_type: '',
     difficulty_level: 1,
+    allow_retry: true,
   }
   modalError.value = ''
   editingId.value = null
@@ -98,6 +100,7 @@ function openEditModal(challenge: Challenge) {
     category_id: challenge.category_id,
     challenge_type: challenge.challenge_type,
     difficulty_level: challenge.difficulty_level,
+    allow_retry: challenge.allow_retry !== false,
   }
   modalError.value = ''
   showModal.value = true
@@ -147,6 +150,7 @@ async function handleSubmit() {
     category_id: Number(form.value.category_id),
     challenge_type: form.value.challenge_type.trim(),
     difficulty_level: form.value.difficulty_level,
+    allow_retry: form.value.allow_retry,
   }
 
   try {
@@ -463,6 +467,7 @@ onMounted(fetchData)
                 <th class="px-5 py-3 font-semibold text-[#555]">카테고리</th>
                 <th class="px-5 py-3 font-semibold text-[#555]">유형</th>
                 <th class="px-5 py-3 font-semibold text-[#555]">난이도</th>
+                <th class="px-5 py-3 font-semibold text-[#555]">재도전</th>
                 <th class="px-5 py-3 font-semibold text-[#555]">액션</th>
               </tr>
             </thead>
@@ -478,6 +483,14 @@ onMounted(fetchData)
                   </td>
                   <td class="px-5 py-3.5 text-[#888] text-[13px]">
                     {{ difficultyStars(challenge.difficulty_level) }}
+                  </td>
+                  <td class="px-5 py-3.5">
+                    <span
+                      class="px-2 py-0.5 rounded-full text-[11px] font-medium"
+                      :class="challenge.allow_retry !== false ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'"
+                    >
+                      {{ challenge.allow_retry !== false ? '허용' : '1회만' }}
+                    </span>
                   </td>
                   <td class="px-5 py-3.5">
                     <div class="flex items-center gap-3">
@@ -700,6 +713,21 @@ onMounted(fetchData)
                   {{ '★'.repeat(form.difficulty_level) }}{{ '☆'.repeat(5 - form.difficulty_level) }}
                 </span>
               </div>
+            </div>
+
+            <!-- 재도전 허용 -->
+            <div class="mb-5">
+              <label class="flex items-center gap-3 cursor-pointer">
+                <div class="relative inline-flex items-center">
+                  <input type="checkbox" v-model="form.allow_retry" class="sr-only peer" />
+                  <div class="w-11 h-6 bg-gray-200 rounded-full peer-checked:bg-[#4CAF50] transition-colors"></div>
+                  <div class="absolute left-[2px] top-[2px] w-5 h-5 bg-white rounded-full shadow-sm transition-transform peer-checked:translate-x-5"></div>
+                </div>
+                <div>
+                  <span class="text-[14px] font-semibold text-[#333]">재도전 허용</span>
+                  <p class="text-[12px] text-[#888]">끄면 학습자가 한 번 통과 후 다시 풀 수 없습니다</p>
+                </div>
+              </label>
             </div>
 
             <!-- 버튼 -->

@@ -28,7 +28,10 @@ function getStatus(index: number): 'completed' | 'current' | 'locked' {
   const challenge = props.challenges[index]
   if (!challenge) return 'locked'
 
-  if (challenge.latest_attempt?.is_passed) return 'completed'
+  if (challenge.latest_attempt?.is_passed) {
+    // 재도전 불가 챌린지는 completed(잠금 느낌)로 표시
+    return 'completed'
+  }
 
   // First incomplete challenge is "current"
   const allPreviousCompleted = props.challenges
@@ -39,6 +42,11 @@ function getStatus(index: number): 'completed' | 'current' | 'locked' {
   if (allPreviousCompleted) return 'current'
 
   return 'locked'
+}
+
+// 재도전 불가 + 이미 통과 → 클릭 차단
+function isRetryBlocked(challenge: Challenge): boolean {
+  return challenge.allow_retry === false && !!challenge.latest_attempt?.is_passed
 }
 
 function getStars(challenge: Challenge): number {
@@ -145,6 +153,7 @@ function getConnectorPath(fromIndex: number, toIndex: number): string {
               :challenge="challenge"
               :status="getStatus(group.startIndex + idx)"
               :stars="getStars(challenge)"
+              :retry-blocked="isRetryBlocked(challenge)"
               @play="emit('play', $event)"
             />
           </div>

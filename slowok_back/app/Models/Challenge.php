@@ -8,7 +8,8 @@ class Challenge extends Model
     use HasFactory, Traits\BelongsToInstitution;
     protected $table = 'challenge';
     protected $primaryKey = 'challenge_id';
-    protected $fillable = ['category_id', 'title', 'challenge_type', 'difficulty_level', 'institution_id', 'is_active'];
+    protected $fillable = ['category_id', 'title', 'challenge_type', 'difficulty_level', 'institution_id', 'is_active', 'allow_retry'];
+    protected $casts = ['allow_retry' => 'boolean'];
 
     public function category() { return $this->belongsTo(LearningCategory::class, 'category_id', 'category_id'); }
     public function attempts() { return $this->hasMany(ChallengeAttempt::class, 'challenge_id', 'challenge_id'); }

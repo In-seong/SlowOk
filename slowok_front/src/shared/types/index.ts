@@ -139,6 +139,8 @@ export interface Challenge {
   challenge_type: string
   difficulty_level: number
   institution_id: number | null
+  is_active?: boolean
+  allow_retry?: boolean
   category?: LearningCategory
   questions?: ChallengeQuestion[]
   latest_attempt?: ChallengeAttempt | null

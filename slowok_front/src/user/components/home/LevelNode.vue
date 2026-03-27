@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import type { Challenge } from '@shared/types'
 
-defineProps<{
+const props = defineProps<{
   challenge: Challenge
   status: 'completed' | 'current' | 'locked'
   stars: number
+  retryBlocked?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -24,7 +25,7 @@ const emit = defineEmits<{
 
     <!-- Node Button -->
     <button
-      :disabled="status === 'locked'"
+      :disabled="status === 'locked' || retryBlocked"
       class="relative w-16 h-16 rounded-full flex items-center justify-center transition-all"
       :class="[
         status === 'completed'
@@ -33,7 +34,7 @@ const emit = defineEmits<{
             ? 'bg-[#4CAF50] shadow-[0_4px_0_#388E3C] active:shadow-[0_2px_0_#388E3C] active:translate-y-[2px] animate-bounce-gentle ring-4 ring-[#4CAF50]/20'
             : 'bg-[#E0E0E0] shadow-[0_4px_0_#BDBDBD] cursor-not-allowed'
       ]"
-      @click="status !== 'locked' && emit('play', challenge.challenge_id)"
+      @click="status !== 'locked' && !retryBlocked && emit('play', challenge.challenge_id)"
     >
       <!-- Completed: Check -->
       <svg v-if="status === 'completed'" class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
