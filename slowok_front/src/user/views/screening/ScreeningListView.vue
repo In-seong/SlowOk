@@ -65,21 +65,6 @@ const isEmpty = computed(() => !screeningStore.loading && screeningStore.tests.l
     <BackHeader title="진단 검사" />
 
     <main class="px-5 pb-[80px] pt-4 space-y-3">
-      <!-- Info Banner -->
-      <div class="bg-[#E3F2FD] rounded-[12px] p-4">
-        <div class="flex items-start gap-3">
-          <div class="w-9 h-9 rounded-[10px] bg-[#2196F3]/10 flex items-center justify-center shrink-0 mt-0.5">
-            <svg class="w-5 h-5 text-[#2196F3]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-            </svg>
-          </div>
-          <div>
-            <p class="text-[14px] font-semibold text-[#2196F3]">맞춤 학습의 시작!</p>
-            <p class="text-[13px] text-[#555] mt-0.5 leading-relaxed">나의 학습 수준을 알아보고 맞춤 학습을 시작해요!</p>
-          </div>
-        </div>
-      </div>
-
       <!-- Loading State -->
       <div v-if="screeningStore.loading" class="flex items-center justify-center py-20">
         <p class="text-[14px] text-[#999]">불러오는 중...</p>
