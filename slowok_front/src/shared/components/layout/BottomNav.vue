@@ -38,7 +38,7 @@ function navigateTo(item: NavItem): void {
     >
       <!-- 홈: 나무 아이콘 -->
       <template v-if="item.routeName === 'home'">
-        <svg class="w-7 h-7" viewBox="0 0 32 32" fill="none">
+        <svg class="w-10 h-10" viewBox="0 0 32 32" fill="none">
           <!-- 나뭇잎 -->
           <ellipse cx="16" cy="10" rx="10" ry="9" :fill="isActive(item) ? '#4CAF50' : '#C8C8C8'" />
           <ellipse cx="16" cy="10" rx="7" ry="6" :fill="isActive(item) ? '#66BB6A' : '#D8D8D8'" />
@@ -52,7 +52,7 @@ function navigateTo(item: NavItem): void {
 
       <!-- 진단: 돋보기+별 아이콘 -->
       <template v-else-if="item.routeName === 'screening-list'">
-        <svg class="w-7 h-7" viewBox="0 0 32 32" fill="none">
+        <svg class="w-10 h-10" viewBox="0 0 32 32" fill="none">
           <!-- 돋보기 몸통 -->
           <circle cx="14" cy="14" r="8" :stroke="isActive(item) ? '#4CAF50' : '#C8C8C8'" stroke-width="2.5" fill="none" />
           <!-- 렌즈 안 반짝임 -->
@@ -68,7 +68,7 @@ function navigateTo(item: NavItem): void {
 
       <!-- MY: 거북이 얼굴 -->
       <template v-else-if="item.routeName === 'mypage'">
-        <svg class="w-7 h-7" viewBox="0 0 32 32" fill="none">
+        <svg class="w-10 h-10" viewBox="0 0 32 32" fill="none">
           <!-- 머리 -->
           <circle cx="16" cy="15" r="10" :fill="isActive(item) ? '#4CAF50' : '#C8C8C8'" />
           <circle cx="16" cy="15" r="7.5" :fill="isActive(item) ? '#66BB6A' : '#D8D8D8'" />
