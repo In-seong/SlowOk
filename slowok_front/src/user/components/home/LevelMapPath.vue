@@ -90,6 +90,14 @@ const decorIcons = [
 
 const decorColors = ['text-[#A5D6A7]', 'text-[#FFC107]/40', 'text-[#EF9A9A]/50', 'text-[#81C784]/60', 'text-[#FFD54F]/40']
 
+// 첫 번째 노드: 노드 반대편에 배치
+function getFirstDecorPosition(index: number): string {
+  const pos = positions[index % positions.length]
+  if (pos === 'left') return 'right-6'
+  if (pos === 'right') return 'left-6'
+  return 'right-6'
+}
+
 // 이전 노드와 현재 노드 사이의 빈쪽에 배치
 function getDecorOppositePosition(index: number): string {
   const prevPos = positions[(index - 1) % positions.length]
@@ -143,11 +151,10 @@ function getDecorColor(index: number): string {
         />
       </svg>
 
-      <!-- 장식 아이콘 (노드 사이 빈 공간에 1개) -->
+      <!-- 장식 아이콘 -->
       <div
-        v-if="idx > 0"
         class="absolute opacity-50"
-        :class="[getDecorOppositePosition(idx), getDecorColor(idx), idx % decorIcons.length === 0 ? 'w-12 h-12' : 'w-5 h-5']"
+        :class="[idx === 0 ? getFirstDecorPosition(idx) : getDecorOppositePosition(idx), getDecorColor(idx), idx % decorIcons.length === 0 ? 'w-12 h-12' : 'w-5 h-5']"
         style="z-index: 1; pointer-events: none; top: 30%;"
         v-html="getDecorIcon(idx)"
       />
