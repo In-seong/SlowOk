@@ -120,53 +120,53 @@ function isRightMatched(idx: number): boolean {
     </div>
 
     <!-- 매칭 영역 -->
-    <div class="flex gap-4">
-      <!-- 좌측 카드 -->
-      <div class="flex-1 space-y-3">
-        <p class="text-[11px] text-[#999] font-medium mb-1 text-center">멘트</p>
-        <button
-          v-for="(pair, idx) in pairs"
-          :key="'left-' + idx"
-          @click="selectLeft(idx)"
-          :disabled="matched.has(idx)"
-          :class="[
-            'w-full py-3.5 px-3 rounded-2xl text-[14px] font-medium border-2 transition-all text-center',
-            matched.has(idx)
-              ? 'bg-[#E8F5E9] border-[#4CAF50] text-[#4CAF50] shadow-[0_3px_0_#388E3C] opacity-70'
-              : wrongPair?.left === idx
-                ? 'border-[#F44336] bg-[#FFEBEE] text-[#F44336] animate-shake shadow-[0_3px_0_#C62828]'
-                : selectedLeft === idx
-                  ? 'border-[#4CAF50] bg-[#E8F5E9] text-[#4CAF50] shadow-[0_3px_0_#388E3C]'
-                  : 'border-[#E0E0E0] bg-white text-[#333] shadow-[0_3px_0_#E0E0E0] active:translate-y-[2px] active:shadow-none'
-          ]"
-        >
-          {{ pair.left }}
-        </button>
+    <div>
+      <!-- 헤더 -->
+      <div class="flex gap-3 mb-2">
+        <p class="flex-1 text-[11px] text-[#999] font-medium text-center">멘트</p>
+        <p class="flex-1 text-[11px] text-[#999] font-medium text-center">답</p>
       </div>
-
-      <!-- 우측 카드 -->
-      <div class="flex-1 space-y-3">
-        <p class="text-[11px] text-[#999] font-medium mb-1 text-center">답</p>
-        <button
-          v-for="(card, idx) in shuffledRight"
-          :key="'right-' + idx"
-          @click="selectRight(idx)"
-          :disabled="isRightMatched(idx)"
-          :class="[
-            'w-full rounded-2xl border-2 transition-all flex items-center justify-center py-3.5 px-3',
-            card.image ? '' : 'text-[14px] font-medium text-center',
-            isRightMatched(idx)
-              ? 'bg-[#E8F5E9] border-[#4CAF50] text-[#4CAF50] shadow-[0_3px_0_#388E3C] opacity-70'
-              : wrongPair?.right === idx
-                ? 'border-[#F44336] bg-[#FFEBEE] text-[#F44336] animate-shake shadow-[0_3px_0_#C62828]'
-                : selectedRight === idx
-                  ? 'border-[#4CAF50] bg-[#E8F5E9] text-[#4CAF50] shadow-[0_3px_0_#388E3C]'
-                  : 'border-[#E0E0E0] bg-white text-[#333] shadow-[0_3px_0_#E0E0E0] active:translate-y-[2px] active:shadow-none'
-          ]"
-        >
-          <img v-if="card.image" :src="card.image" class="w-8 h-8 rounded object-contain" />
-          <span v-else>{{ card.text }}</span>
-        </button>
+      <!-- 행 단위 -->
+      <div class="space-y-3">
+        <div v-for="(pair, idx) in pairs" :key="'row-' + idx" class="flex gap-3 items-stretch">
+          <!-- 좌측 -->
+          <button
+            @click="selectLeft(idx)"
+            :disabled="matched.has(idx)"
+            :class="[
+              'flex-1 rounded-2xl text-[14px] font-medium border-2 transition-all text-center flex items-center justify-center px-3',
+              matched.has(idx)
+                ? 'bg-[#E8F5E9] border-[#4CAF50] text-[#4CAF50] shadow-[0_3px_0_#388E3C] opacity-70'
+                : wrongPair?.left === idx
+                  ? 'border-[#F44336] bg-[#FFEBEE] text-[#F44336] animate-shake shadow-[0_3px_0_#C62828]'
+                  : selectedLeft === idx
+                    ? 'border-[#4CAF50] bg-[#E8F5E9] text-[#4CAF50] shadow-[0_3px_0_#388E3C]'
+                    : 'border-[#E0E0E0] bg-white text-[#333] shadow-[0_3px_0_#E0E0E0] active:translate-y-[2px] active:shadow-none'
+            ]"
+          >
+            {{ pair.left }}
+          </button>
+          <!-- 우측 (셔플된 카드) -->
+          <button
+            v-if="shuffledRight[idx]"
+            @click="selectRight(idx)"
+            :disabled="isRightMatched(idx)"
+            :class="[
+              'flex-1 rounded-2xl border-2 transition-all flex items-center justify-center px-3',
+              shuffledRight[idx]?.image ? 'py-2' : 'py-3.5 text-[14px] font-medium text-center',
+              isRightMatched(idx)
+                ? 'bg-[#E8F5E9] border-[#4CAF50] text-[#4CAF50] shadow-[0_3px_0_#388E3C] opacity-70'
+                : wrongPair?.right === idx
+                  ? 'border-[#F44336] bg-[#FFEBEE] text-[#F44336] animate-shake shadow-[0_3px_0_#C62828]'
+                  : selectedRight === idx
+                    ? 'border-[#4CAF50] bg-[#E8F5E9] text-[#4CAF50] shadow-[0_3px_0_#388E3C]'
+                    : 'border-[#E0E0E0] bg-white text-[#333] shadow-[0_3px_0_#E0E0E0] active:translate-y-[2px] active:shadow-none'
+            ]"
+          >
+            <img v-if="shuffledRight[idx]?.image" :src="shuffledRight[idx]!.image!" class="w-12 h-12 rounded-lg object-contain" />
+            <span v-else>{{ shuffledRight[idx]?.text }}</span>
+          </button>
+        </div>
       </div>
     </div>
 
