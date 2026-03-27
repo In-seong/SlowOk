@@ -78,8 +78,6 @@ const menuSections = computed<MenuSection[]>(() => {
     {
       title: '학습 관리',
       items: [
-        { label: '학습 리포트', routeName: 'reports' },
-        { label: '평가 결과', routeName: 'assessment-list' },
         { label: '알림', routeName: 'notifications', badge: true },
       ],
     },
@@ -88,13 +86,6 @@ const menuSections = computed<MenuSection[]>(() => {
       items: [
         { label: '프로필 수정', routeName: 'edit-profile' },
         { label: '비밀번호 변경', routeName: 'change-password' },
-        { label: '구독 관리', routeName: '' },
-      ],
-    },
-    {
-      title: '기타',
-      items: [
-        { label: '사용 가이드', routeName: 'how-to-use' },
       ],
     },
   ]
