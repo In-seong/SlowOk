@@ -2,7 +2,6 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/authStore'
-import { useLearningStore } from '../../stores/learningStore'
 import { useChallengeStore } from '../../stores/challengeStore'
 import { useNotificationStore } from '../../stores/notificationStore'
 import { useToastStore } from '@shared/stores/toastStore'
@@ -10,7 +9,6 @@ import BottomNav from '@shared/components/layout/BottomNav.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
-const learningStore = useLearningStore()
 const challengeStore = useChallengeStore()
 const notificationStore = useNotificationStore()
 const toast = useToastStore()
@@ -24,9 +22,7 @@ onMounted(async () => {
   try {
     await Promise.all([
       authStore.fetchUser(),
-      learningStore.fetchContents(),
       challengeStore.fetchChallenges(),
-      challengeStore.fetchRewardCards(),
       notificationStore.fetchNotifications(),
     ])
   } catch (e: any) {
@@ -46,20 +42,28 @@ const userInitial = computed(() => userName.value.charAt(0))
 
 const unreadCount = computed(() => notificationStore.unreadCount)
 
-const completedLearningCount = computed(() =>
-  learningStore.contents.filter(c => c.progress?.status === 'COMPLETED').length
-)
+const totalChallenges = computed(() => challengeStore.challenges.length)
 
 const challengePassedCount = computed(() =>
   challengeStore.challenges.filter(c => c.latest_attempt?.is_passed).length
 )
 
-const rewardCardCount = computed(() => challengeStore.rewardCards.length)
+const totalStars = computed(() =>
+  challengeStore.challenges.reduce((sum, c) => {
+    if (!c.latest_attempt?.is_passed) return sum
+    const total = (c as any).questions_count ?? c.questions?.length ?? 0
+    if (total === 0) return sum + 3
+    const ratio = c.latest_attempt.score / total
+    if (ratio >= 1) return sum + 3
+    if (ratio >= 0.85) return sum + 2
+    return sum + 1
+  }, 0)
+)
 
 const stats = computed(() => [
-  { label: '완료한 학습', value: completedLearningCount.value, color: 'text-[#4CAF50]' },
-  { label: '챌린지 달성', value: challengePassedCount.value, color: 'text-[#FF9800]' },
-  { label: '보상 카드', value: rewardCardCount.value, color: 'text-[#2196F3]' },
+  { label: '챌린지 달성', value: `${challengePassedCount.value}/${totalChallenges.value}`, color: 'text-[#4CAF50]' },
+  { label: '획득한 별', value: `${totalStars.value}`, color: 'text-[#FFC107]' },
+  { label: '총 챌린지', value: `${totalChallenges.value}`, color: 'text-[#2196F3]' },
 ])
 
 interface MenuItem {
