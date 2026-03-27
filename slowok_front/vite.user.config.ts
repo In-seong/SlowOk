@@ -35,6 +35,7 @@ export default defineConfig({
       }
     }
   },
+  publicDir: 'public-user',
   build: {
     outDir: '../slowok_back/public/user',
     emptyOutDir: true,
