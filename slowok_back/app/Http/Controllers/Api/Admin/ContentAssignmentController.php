@@ -148,6 +148,26 @@ class ContentAssignmentController extends BaseAdminController
         ], 201);
     }
 
+    public function update(Request $request, int $id): JsonResponse
+    {
+        $assignment = ContentAssignment::with('profile.account')->findOrFail($id);
+
+        $instId = $this->getInstitutionId($request);
+        if ($instId && $assignment->profile?->account?->institution_id !== $instId) {
+            return response()->json(['success' => false, 'message' => '권한이 없습니다.'], 403);
+        }
+
+        $request->validate([
+            'allow_retry' => 'sometimes|boolean',
+        ]);
+
+        if ($request->has('allow_retry')) {
+            $assignment->update(['allow_retry' => $request->allow_retry]);
+        }
+
+        return response()->json(['success' => true, 'data' => $assignment, 'message' => '수정되었습니다.']);
+    }
+
     public function reorder(Request $request): JsonResponse
     {
         $request->validate([

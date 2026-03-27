@@ -75,6 +75,15 @@ async function moveAssignment(assignmentId: number, direction: 'up' | 'down') {
   }
 }
 
+async function toggleRetry(assignmentId: number, currentValue: boolean) {
+  try {
+    await api.put(`/admin/content-assignments/${assignmentId}`, { allow_retry: !currentValue })
+    await fetchUser()
+  } catch (e: any) {
+    toast.error(e.response?.data?.message || '변경에 실패했습니다.')
+  }
+}
+
 // 수정 모달
 const showEditModal = ref(false)
 const editForm = ref({ username: '', password: '', name: '', phone: '', email: '' })
@@ -404,6 +413,7 @@ onMounted(fetchUser)
                 
                 <th class="text-left px-4 py-3 font-medium">상태</th>
                 <th class="text-left px-4 py-3 font-medium">할당일</th>
+                <th class="text-center px-4 py-3 font-medium">재도전</th>
                 <th class="text-center px-4 py-3 font-medium">관리</th>
               </tr>
             </thead>
@@ -446,6 +456,16 @@ onMounted(fetchUser)
                   </span>
                 </td>
                 <td class="px-4 py-3 text-[#888]">{{ formatDate(a.assigned_at) }}</td>
+                <td v-if="a.assignable_type === 'challenge'" class="px-4 py-3 text-center">
+                  <button
+                    @click.stop="toggleRetry(a.assignment_id, !!(a as any).allow_retry)"
+                    class="px-2 py-0.5 rounded-full text-[11px] font-medium transition-colors"
+                    :class="(a as any).allow_retry !== false ? 'bg-green-50 text-green-600 hover:bg-green-100' : 'bg-red-50 text-red-500 hover:bg-red-100'"
+                  >
+                    {{ (a as any).allow_retry !== false ? '재도전 허용' : '1회만' }}
+                  </button>
+                </td>
+                <td v-else class="px-4 py-3"></td>
                 <td class="px-4 py-3 text-center">
                   <button @click="removeAssignment(a.assignment_id)" class="text-red-500 hover:underline text-[13px]">해제</button>
                 </td>

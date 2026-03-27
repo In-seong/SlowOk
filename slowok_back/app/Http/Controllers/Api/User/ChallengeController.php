@@ -29,6 +29,7 @@ class ChallengeController extends Controller
 
         $assignedIds = $assignments->pluck('assignable_id');
         $sortMap = $assignments->pluck('sort_order', 'assignable_id');
+        $retryMap = $assignments->pluck('allow_retry', 'assignable_id');
 
         $challenges = Challenge::with(['category'])
             ->withCount('questions')
@@ -45,8 +46,9 @@ class ChallengeController extends Controller
             ->unique('challenge_id')
             ->keyBy('challenge_id');
 
-        $challenges->each(function ($challenge) use ($latestAttempts) {
+        $challenges->each(function ($challenge) use ($latestAttempts, $retryMap) {
             $challenge->setAttribute('latest_attempt', $latestAttempts->get($challenge->challenge_id));
+            $challenge->setAttribute('allow_retry', (bool) $retryMap->get($challenge->challenge_id, 1));
         });
 
         return response()->json(['success' => true, 'data' => $challenges]);

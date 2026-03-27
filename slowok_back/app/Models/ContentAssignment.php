@@ -19,6 +19,7 @@ class ContentAssignment extends Model
         'note',
         'status',
         'sort_order',
+        'allow_retry',
     ];
 
     protected $casts = [
