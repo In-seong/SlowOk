@@ -1,15 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import BackHeader from '@shared/components/layout/BackHeader.vue'
 import BottomNav from '@shared/components/layout/BottomNav.vue'
-
-type TabKey = 'parent' | 'learner'
-const activeTab = ref<TabKey>('parent')
-
-const tabs: { key: TabKey; label: string }[] = [
-  { key: 'parent', label: '학부모' },
-  { key: 'learner', label: '학습자' },
-]
 
 interface GuideStep {
   step: number
@@ -26,7 +17,7 @@ interface GuideStep {
   }
 }
 
-const parentSteps: GuideStep[] = [
+const steps: GuideStep[] = [
   {
     step: 1,
     title: '회원가입',
@@ -62,93 +53,6 @@ const parentSteps: GuideStep[] = [
   },
   {
     step: 3,
-    title: '자녀 프로필 추가',
-    description: '학부모 프로필로 로그인 후, 자녀(학습자) 프로필을 추가합니다. 자녀 프로필은 여러 개 추가할 수 있습니다.',
-    iconPath: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z',
-    iconBg: 'bg-[#E8F5E9]',
-    iconColor: 'text-[#4CAF50]',
-    tips: [
-      '홈 화면의 "자녀추가" 버튼 또는 마이페이지 > 자녀 관리에서 추가',
-      '자녀 이름은 필수, 생년월일과 전화번호는 선택 입력',
-    ],
-    uiPreview: {
-      type: 'button',
-      content: '자녀추가',
-      variant: 'success',
-    },
-  },
-  {
-    step: 4,
-    title: '프로필 전환',
-    description: '학부모 프로필과 자녀 프로필을 자유롭게 전환하며 사용합니다. 넷플릭스처럼 프로필을 선택하는 화면이 표시됩니다.',
-    iconPath: 'M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4',
-    iconBg: 'bg-[#F3E5F5]',
-    iconColor: 'text-[#9C27B0]',
-    tips: [
-      '홈 화면 상단의 "전환" 버튼을 탭합니다',
-      '자녀 프로필 선택 시 해당 자녀의 학습 화면으로 전환됩니다',
-      '학부모 프로필로 돌아오면 학부모 전용 메뉴가 표시됩니다',
-    ],
-    uiPreview: {
-      type: 'card',
-      content: '프로필 선택',
-    },
-  },
-  {
-    step: 5,
-    title: '자녀 학습현황 확인',
-    description: '학부모 프로필 상태에서 "자녀현황" 메뉴를 통해 각 자녀의 진단결과, 학습 진행률, 챌린지 성과를 한눈에 확인합니다.',
-    iconPath: 'M3 3v18h18M7 16l4-8 4 4 4-6',
-    iconBg: 'bg-[#E3F2FD]',
-    iconColor: 'text-[#2196F3]',
-    tips: [
-      '홈 화면 빠른 메뉴의 "자녀현황" 버튼을 탭합니다',
-      '각 자녀 카드에서 "전환" 버튼을 누르면 해당 자녀의 학습 화면으로 바로 이동합니다',
-      '"녹음 듣기 / 피드백" 버튼으로 자녀의 음성 녹음을 듣고 격려 코멘트를 남길 수 있습니다',
-    ],
-    uiPreview: {
-      type: 'card',
-      content: '자녀 학습 대시보드',
-    },
-  },
-  {
-    step: 6,
-    title: '프로필 수정 / 자녀 프로필 수정',
-    description: '마이페이지 > 프로필 수정에서 내 이름, 연락처, 이메일을 변경할 수 있습니다. 자녀 프로필도 마이페이지 하단 또는 프로필 선택 화면에서 편집 버튼을 눌러 수정합니다.',
-    iconPath: 'M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z',
-    iconBg: 'bg-[#E8F5E9]',
-    iconColor: 'text-[#4CAF50]',
-    tips: [
-      '마이페이지 > 내 정보 > 프로필 수정에서 본인 정보를 변경합니다',
-      '자녀 프로필 편집: 마이페이지 하단 "자녀 프로필 편집" 또는 프로필 선택 화면의 편집 아이콘',
-    ],
-    uiPreview: {
-      type: 'button',
-      content: '프로필 수정',
-      variant: 'success',
-    },
-  },
-  {
-    step: 7,
-    title: '비밀번호 변경',
-    description: '마이페이지 > 비밀번호 변경에서 현재 비밀번호 확인 후 새 비밀번호로 변경할 수 있습니다.',
-    iconPath: 'M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z',
-    iconBg: 'bg-[#FFF3E0]',
-    iconColor: 'text-[#FF9800]',
-    tips: [
-      '마이페이지 > 내 정보 > 비밀번호 변경을 탭합니다',
-      '새 비밀번호는 8자 이상이어야 합니다',
-    ],
-    uiPreview: {
-      type: 'input',
-      content: '새 비밀번호 입력 (8자 이상)',
-    },
-  },
-]
-
-const learnerSteps: GuideStep[] = [
-  {
-    step: 1,
     title: '진단검사 실시',
     description: '기관에서 배정한 진단검사를 실시합니다. 검사 결과를 바탕으로 맞춤형 챌린지가 제공됩니다.',
     iconPath: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4',
@@ -167,7 +71,7 @@ const learnerSteps: GuideStep[] = [
     },
   },
   {
-    step: 2,
+    step: 4,
     title: '레벨맵에서 챌린지 도전',
     description: '홈 화면의 레벨맵에서 배정된 챌린지를 순서대로 도전합니다. 이전 챌린지를 통과해야 다음 챌린지가 열립니다.',
     iconPath: 'M6 9H4a2 2 0 01-2-2V5a2 2 0 012-2h2M18 9h2a2 2 0 002-2V5a2 2 0 00-2-2h-2M6 3h12v6a6 6 0 01-12 0V3zM12 15v3M8 21h8M10 18h4',
@@ -186,7 +90,7 @@ const learnerSteps: GuideStep[] = [
     },
   },
   {
-    step: 3,
+    step: 5,
     title: '챌린지 풀기',
     description: '챌린지 노드를 눌러 문제를 풀어보세요. 문항마다 확인 → 피드백 → 계속하기 순서로 진행됩니다. 70% 이상 맞히면 통과!',
     iconPath: 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z',
@@ -204,7 +108,7 @@ const learnerSteps: GuideStep[] = [
     },
   },
   {
-    step: 4,
+    step: 6,
     title: '학습 리포트 확인',
     description: '마이페이지에서 학습 리포트, 평가 결과, 알림을 확인합니다. 전체 학습 이력과 성과를 한눈에 볼 수 있습니다.',
     iconPath: 'M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z',
@@ -221,7 +125,7 @@ const learnerSteps: GuideStep[] = [
     },
   },
   {
-    step: 5,
+    step: 7,
     title: '프로필 수정 / 비밀번호 변경',
     description: '마이페이지에서 프로필 정보(이름, 연락처, 이메일)를 수정하고, 비밀번호를 변경할 수 있습니다.',
     iconPath: 'M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z',
@@ -238,13 +142,6 @@ const learnerSteps: GuideStep[] = [
     },
   },
 ]
-
-const currentSteps = ref<GuideStep[]>(parentSteps)
-
-function switchTab(key: TabKey): void {
-  activeTab.value = key
-  currentSteps.value = key === 'parent' ? parentSteps : learnerSteps
-}
 
 function getPreviewBgColor(variant?: string): string {
   switch (variant) {
@@ -277,37 +174,16 @@ function getPreviewTextColor(variant?: string): string {
           <p class="text-[13px] text-[#555]">느린 학습자를 위한 맞춤형 학습 플랫폼</p>
         </div>
 
-        <!-- Role Tabs -->
-        <div class="flex bg-white rounded-[12px] p-1 shadow-[0_0_6px_rgba(0,0,0,0.06)]">
-          <button
-            v-for="tab in tabs"
-            :key="tab.key"
-            class="flex-1 py-2.5 rounded-[10px] text-[14px] font-semibold transition-all"
-            :class="activeTab === tab.key
-              ? 'bg-[#4CAF50] text-white shadow-sm'
-              : 'text-[#888] hover:text-[#555]'"
-            @click="switchTab(tab.key)"
-          >
-            {{ tab.label }}
-          </button>
-        </div>
-
         <!-- Guide Header -->
         <div class="px-1">
-          <h3 class="text-[16px] font-bold text-[#333]">
-            {{ activeTab === 'parent' ? '학부모 사용 가이드' : '학습자 사용 가이드' }}
-          </h3>
-          <p class="text-[12px] text-[#888] mt-1">
-            {{ activeTab === 'parent'
-              ? '자녀의 학습을 관리하고 진행 상황을 확인하세요'
-              : '학습 콘텐츠를 진행하고 챌린지에 도전하세요' }}
-          </p>
+          <h3 class="text-[16px] font-bold text-[#333]">사용 가이드</h3>
+          <p class="text-[12px] text-[#888] mt-1">학습 콘텐츠를 진행하고 챌린지에 도전하세요</p>
         </div>
 
         <!-- Steps -->
         <div class="space-y-4">
           <div
-            v-for="(guideStep, index) in currentSteps"
+            v-for="(guideStep, index) in steps"
             :key="guideStep.step"
             class="bg-white rounded-[16px] shadow-[0_0_6px_rgba(0,0,0,0.06)] overflow-hidden"
           >
@@ -376,20 +252,6 @@ function getPreviewTextColor(variant?: string): string {
               <div v-if="guideStep.uiPreview.type === 'card'" class="border border-dashed border-[#CCC] rounded-[10px] p-3 bg-[#FAFAFA]">
                 <div class="bg-white rounded-[10px] shadow-sm p-3 text-center">
                   <p class="text-[13px] font-semibold text-[#555]">{{ guideStep.uiPreview.content }}</p>
-                  <div class="flex justify-center gap-4 mt-2">
-                    <div class="flex flex-col items-center gap-1">
-                      <div class="w-10 h-10 rounded-full bg-[#E8F5E9] flex items-center justify-center">
-                        <span class="text-[14px] font-bold text-[#4CAF50]">A</span>
-                      </div>
-                      <span class="text-[10px] text-[#888]">프로필1</span>
-                    </div>
-                    <div class="flex flex-col items-center gap-1">
-                      <div class="w-10 h-10 rounded-full bg-[#E3F2FD] flex items-center justify-center">
-                        <span class="text-[14px] font-bold text-[#2196F3]">B</span>
-                      </div>
-                      <span class="text-[10px] text-[#888]">프로필2</span>
-                    </div>
-                  </div>
                 </div>
                 <p class="text-[10px] text-[#AAA] mt-1.5 text-center">화면 예시</p>
               </div>
@@ -448,7 +310,7 @@ function getPreviewTextColor(variant?: string): string {
 
             <!-- Connector line -->
             <div
-              v-if="index < currentSteps.length - 1"
+              v-if="index < steps.length - 1"
               class="flex justify-center -mb-4 relative z-10"
             >
               <div class="w-0.5 h-4 bg-[#E0E0E0]"></div>
@@ -464,10 +326,6 @@ function getPreviewTextColor(variant?: string): string {
             <div>
               <p class="text-[13px] font-semibold text-[#333] mb-1">Q. 초대코드는 어디서 받나요?</p>
               <p class="text-[12px] text-[#666] leading-relaxed">소속 기관(학교, 치료센터, 복지관 등)의 담당자에게 문의하세요. 기관 관리자가 초대코드를 발급합니다.</p>
-            </div>
-            <div class="border-t border-[#F0F0F0] pt-3">
-              <p class="text-[13px] font-semibold text-[#333] mb-1">Q. 자녀를 여러 명 등록할 수 있나요?</p>
-              <p class="text-[12px] text-[#666] leading-relaxed">네, 학부모 프로필에서 자녀를 여러 명 추가하고 프로필을 전환하며 각 자녀별로 학습을 관리할 수 있습니다.</p>
             </div>
             <div class="border-t border-[#F0F0F0] pt-3">
               <p class="text-[13px] font-semibold text-[#333] mb-1">Q. 학습 콘텐츠가 보이지 않아요</p>

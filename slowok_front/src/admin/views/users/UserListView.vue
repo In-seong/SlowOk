@@ -18,17 +18,17 @@ const togglingId = ref<number | null>(null)
 
 // 고객 추가 모달
 const showCreateModal = ref(false)
-const createForm = ref({ username: '', password: '', name: '', user_type: 'LEARNER' as 'LEARNER' | 'PARENT', phone: '', email: '' })
+const createForm = ref({ username: '', password: '', name: '', phone: '', email: '' })
 const createLoading = ref(false)
 const createError = ref('')
 
 function getProfiles(user: Account): UserProfile[] {
-  return user.profiles ?? (user.profile ? [user.profile] : [])
+  return user.profile ? [user.profile] : []
 }
 
 function getMainProfile(user: Account): UserProfile | undefined {
   const profiles = getProfiles(user)
-  return profiles.find(p => p.user_type === 'PARENT') ?? profiles[0]
+  return profiles[0]
 }
 
 function getProfileName(user: Account): string {
@@ -90,7 +90,7 @@ async function deleteUser(user: Account) {
 }
 
 function openCreateModal() {
-  createForm.value = { username: '', password: '', name: '', user_type: 'LEARNER', phone: '', email: '' }
+  createForm.value = { username: '', password: '', name: '', phone: '', email: '' }
   createError.value = ''
   showCreateModal.value = true
 }
@@ -103,7 +103,6 @@ async function handleCreate() {
       username: createForm.value.username,
       password: createForm.value.password,
       name: createForm.value.name,
-      user_type: createForm.value.user_type,
     }
     if (createForm.value.phone) payload.phone = createForm.value.phone
     if (createForm.value.email) payload.email = createForm.value.email
@@ -223,17 +222,8 @@ onMounted(fetchUsers)
                   {{ getProfileName(user) }}
                 </td>
                 <td class="px-5 py-3.5 text-[#555]">{{ user.username }}</td>
-                <td class="px-5 py-3.5">
-                  <div class="flex items-center gap-1.5 flex-wrap">
-                    <template v-for="p in getProfiles(user)" :key="p.profile_id">
-                      <span
-                        class="px-2 py-0.5 rounded-full text-[11px] font-medium"
-                        :class="p.user_type === 'PARENT' ? 'bg-purple-50 text-purple-600' : 'bg-blue-50 text-blue-600'"
-                      >
-                        {{ p.user_type === 'PARENT' ? '보호자' : (p.decrypted_name ?? p.name ?? '학습자') }}
-                      </span>
-                    </template>
-                  </div>
+                <td class="px-5 py-3.5 text-[#555]">
+                  {{ getProfileName(user) }}
                 </td>
                 <td class="px-5 py-3.5 text-[#888]">{{ formatDate(user.last_login_at) }}</td>
                 <td class="px-5 py-3.5">
@@ -283,19 +273,7 @@ onMounted(fetchUsers)
             <label class="block text-[13px] font-medium text-[#555] mb-1">이름 *</label>
             <input v-model="createForm.name" type="text" required class="w-full border border-[#E8E8E8] rounded-[10px] px-3 py-2.5 text-[14px] outline-none focus:border-[#4CAF50]" />
           </div>
-          <div>
-            <label class="block text-[13px] font-medium text-[#555] mb-1">유형 *</label>
-            <div class="flex gap-3">
-              <label class="flex items-center gap-2 text-[14px] cursor-pointer">
-                <input type="radio" v-model="createForm.user_type" value="LEARNER" class="accent-[#4CAF50]" />
-                학습자
-              </label>
-              <label class="flex items-center gap-2 text-[14px] cursor-pointer">
-                <input type="radio" v-model="createForm.user_type" value="PARENT" class="accent-[#4CAF50]" />
-                보호자
-              </label>
-            </div>
-          </div>
+
           <div>
             <label class="block text-[13px] font-medium text-[#555] mb-1">연락처</label>
             <input v-model="createForm.phone" type="tel" class="w-full border border-[#E8E8E8] rounded-[10px] px-3 py-2.5 text-[14px] outline-none focus:border-[#4CAF50]" />

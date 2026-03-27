@@ -14,7 +14,6 @@ const form = ref({
   password_confirmation: '',
   phone: '',
   email: '',
-  user_type: 'LEARNER' as 'LEARNER' | 'PARENT',
   invite_code: '',
 })
 
@@ -38,11 +37,7 @@ const passwordMismatch = computed(() => {
 async function handleRegister(): Promise<void> {
   const success = await authStore.register(form.value)
   if (success) {
-    if (authStore.needsProfileSelect) {
-      router.push({ name: 'profile-select' })
-    } else {
-      router.push({ name: 'home' })
-    }
+    router.push({ name: 'home' })
   }
 }
 </script>
@@ -70,39 +65,6 @@ async function handleRegister(): Promise<void> {
         </div>
 
         <form @submit.prevent="handleRegister" class="flex flex-col gap-4">
-          <!-- User Type Toggle -->
-          <div>
-            <label class="block text-[13px] font-medium text-[#555] mb-1.5">유형 선택</label>
-            <div class="flex gap-2">
-              <button
-                type="button"
-                @click="form.user_type = 'LEARNER'"
-                class="flex-1 flex items-center justify-center gap-1.5 rounded-[10px] px-3 py-2.5 text-[14px] font-semibold transition-all"
-                :class="form.user_type === 'LEARNER'
-                  ? 'border-[1.5px] border-[#4CAF50] bg-[#E8F5E9] text-[#4CAF50]'
-                  : 'border-[1.5px] border-transparent bg-[#F8F8F8] text-[#555]'"
-              >
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-                학습자
-              </button>
-              <button
-                type="button"
-                @click="form.user_type = 'PARENT'"
-                class="flex-1 flex items-center justify-center gap-1.5 rounded-[10px] px-3 py-2.5 text-[14px] font-semibold transition-all"
-                :class="form.user_type === 'PARENT'
-                  ? 'border-[1.5px] border-[#4CAF50] bg-[#E8F5E9] text-[#4CAF50]'
-                  : 'border-[1.5px] border-transparent bg-[#F8F8F8] text-[#555]'"
-              >
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                학부모
-              </button>
-            </div>
-          </div>
-
           <!-- Invite Code -->
           <div>
             <label class="block text-[13px] font-medium text-[#555] mb-1.5">초대코드</label>

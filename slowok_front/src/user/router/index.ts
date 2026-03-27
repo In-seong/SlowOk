@@ -21,24 +21,6 @@ const router = createRouter({
       component: () => import('../views/RegisterView.vue'),
     },
     {
-      path: '/profile-select',
-      name: 'profile-select',
-      component: () => import('../views/ProfileSelectView.vue'),
-      meta: { requiresAuth: true },
-    },
-    {
-      path: '/add-child',
-      name: 'add-child',
-      component: () => import('../views/AddChildProfileView.vue'),
-      meta: { requiresAuth: true, parentOnly: true },
-    },
-    {
-      path: '/parent-dashboard',
-      name: 'parent-dashboard',
-      component: () => import('../views/ParentDashboardView.vue'),
-      meta: { requiresAuth: true, parentOnly: true },
-    },
-    {
       path: '/screening',
       name: 'screening-list',
       component: () => import('../views/screening/ScreeningListView.vue'),
@@ -110,18 +92,6 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
-      path: '/edit-child-profile/:id',
-      name: 'edit-child-profile',
-      component: () => import('../views/mypage/EditChildProfileView.vue'),
-      meta: { requiresAuth: true, parentOnly: true },
-    },
-    {
-      path: '/child-recordings/:id',
-      name: 'child-recordings',
-      component: () => import('../views/ChildRecordingsView.vue'),
-      meta: { requiresAuth: true, parentOnly: true },
-    },
-    {
       path: '/notifications',
       name: 'notifications',
       component: () => import('../views/mypage/NotificationsView.vue'),
@@ -149,7 +119,6 @@ const router = createRouter({
 
 router.beforeEach(async (to, _from, next) => {
   const isLoggedIn = localStorage.getItem('userIsLoggedIn') === 'true'
-  const activeProfileId = localStorage.getItem('activeProfileId')
 
   if (to.meta.requiresAuth && !isLoggedIn) {
     next({ name: 'login' })
@@ -159,30 +128,6 @@ router.beforeEach(async (to, _from, next) => {
   if (to.name === 'login' && isLoggedIn) {
     next({ name: 'home' })
     return
-  }
-
-  // 프로필 선택 화면 자체와 add-child는 예외 처리
-  const profileExemptRoutes = ['profile-select', 'add-child', 'edit-child-profile']
-  if (
-    isLoggedIn &&
-    !activeProfileId &&
-    to.meta.requiresAuth &&
-    !profileExemptRoutes.includes(to.name as string)
-  ) {
-    // activeProfileId가 없으면 프로필 선택 화면으로 리다이렉트
-    // 단, profiles가 1개인 경우는 authStore에서 자동 설정되므로 여기서는 패스
-    next({ name: 'profile-select' })
-    return
-  }
-
-  // parentOnly 가드: PARENT 프로필이 아닌 경우 홈으로 리다이렉트
-  if (to.meta.parentOnly && activeProfileId) {
-    const { useAuthStore } = await import('../stores/authStore')
-    const authStore = useAuthStore()
-    if (authStore.activeProfile && authStore.activeProfile.user_type !== 'PARENT') {
-      next({ name: 'home' })
-      return
-    }
   }
 
   next()

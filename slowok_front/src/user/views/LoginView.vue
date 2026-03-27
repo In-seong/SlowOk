@@ -14,11 +14,7 @@ const isFormValid = computed(() => username.value.trim() !== '' && password.valu
 async function handleLogin(): Promise<void> {
   const success = await authStore.login(username.value, password.value)
   if (success) {
-    if (authStore.needsProfileSelect) {
-      router.push({ name: 'profile-select' })
-    } else {
-      router.push({ name: 'home' })
-    }
+    router.push({ name: 'home' })
   }
 }
 </script>

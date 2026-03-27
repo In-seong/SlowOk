@@ -7,7 +7,6 @@ import { useChallengeStore } from '../../stores/challengeStore'
 import { useNotificationStore } from '../../stores/notificationStore'
 import { useToastStore } from '@shared/stores/toastStore'
 import BottomNav from '@shared/components/layout/BottomNav.vue'
-import StatusBadge from '@shared/components/ui/StatusBadge.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -41,12 +40,9 @@ const userName = computed(() => {
   const p = authStore.activeProfile
   return p?.decrypted_name || p?.name || authStore.user?.profile?.name || '사용자'
 })
-const userType = computed(() => authStore.activeProfile?.user_type || authStore.user?.profile?.user_type || 'LEARNER')
-const userTypeLabel = computed(() => userType.value === 'PARENT' ? '학부모' : '학습자')
 const userPhone = computed(() => authStore.activeProfile?.decrypted_phone || authStore.activeProfile?.phone || '')
 const userEmail = computed(() => authStore.activeProfile?.decrypted_email || authStore.activeProfile?.email || '')
 const userInitial = computed(() => userName.value.charAt(0))
-const hasMultipleProfiles = computed(() => authStore.profiles.length > 1)
 
 const unreadCount = computed(() => notificationStore.unreadCount)
 
@@ -78,31 +74,7 @@ interface MenuSection {
 }
 
 const menuSections = computed<MenuSection[]>(() => {
-  const sections: MenuSection[] = []
-
-  // 프로필 전환 (2개 이상일 때)
-  if (hasMultipleProfiles.value) {
-    sections.push({
-      title: '프로필',
-      items: [
-        { label: '프로필 전환', routeName: 'profile-select' },
-      ],
-    })
-  }
-
-  // 학부모 전용 메뉴
-  if (authStore.isParent) {
-    const childItems: MenuItem[] = [
-      { label: '자녀 학습현황', routeName: 'parent-dashboard' },
-      { label: '자녀 추가', routeName: 'add-child' },
-    ]
-    sections.push({
-      title: '자녀 관리',
-      items: childItems,
-    })
-  }
-
-  sections.push(
+  return [
     {
       title: '학습 관리',
       items: [
@@ -125,9 +97,7 @@ const menuSections = computed<MenuSection[]>(() => {
         { label: '사용 가이드', routeName: 'how-to-use' },
       ],
     },
-  )
-
-  return sections
+  ]
 })
 
 const inviteCodeInput = ref('')
@@ -156,14 +126,6 @@ function navigateTo(routeName: string): void {
   }
 }
 
-const childProfiles = computed(() =>
-  authStore.profiles.filter(p => p.user_type === 'LEARNER' && p.parent_profile_id),
-)
-
-function navigateToEditChild(profileId: number): void {
-  router.push({ name: 'edit-child-profile', params: { id: profileId } })
-}
-
 async function handleDeleteAccount(): Promise<void> {
   deleteError.value = ''
   if (!deletePassword.value.trim()) {
@@ -180,7 +142,6 @@ async function handleDeleteAccount(): Promise<void> {
 
 async function handleLogout(): Promise<void> {
   await authStore.logout()
-  localStorage.removeItem('activeProfileId')
   router.push({ name: 'login' })
 }
 </script>
@@ -206,7 +167,6 @@ async function handleLogout(): Promise<void> {
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 mb-1">
                   <span class="text-[16px] font-bold text-[#333]">{{ userName }}</span>
-                  <StatusBadge :label="userTypeLabel" variant="primary" />
                 </div>
                 <p v-if="userPhone" class="text-[13px] text-[#555]">{{ userPhone }}</p>
                 <p v-if="userEmail" class="text-[12px] text-[#888] mt-0.5">{{ userEmail }}</p>
@@ -292,29 +252,6 @@ async function handleLogout(): Promise<void> {
                     <path d="M9 18l6-6-6-6" />
                   </svg>
                 </div>
-              </button>
-            </div>
-          </div>
-
-          <!-- 4. Children Edit (PARENT only) -->
-          <div v-if="authStore.isParent && childProfiles.length > 0" class="space-y-2">
-            <h3 class="text-[12px] font-semibold text-[#888] uppercase tracking-wider px-1 pt-2">자녀 프로필 편집</h3>
-            <div class="space-y-2">
-              <button
-                v-for="child in childProfiles"
-                :key="child.profile_id"
-                class="w-full flex items-center justify-between bg-[#F8F8F8] rounded-[12px] px-4 py-3.5 active:bg-[#F0F0F0] transition-colors"
-                @click="navigateToEditChild(child.profile_id)"
-              >
-                <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-full bg-[#E3F2FD] flex items-center justify-center">
-                    <span class="text-[13px] font-bold text-[#2196F3]">{{ (child.decrypted_name || child.name || '').charAt(0) }}</span>
-                  </div>
-                  <span class="text-[14px] text-[#333]">{{ child.decrypted_name || child.name }}</span>
-                </div>
-                <svg class="w-4 h-4 text-[#CCC]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
-                </svg>
               </button>
             </div>
           </div>

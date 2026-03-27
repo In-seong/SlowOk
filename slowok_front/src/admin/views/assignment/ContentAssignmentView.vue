@@ -30,8 +30,6 @@ interface ProfileItem {
   profileId: number
   name: string
   username: string
-  userType: string
-  isChild: boolean
 }
 
 interface AccountGroup {
@@ -44,36 +42,14 @@ const accountGroups = computed<AccountGroup[]>(() => {
   const result: AccountGroup[] = []
   for (const u of users.value) {
     if (u.role !== 'USER') continue
-    const profiles = u.profiles ?? (u.profile ? [u.profile] : [])
+    const profiles = u.profile ? [u.profile] : []
     if (profiles.length === 0) continue
 
-    const items: ProfileItem[] = []
-    // 부모 먼저, 자녀 나중에
-    const parents = profiles.filter(p => p.user_type === 'PARENT')
-    const children = profiles.filter(p => p.user_type === 'LEARNER')
-
-    for (const p of parents) {
-      items.push({
-        profileId: p.profile_id,
-        name: (p as any).decrypted_name ?? p.name ?? u.username,
-        username: u.username,
-        userType: p.user_type ?? '',
-        isChild: false,
-      })
-    }
-    for (const p of children) {
-      items.push({
-        profileId: p.profile_id,
-        name: (p as any).decrypted_name ?? p.name ?? '학습자',
-        username: u.username,
-        userType: p.user_type ?? '',
-        isChild: parents.length > 0,
-      })
-    }
-    // 부모가 없는 경우 (학습자만 있는 계정)
-    if (parents.length === 0) {
-      items.forEach(item => item.isChild = false)
-    }
+    const items: ProfileItem[] = profiles.map((p: import('@shared/types').UserProfile) => ({
+      profileId: p.profile_id,
+      name: (p as any).decrypted_name ?? p.name ?? u.username,
+      username: u.username,
+    }))
 
     result.push({ accountId: u.account_id, username: u.username, profiles: items })
   }
@@ -305,10 +281,7 @@ onMounted(fetchData)
               v-for="p in group.profiles"
               :key="p.profileId"
               class="flex items-center gap-2 px-3 py-2 rounded-[8px] cursor-pointer transition-colors"
-              :class="[
-                selectedProfileIds.has(p.profileId) ? 'bg-[#E8F5E9]' : 'hover:bg-[#F5F5F5]',
-                p.isChild ? 'ml-6' : ''
-              ]"
+              :class="selectedProfileIds.has(p.profileId) ? 'bg-[#E8F5E9]' : 'hover:bg-[#F5F5F5]'"
               @click="toggleUser(p.profileId)"
             >
               <input
@@ -316,15 +289,8 @@ onMounted(fetchData)
                 :checked="selectedProfileIds.has(p.profileId)"
                 class="w-4 h-4 accent-[#4CAF50] pointer-events-none"
               />
-              <span v-if="p.isChild" class="text-[#BDBDBD] text-[12px]">└</span>
               <span class="text-[14px]">{{ p.name }}</span>
-              <span
-                class="text-[11px] px-1.5 py-0.5 rounded-full"
-                :class="p.userType === 'PARENT' ? 'bg-purple-50 text-purple-600' : 'bg-blue-50 text-blue-600'"
-              >
-                {{ p.userType === 'PARENT' ? '보호자' : '학습자' }}
-              </span>
-              <span v-if="!p.isChild" class="text-[12px] text-[#888]">({{ p.username }})</span>
+              <span class="text-[12px] text-[#888]">({{ p.username }})</span>
             </div>
           </template>
         </div>

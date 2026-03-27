@@ -52,7 +52,7 @@ class AuthController extends Controller
         // 중복 로그인 허용 (여러 기기에서 동시 사용 가능)
         $token = $account->createToken('auth-token')->plainTextToken;
         $account->update(['last_login_at' => now()]);
-        $account->load(['profile', 'profiles', 'institution']);
+        $account->load(['profile', 'institution']);
 
         return response()->json([
             'success' => true,
@@ -77,7 +77,7 @@ class AuthController extends Controller
     public function me(Request $request): JsonResponse
     {
         $account = $request->user();
-        $account->load(['profile', 'profiles', 'institution']);
+        $account->load(['profile', 'institution']);
 
         $data = $account->toArray();
 
@@ -133,7 +133,7 @@ class AuthController extends Controller
         }
 
         // 연관 프로필 개인정보 익명화
-        $account->profiles()->update([
+        $account->profile()?->update([
             'name' => '탈퇴회원',
             'phone' => null,
             'email' => null,
@@ -165,7 +165,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:100',
             'phone' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:100',
-            'user_type' => 'nullable|string|in:LEARNER,PARENT',
+            // user_type은 항상 LEARNER 고정
             'invite_code' => 'nullable|string|max:20',
         ]);
 
@@ -200,11 +200,11 @@ class AuthController extends Controller
 
         UserProfile::create(array_merge([
             'account_id' => $account->account_id,
-            'user_type' => $request->user_type ?? 'LEARNER',
+            'user_type' => 'LEARNER',
         ], $profileData, $encryptionService->encryptProfileData($profileData)));
 
         $token = $account->createToken('auth-token')->plainTextToken;
-        $account->load(['profile', 'profiles', 'institution']);
+        $account->load(['profile', 'institution']);
 
         return response()->json([
             'success' => true,

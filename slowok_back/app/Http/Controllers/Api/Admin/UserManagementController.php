@@ -22,7 +22,7 @@ class UserManagementController extends BaseAdminController
 
         $users = Account::where('role', 'USER')
             ->when($instId, fn ($q) => $q->where('institution_id', $instId))
-            ->with(['profiles.children'])
+            ->with(['profile'])
             ->latest()
             ->get();
 
@@ -37,12 +37,11 @@ class UserManagementController extends BaseAdminController
         if ($instId) {
             $query->where('institution_id', $instId);
         }
-        $user = $query->with(['profiles.children'])->findOrFail($id);
+        $user = $query->with(['profile'])->findOrFail($id);
 
         $detail = $user->toArray();
 
-        // 모든 프로필의 데이터를 수집 (부모 + 자녀)
-        $profileIds = $user->profiles->pluck('profile_id')->toArray();
+        $profileIds = $user->profile ? [$user->profile->profile_id] : [];
 
         if (!empty($profileIds)) {
             $detail['screening_results'] = ScreeningResult::whereIn('profile_id', $profileIds)
@@ -83,7 +82,7 @@ class UserManagementController extends BaseAdminController
             'username' => 'required|string|max:50|unique:account,username',
             'password' => 'required|string|min:6',
             'name' => 'required|string|max:100',
-            'user_type' => 'required|in:LEARNER,PARENT',
+            // user_type은 항상 LEARNER 고정
             'phone' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:100',
         ]);
@@ -101,7 +100,7 @@ class UserManagementController extends BaseAdminController
         $profileData = [
             'account_id' => $account->account_id,
             'name' => $request->name,
-            'user_type' => $request->user_type,
+            'user_type' => 'LEARNER',
             'phone' => $request->phone,
             'email' => $request->email,
         ];
@@ -118,7 +117,7 @@ class UserManagementController extends BaseAdminController
 
         UserProfile::create($profileData);
 
-        $account->load('profiles');
+        $account->load('profile');
 
         return response()->json([
             'success' => true,

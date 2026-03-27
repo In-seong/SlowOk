@@ -64,11 +64,8 @@ Route::prefix('auth')->group(function () {
 // 인증 필요 API
 Route::middleware('auth:sanctum')->group(function () {
 
-    // 학습자/학부모 API
+    // 학습자 API
     Route::prefix('user')->middleware(['role:USER', 'active-profile'])->group(function () {
-        // 프로필 목록 (프로필 전환용)
-        Route::get('/profiles', [ProfileController::class, 'profiles']);
-
         // 초대코드로 기관 연결
         Route::post('/join-institution', [ProfileController::class, 'joinInstitution']);
 
@@ -79,15 +76,6 @@ Route::middleware('auth:sanctum')->group(function () {
         // 비밀번호 변경 / 회원 탈퇴
         Route::post('/change-password', [AuthController::class, 'changePassword']);
         Route::post('/delete-account', [AuthController::class, 'deleteAccount']);
-
-        // 자녀 관리 (PARENT 전용)
-        Route::get('/children', [ChildProfileController::class, 'index']);
-        Route::post('/children', [ChildProfileController::class, 'store']);
-        Route::put('/children/{id}', [ChildProfileController::class, 'update']);
-        Route::delete('/children/{id}', [ChildProfileController::class, 'destroy']);
-
-        // 학부모 대시보드
-        Route::get('/parent-dashboard', [ParentDashboardController::class, 'index']);
 
         // 진단 검사
         Route::get('/screening-tests', [ScreeningController::class, 'index']);
@@ -133,12 +121,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/voice-recordings', [VoiceRecordingController::class, 'store']);
         Route::delete('/voice-recordings/{id}', [VoiceRecordingController::class, 'destroy']);
 
-        // 자녀 녹음 조회 (학부모)
-        Route::get('/children/{childProfileId}/voice-recordings', [VoiceRecordingController::class, 'childRecordings']);
-
-        // 녹음 피드백 (학부모 → 자녀 녹음)
-        Route::post('/voice-recordings/{recordingId}/feedback', [VoiceRecordingController::class, 'storeFeedback']);
-        Route::delete('/voice-recording-feedback/{feedbackId}', [VoiceRecordingController::class, 'destroyFeedback']);
     });
 
     // 관리자 API

@@ -6,7 +6,6 @@ export interface Account {
   is_active: boolean
   last_login_at: string | null
   profile?: UserProfile
-  profiles?: UserProfile[]
   institution?: Institution
   permissions?: string[]
 }
@@ -18,8 +17,7 @@ export interface UserProfile {
   phone: string | null
   email: string | null
   birth_date: string | null
-  user_type: 'LEARNER' | 'PARENT'
-  parent_profile_id: number | null
+  user_type: 'LEARNER'
   decrypted_name?: string
   decrypted_phone?: string
   decrypted_email?: string
@@ -261,7 +259,6 @@ export interface UserDetailData {
   is_active: boolean
   last_login_at: string | null
   profile?: UserProfile
-  profiles?: UserProfile[]
   screening_results?: ScreeningResult[]
   learning_progress?: (LearningProgress & { content?: LearningContent })[]
   challenge_attempts?: (ChallengeAttempt & { challenge?: Challenge })[]
@@ -338,28 +335,6 @@ export interface DashboardData {
   total_screenings: number
 }
 
-export interface ChildDashboardData {
-  profile_id: number
-  name: string
-  decrypted_name?: string
-  birth_date: string | null
-  latest_screening: {
-    score: number
-    level: string | null
-    test_title: string | null
-    date: string
-  } | null
-  learning: {
-    total: number
-    completed: number
-    in_progress: number
-  }
-  challenge: {
-    total: number
-    passed: number
-  }
-  latest_activity_at: string | null
-}
 
 export interface Feature {
   feature_id: number

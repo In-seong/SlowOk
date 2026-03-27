@@ -22,7 +22,7 @@ const selectedProfileId = ref<number | null>(null)
 
 function allProfiles(): import('@shared/types').UserProfile[] {
   if (!user.value) return []
-  return user.value.profiles ?? (user.value.profile ? [user.value.profile] : [])
+  return user.value.profile ? [user.value.profile] : []
 }
 
 function profileName(p: import('@shared/types').UserProfile): string {
@@ -329,15 +329,13 @@ onMounted(fetchUser)
               :key="p.profile_id"
               class="flex items-center gap-3 p-3 rounded-[10px] bg-[#FAFAFA]"
             >
-              <div class="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-bold text-white" :class="p.user_type === 'PARENT' ? 'bg-purple-400' : 'bg-blue-400'">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-bold text-white bg-blue-400">
                 {{ profileName(p).charAt(0) }}
               </div>
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2">
                   <span class="text-[14px] font-medium text-[#333]">{{ profileName(p) }}</span>
-                  <span class="px-2 py-0.5 rounded-full text-[11px] font-medium" :class="p.user_type === 'PARENT' ? 'bg-purple-50 text-purple-600' : 'bg-blue-50 text-blue-600'">
-                    {{ p.user_type === 'PARENT' ? '보호자' : '학습자' }}
-                  </span>
+
                 </div>
                 <div class="text-[12px] text-[#888] mt-0.5">
                   {{ p.decrypted_phone ?? p.phone ?? '' }}
@@ -354,26 +352,7 @@ onMounted(fetchUser)
       <div v-if="activeTab === 'assignments'" class="space-y-3">
         <!-- 필터 영역 -->
         <div class="flex flex-wrap gap-3">
-          <!-- 프로필 필터 -->
-          <div v-if="allProfiles().length > 1" class="flex gap-1.5 flex-wrap">
-            <button
-              class="px-3 py-1.5 rounded-[8px] text-[13px] transition-colors"
-              :class="!selectedProfileId ? 'bg-[#4CAF50] text-white' : 'bg-[#F0F0F0] text-[#666] hover:bg-[#E0E0E0]'"
-              @click="selectedProfileId = null"
-            >
-              전체
-            </button>
-            <button
-              v-for="p in allProfiles()"
-              :key="p.profile_id"
-              class="px-3 py-1.5 rounded-[8px] text-[13px] transition-colors"
-              :class="selectedProfileId === p.profile_id ? 'bg-[#4CAF50] text-white' : 'bg-[#F0F0F0] text-[#666] hover:bg-[#E0E0E0]'"
-              @click="selectedProfileId = p.profile_id"
-            >
-              {{ profileName(p) }}
-              <span class="text-[11px] opacity-70">({{ p.user_type === 'PARENT' ? '보호자' : '학습자' }})</span>
-            </button>
-          </div>
+
 
           <!-- 유형 필터 -->
           <div class="flex gap-1.5 ml-auto">
@@ -418,7 +397,7 @@ onMounted(fetchUser)
                 <th v-if="assignmentTypeFilter === 'challenge'" class="text-center px-2 py-3 font-medium w-[70px]">순서</th>
                 <th class="text-left px-4 py-3 font-medium">유형</th>
                 <th class="text-left px-4 py-3 font-medium">콘텐츠명</th>
-                <th v-if="allProfiles().length > 1 && !selectedProfileId" class="text-left px-4 py-3 font-medium">프로필</th>
+                
                 <th class="text-left px-4 py-3 font-medium">상태</th>
                 <th class="text-left px-4 py-3 font-medium">할당일</th>
                 <th class="text-center px-4 py-3 font-medium">관리</th>
@@ -455,9 +434,7 @@ onMounted(fetchUser)
                   </span>
                 </td>
                 <td class="px-4 py-3 font-medium text-[#333]">{{ a.assignable_title || `#${a.assignable_id}` }}</td>
-                <td v-if="allProfiles().length > 1 && !selectedProfileId" class="px-4 py-3 text-[12px] text-[#888]">
-                  {{ a.profile ? (a.profile.decrypted_name ?? a.profile.name ?? '-') : '-' }}
-                </td>
+
                 <td class="px-4 py-3">
                   <span class="px-2 py-0.5 rounded-full text-[12px]"
                     :class="a.status === 'COMPLETED' ? 'bg-green-50 text-green-600' : a.status === 'IN_PROGRESS' ? 'bg-blue-50 text-blue-600' : 'bg-gray-100 text-gray-600'">
@@ -555,7 +532,7 @@ onMounted(fetchUser)
       <!-- 메모 탭 -->
       <div v-if="activeTab === 'memos'">
         <div class="flex justify-between items-center mb-3">
-          <p class="text-[13px] text-[#888]">내부 직원용 메모 (학부모/학습자에게 보이지 않음)</p>
+          <p class="text-[13px] text-[#888]">내부 직원용 메모 (사용자에게 보이지 않음)</p>
           <button
             class="px-4 py-2 rounded-[10px] text-[13px] font-medium bg-[#4CAF50] text-white hover:bg-[#388E3C] transition-colors"
             @click="openMemoModal()"

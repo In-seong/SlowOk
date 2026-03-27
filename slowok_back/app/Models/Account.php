@@ -76,11 +76,6 @@ class Account extends Authenticatable
         return $this->hasOne(UserProfile::class, 'account_id', 'account_id');
     }
 
-    public function profiles()
-    {
-        return $this->hasMany(UserProfile::class, 'account_id', 'account_id');
-    }
-
     public function subscription()
     {
         return $this->hasOne(Subscription::class, 'account_id', 'account_id');

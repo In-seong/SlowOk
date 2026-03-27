@@ -137,7 +137,7 @@ export const adminApi = {
   },
 
   // 사용자(고객) 생성
-  createUser(data: { username: string; password: string; name: string; user_type: 'LEARNER' | 'PARENT'; phone?: string; email?: string }) {
+  createUser(data: { username: string; password: string; name: string; phone?: string; email?: string }) {
     return api.post<ApiResponse<Account>>('/admin/users', data)
   },
 
