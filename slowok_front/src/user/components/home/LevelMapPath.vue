@@ -67,7 +67,7 @@ function getConnectorPath(fromIndex: number, toIndex: number): string {
   const fromPos = positions[fromIndex % positions.length]
   const toPos = positions[toIndex % positions.length]
 
-  const posToX: Record<string, number> = { left: 70, center: 180, right: 290 }
+  const posToX: Record<string, number> = { left: 94, center: 180, right: 266 }
   const x1 = posToX[fromPos ?? 'center'] ?? 180
   const x2 = posToX[toPos ?? 'center'] ?? 180
 
