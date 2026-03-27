@@ -69,7 +69,7 @@ function onPlayChallenge(challengeId: number) {
       </div>
 
       <!-- Main Content -->
-      <main class="px-5 pb-[80px] pt-[130px] space-y-[14px] overflow-y-auto">
+      <main class="px-5 pb-[80px] pt-[80px] space-y-[14px] overflow-y-auto">
         <!-- Loading State -->
         <div v-if="pageLoading" class="flex flex-col items-center justify-center py-20">
           <div class="w-8 h-8 border-3 border-[#4CAF50] border-t-transparent rounded-full animate-spin"></div>
