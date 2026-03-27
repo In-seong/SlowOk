@@ -33,7 +33,7 @@ function navigateTo(item: NavItem): void {
     <button
       v-for="item in navItems"
       :key="item.label"
-      class="flex flex-col items-center justify-center py-2 flex-1 gap-1 active:scale-95 transition-transform"
+      class="flex flex-col items-center justify-center py-2 flex-1 gap-0 active:scale-95 transition-transform"
       @click="navigateTo(item)"
     >
       <!-- 홈: 나무 아이콘 -->
