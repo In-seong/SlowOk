@@ -25,6 +25,7 @@ class ContentAssignment extends Model
     protected $casts = [
         'assigned_at' => 'datetime',
         'due_date' => 'date',
+        'allow_retry' => 'boolean',
     ];
 
     public function profile()
