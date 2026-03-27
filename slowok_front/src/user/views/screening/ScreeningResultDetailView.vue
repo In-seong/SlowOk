@@ -38,8 +38,8 @@ const radarData = computed(() => {
   const count = entries.length
   if (count === 0) return null
 
-  const centerX = 100
-  const centerY = 100
+  const centerX = 140
+  const centerY = 140
   const maxR = 70
   const angleStep = (2 * Math.PI) / count
 
@@ -199,7 +199,7 @@ function goRetake() {
           <CardSection>
             <p class="text-[13px] font-semibold text-[#333] mb-3">하위영역 분석</p>
             <div class="flex justify-center">
-              <svg viewBox="0 0 200 200" class="w-[220px] h-[220px]">
+              <svg viewBox="0 0 280 280" class="w-[280px] h-[280px]">
                 <!-- 그리드 -->
                 <polygon
                   v-for="(grid, gi) in radarData.gridLines"
