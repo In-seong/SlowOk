@@ -153,8 +153,8 @@ function isRightMatched(idx: number): boolean {
           @click="selectRight(idx)"
           :disabled="isRightMatched(idx)"
           :class="[
-            'w-full rounded-2xl border-2 transition-all flex items-center justify-center',
-            card.image ? 'p-2' : 'py-3.5 px-3 text-[14px] font-medium text-center',
+            'w-full rounded-2xl border-2 transition-all flex items-center justify-center py-3.5 px-3',
+            card.image ? '' : 'text-[14px] font-medium text-center',
             isRightMatched(idx)
               ? 'bg-[#E8F5E9] border-[#4CAF50] text-[#4CAF50] shadow-[0_3px_0_#388E3C] opacity-70'
               : wrongPair?.right === idx
@@ -164,7 +164,7 @@ function isRightMatched(idx: number): boolean {
                   : 'border-[#E0E0E0] bg-white text-[#333] shadow-[0_3px_0_#E0E0E0] active:translate-y-[2px] active:shadow-none'
           ]"
         >
-          <img v-if="card.image" :src="card.image" class="w-12 h-12 rounded-[8px] object-cover" />
+          <img v-if="card.image" :src="card.image" class="w-8 h-8 rounded object-contain" />
           <span v-else>{{ card.text }}</span>
         </button>
       </div>
