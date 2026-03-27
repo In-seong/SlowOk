@@ -203,6 +203,54 @@ onMounted(fetchResults)
               <tr v-if="expandedResultId === result.result_id && result.sub_scores">
                 <td colspan="6" class="px-5 pb-4 pt-0">
                   <div class="bg-[#F8F8F8] rounded-[12px] p-4 mt-2">
+                    <!-- 레이더 차트 -->
+                    <p class="text-[13px] font-semibold text-[#333] mb-3">하위영역 분석</p>
+                    <div class="flex justify-center mb-4">
+                      <svg viewBox="0 0 280 280" class="w-[260px] h-[260px]">
+                        <!-- 그리드 -->
+                        <polygon
+                          v-for="level in [1,2,3,4,5]"
+                          :key="'g'+level"
+                          :points="Object.keys(result.sub_scores!).map((_,i,arr) => {
+                            const angle = (2*Math.PI/arr.length)*i - Math.PI/2;
+                            const r = 70*(level/5);
+                            return `${140+r*Math.cos(angle)},${140+r*Math.sin(angle)}`;
+                          }).join(' ')"
+                          fill="none" stroke="#E0E0E0" stroke-width="0.5"
+                        />
+                        <!-- 축선 -->
+                        <line
+                          v-for="(_,i) in Object.keys(result.sub_scores!)"
+                          :key="'a'+i"
+                          x1="140" y1="140"
+                          :x2="140+70*Math.cos((2*Math.PI/Object.keys(result.sub_scores!).length)*i - Math.PI/2)"
+                          :y2="140+70*Math.sin((2*Math.PI/Object.keys(result.sub_scores!).length)*i - Math.PI/2)"
+                          stroke="#E0E0E0" stroke-width="0.5"
+                        />
+                        <!-- 데이터 -->
+                        <polygon
+                          :points="Object.values(result.sub_scores!).map((d:any,i:number,arr:any[]) => {
+                            const angle = (2*Math.PI/arr.length)*i - Math.PI/2;
+                            const r = 70*(d.avg/5);
+                            return `${140+r*Math.cos(angle)},${140+r*Math.sin(angle)}`;
+                          }).join(' ')"
+                          fill="rgba(76,175,80,0.2)" stroke="#4CAF50" stroke-width="2"
+                        />
+                        <!-- 라벨 -->
+                        <text
+                          v-for="(domain,i) in Object.keys(result.sub_scores!)"
+                          :key="'l'+i"
+                          :x="140+92*Math.cos((2*Math.PI/Object.keys(result.sub_scores!).length)*i - Math.PI/2)"
+                          :y="140+92*Math.sin((2*Math.PI/Object.keys(result.sub_scores!).length)*i - Math.PI/2)"
+                          text-anchor="middle" dominant-baseline="central"
+                          class="text-[9px] font-semibold" fill="#333"
+                        >
+                          {{ domain }}({{ (result.sub_scores as any)[domain].avg }})
+                        </text>
+                      </svg>
+                    </div>
+
+                    <!-- 바 차트 -->
                     <p class="text-[13px] font-semibold text-[#333] mb-3">하위영역 점수</p>
                     <div class="grid grid-cols-2 gap-3">
                       <div
