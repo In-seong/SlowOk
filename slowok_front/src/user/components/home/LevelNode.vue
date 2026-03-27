@@ -71,10 +71,13 @@ const emit = defineEmits<{
 
 <style scoped>
 @keyframes bounce-gentle {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
+  0%, 100% { transform: translateY(0) scale(1); }
+  30% { transform: translateY(-10px) scale(1.05); }
+  50% { transform: translateY(0) scale(0.97); }
+  70% { transform: translateY(-5px) scale(1.02); }
+  85% { transform: translateY(0) scale(0.99); }
 }
 .animate-bounce-gentle {
-  animation: bounce-gentle 2s ease-in-out infinite;
+  animation: bounce-gentle 1.2s ease-in-out infinite;
 }
 </style>
