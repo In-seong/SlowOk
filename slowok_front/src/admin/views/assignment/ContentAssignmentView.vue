@@ -400,7 +400,6 @@ onMounted(fetchData)
               <th class="text-left px-4 py-3 font-medium">이름</th>
               <th class="text-left px-4 py-3 font-medium">상태</th>
               <th class="text-left px-4 py-3 font-medium">할당일</th>
-              <th class="text-left px-4 py-3 font-medium">마감일</th>
               <th class="text-center px-4 py-3 font-medium">관리</th>
             </tr>
           </thead>
@@ -416,7 +415,6 @@ onMounted(fetchData)
                 </span>
               </td>
               <td class="px-4 py-3">{{ a.assigned_at?.slice(0, 10) ?? '-' }}</td>
-              <td class="px-4 py-3">{{ a.due_date ?? '-' }}</td>
               <td class="px-4 py-3 text-center">
                 <button @click="handleRemoveAssignment(a.assignment_id)" class="text-red-500 hover:underline text-[13px]">해제</button>
               </td>
