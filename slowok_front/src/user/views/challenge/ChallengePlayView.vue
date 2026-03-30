@@ -7,6 +7,7 @@ import ImageChoiceQuestion from '@user/components/challenge/ImageChoiceQuestion.
 import ImageTextQuestion from '@user/components/challenge/ImageTextQuestion.vue'
 // import ImageVoiceQuestion from '@user/components/challenge/ImageVoiceQuestion.vue' // [미사용] 음성 기능 비활성화
 import turtleSuccessImg from '@shared/assets/turtle-success.png'
+import { playCorrectSound, playWrongSound, playSuccessSound } from '@shared/utils/soundEffects'
 import { useChallengeStore } from '@user/stores/challengeStore'
 
 const route = useRoute()
@@ -91,6 +92,13 @@ function checkAnswer(): void {
   }
 
   showFeedback.value = true
+
+  // 효과음
+  if (feedbackCorrect.value) {
+    playCorrectSound()
+  } else {
+    playWrongSound()
+  }
 }
 
 // "계속하기" 버튼 → 다음 문항 or 완료
@@ -146,6 +154,14 @@ async function finishChallenge(): Promise<void> {
   isCompleted.value = true
 
   const passed = correctCount >= passThreshold.value
+
+  // 완료 효과음
+  if (passed) {
+    playSuccessSound()
+  } else {
+    playWrongSound()
+  }
+
   submitting.value = true
   await challengeStore.submitAttempt(challengeId, correctCount, passed)
   submitting.value = false
