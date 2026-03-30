@@ -122,12 +122,13 @@ const router = createRouter({
       component: () => import('../views/ai/AiContentGenerateView.vue'),
       meta: { requiresAuth: true, permissionKey: 'content_manage' },
     },
-    {
-      path: '/recommendation-rules',
-      name: 'recommendation-rules',
-      component: () => import('../views/recommendation/RecommendationRuleView.vue'),
-      meta: { requiresAuth: true, permissionKey: 'recommendation_manage' },
-    },
+    // [미사용] 추천 규칙 — 추후 활성화 시 복원
+    // {
+    //   path: '/recommendation-rules',
+    //   name: 'recommendation-rules',
+    //   component: () => import('../views/recommendation/RecommendationRuleView.vue'),
+    //   meta: { requiresAuth: true, permissionKey: 'recommendation_manage' },
+    // },
     // [미사용] 음성 기능 비활성화 — 추후 활성화 시 복원
     // {
     //   path: '/voice-recordings',
