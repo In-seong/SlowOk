@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import type { ChallengeQuestion, MatchPair } from '@shared/types'
+import { playCorrectSound, playWrongSound } from '@shared/utils/soundEffects'
 
 const props = defineProps<{
   question: ChallengeQuestion
@@ -84,6 +85,7 @@ function tryMatch() {
   if (isSameRight(pair, rightCard)) {
     matched.value.add(leftIdx)
     correctCount.value++
+    playCorrectSound()
     selectedLeft.value = null
     selectedRight.value = null
 
@@ -92,6 +94,7 @@ function tryMatch() {
       emit('answered', { correct: correctCount.value, total: total.value })
     }
   } else {
+    playWrongSound()
     wrongPair.value = { left: leftIdx, right: rightIdx }
     setTimeout(() => {
       wrongPair.value = null
