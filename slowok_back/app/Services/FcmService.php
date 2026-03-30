@@ -99,7 +99,6 @@ class FcmService
                 'message' => [
                     'token' => $token,
                     'notification' => ['title' => $title, 'body' => $body],
-                    'data' => array_map('strval', $data),
                     'android' => [
                         'priority' => 'high',
                         'notification' => ['channel_id' => 'slowok_notifications', 'sound' => 'default'],
@@ -157,7 +156,6 @@ class FcmService
                         'title' => $title,
                         'body' => $body,
                     ],
-                    'data' => array_map('strval', $data),
                     'android' => [
                         'priority' => 'high',
                         'notification' => [
