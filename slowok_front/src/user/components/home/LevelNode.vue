@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Challenge } from '@shared/types'
+import { playStartSound } from '@shared/utils/soundEffects'
 
 const props = defineProps<{
   challenge: Challenge
@@ -34,7 +35,7 @@ const emit = defineEmits<{
             ? 'bg-[#4CAF50] shadow-[0_4px_0_#388E3C] active:shadow-[0_2px_0_#388E3C] active:translate-y-[2px] animate-bounce-gentle ring-4 ring-[#4CAF50]/20'
             : 'bg-[#E0E0E0] shadow-[0_4px_0_#BDBDBD] cursor-not-allowed'
       ]"
-      @click="status !== 'locked' && !retryBlocked && emit('play', challenge.challenge_id)"
+      @click="status !== 'locked' && !retryBlocked && (playStartSound(), emit('play', challenge.challenge_id))"
     >
       <!-- Completed: Check -->
       <svg v-if="status === 'completed'" class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">

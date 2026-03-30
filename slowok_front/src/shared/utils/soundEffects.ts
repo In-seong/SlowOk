@@ -6,6 +6,30 @@ function ensureContext() {
   }
 }
 
+/** 챌린지 시작 효과음 — 차라란~ 밝은 3음 */
+export function playStartSound() {
+  if (!audioCtx) return
+  ensureContext()
+
+  const now = audioCtx.currentTime
+  const notes = [392, 523.25, 659.25] // G4, C5, E5
+
+  notes.forEach((freq, i) => {
+    const osc = audioCtx.createOscillator()
+    const gain = audioCtx.createGain()
+    osc.connect(gain)
+    gain.connect(audioCtx.destination)
+
+    osc.type = 'sine'
+    osc.frequency.value = freq
+    gain.gain.setValueAtTime(0.2, now + i * 0.1)
+    gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.1 + 0.3)
+
+    osc.start(now + i * 0.1)
+    osc.stop(now + i * 0.1 + 0.3)
+  })
+}
+
 /** 정답 효과음 — 밝은 상승 멜로디 */
 export function playCorrectSound() {
   if (!audioCtx) return
