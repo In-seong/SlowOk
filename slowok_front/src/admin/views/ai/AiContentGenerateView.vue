@@ -20,6 +20,15 @@ interface UsageStats {
 }
 const usage = ref<UsageStats | null>(null)
 
+// 프롬프트 이력
+interface PromptHistory {
+  log_id: number
+  prompt: string
+  created_at: string
+}
+const promptHistory = ref<PromptHistory[]>([])
+const showHistory = ref(false)
+
 async function fetchUsage() {
   try {
     const res = await adminApi.getAiUsage()
@@ -27,7 +36,17 @@ async function fetchUsage() {
   } catch { /* ignore */ }
 }
 
-onMounted(fetchUsage)
+async function fetchPromptHistory() {
+  try {
+    const res = await adminApi.getAiPromptHistory()
+    if (res.data.success) promptHistory.value = res.data.data
+  } catch { /* ignore */ }
+}
+
+onMounted(() => {
+  fetchUsage()
+  fetchPromptHistory()
+})
 
 const modes = [
   { value: 'challenge' as GenerateMode, label: '챌린지 생성', icon: '🏆', desc: '아이가 직접 푸는 문제 세트' },
@@ -72,6 +91,7 @@ async function handleGenerate() {
       previewData.value = res.data.data
       toast.success('AI 생성 완료! 아래에서 확인 후 저장해주세요.')
       fetchUsage()
+      fetchPromptHistory()
     }
   } catch (e: unknown) {
     const err = e as { response?: { data?: { message?: string }; status?: number }; message?: string; code?: string }
@@ -173,7 +193,35 @@ function selectExample(text: string) {
 
       <!-- 프롬프트 입력 -->
       <div class="bg-white rounded-[16px] shadow-[0_0_10px_rgba(0,0,0,0.08)] p-5 mb-5">
-        <label class="block text-[14px] font-semibold text-[#333] mb-2">프롬프트 입력</label>
+        <div class="flex items-center justify-between mb-2">
+          <label class="text-[14px] font-semibold text-[#333]">프롬프트 입력</label>
+          <button
+            v-if="promptHistory.length > 0"
+            @click="showHistory = !showHistory"
+            class="flex items-center gap-1 text-[12px] font-medium transition-colors"
+            :class="showHistory ? 'text-[#4CAF50]' : 'text-[#999] hover:text-[#4CAF50]'"
+          >
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            이전 프롬프트 ({{ promptHistory.length }})
+          </button>
+        </div>
+
+        <!-- 프롬프트 이력 -->
+        <div v-if="showHistory && promptHistory.length > 0" class="mb-3 bg-[#FAFAFA] rounded-[12px] p-3 max-h-[200px] overflow-y-auto">
+          <div
+            v-for="h in promptHistory"
+            :key="h.log_id"
+            @click="prompt = h.prompt; showHistory = false"
+            class="flex items-start gap-2 p-2 rounded-[8px] cursor-pointer hover:bg-white transition-colors group"
+          >
+            <svg class="w-3.5 h-3.5 text-[#C8C8C8] group-hover:text-[#4CAF50] mt-0.5 shrink-0 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <div class="flex-1 min-w-0">
+              <p class="text-[12px] text-[#333] line-clamp-2 group-hover:text-[#2E7D32] transition-colors">{{ h.prompt }}</p>
+              <p class="text-[10px] text-[#BBB] mt-0.5">{{ new Date(h.created_at).toLocaleDateString('ko-KR') }}</p>
+            </div>
+          </div>
+        </div>
+
         <textarea
           v-model="prompt"
           rows="4"

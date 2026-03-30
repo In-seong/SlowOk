@@ -156,6 +156,9 @@ export const adminApi = {
   },
 
   // AI 생성
+  getAiPromptHistory() {
+    return api.get<ApiResponse<{ log_id: number; prompt: string; created_at: string }[]>>('/admin/ai-content/prompts')
+  },
   getAiUsage() {
     return api.get<ApiResponse<{ today: { requests: number; success: number; tokens: number; limit: number }; month: { requests: number; success: number; tokens: number } }>>('/admin/ai-content/usage')
   },

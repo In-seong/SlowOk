@@ -6,6 +6,7 @@ use App\Models\Challenge;
 use App\Models\ChallengeQuestion;
 use App\Models\ScreeningQuestion;
 use App\Models\ScreeningTest;
+use App\Models\AiGenerationLog;
 use App\Services\GeminiService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -13,6 +14,25 @@ use Illuminate\Support\Facades\DB;
 
 class AiContentController extends BaseAdminController
 {
+    public function recentPrompts(Request $request): JsonResponse
+    {
+        $instId = $this->getInstitutionId($request);
+        if (!$instId) {
+            return response()->json(['success' => true, 'data' => []]);
+        }
+
+        $prompts = AiGenerationLog::where('institution_id', $instId)
+            ->where('status', 'success')
+            ->orderByDesc('created_at')
+            ->limit(20)
+            ->get(['log_id', 'prompt', 'created_at'])
+            ->unique('prompt')
+            ->take(10)
+            ->values();
+
+        return response()->json(['success' => true, 'data' => $prompts]);
+    }
+
     public function generate(Request $request): JsonResponse
     {
         $request->validate([

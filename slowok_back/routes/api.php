@@ -246,6 +246,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // AI 콘텐츠 생성
         Route::middleware('perm:content_manage')->prefix('ai-content')->group(function () {
             Route::get('/usage', [AiContentController::class, 'usage']);
+            Route::get('/prompts', [AiContentController::class, 'recentPrompts']);
             Route::post('/generate', [AiContentController::class, 'generate']);
             Route::post('/save', [AiContentController::class, 'save']);
         });
