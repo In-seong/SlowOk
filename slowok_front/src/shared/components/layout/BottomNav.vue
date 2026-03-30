@@ -13,7 +13,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { label: '홈', routeName: 'home', matchNames: ['home'] },
   { label: '진단', routeName: 'screening-list', matchNames: ['screening-list', 'screening-results', 'screening-test'] },
-  { label: 'MY', routeName: 'mypage', matchNames: ['mypage', 'notifications', 'reports'] },
+  { label: 'MY', routeName: 'mypage', matchNames: ['mypage', 'notifications'] },
 ]
 
 function isActive(item: NavItem): boolean {

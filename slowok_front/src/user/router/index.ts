@@ -97,12 +97,13 @@ const router = createRouter({
       component: () => import('../views/mypage/NotificationsView.vue'),
       meta: { requiresAuth: true },
     },
-    {
-      path: '/reports',
-      name: 'reports',
-      component: () => import('../views/mypage/ReportsView.vue'),
-      meta: { requiresAuth: true },
-    },
+    // [미사용] 리포트 생성 로직 미구현 — 추후 완성 시 활성화
+    // {
+    //   path: '/reports',
+    //   name: 'reports',
+    //   component: () => import('../views/mypage/ReportsView.vue'),
+    //   meta: { requiresAuth: true },
+    // },
     {
       path: '/how-to-use',
       name: 'how-to-use',

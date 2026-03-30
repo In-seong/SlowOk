@@ -95,12 +95,13 @@ const router = createRouter({
     //   component: () => import('../views/subscription/SubscriptionManageView.vue'),
     //   meta: { requiresAuth: true, permissionKey: 'subscription_manage' },
     // },
-    {
-      path: '/reports',
-      name: 'reports',
-      component: () => import('../views/report/ReportListView.vue'),
-      meta: { requiresAuth: true, permissionKey: 'report_view' },
-    },
+    // [미사용] 리포트 생성 로직 미구현 — 추후 완성 시 활성화
+    // {
+    //   path: '/reports',
+    //   name: 'reports',
+    //   component: () => import('../views/report/ReportListView.vue'),
+    //   meta: { requiresAuth: true, permissionKey: 'report_view' },
+    // },
     {
       path: '/content-assignments',
       name: 'content-assignments',
