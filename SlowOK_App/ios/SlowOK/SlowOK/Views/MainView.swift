@@ -160,6 +160,23 @@ extension MainView {
                 UIApplication.shared.open(url)
             }
 
+        case "haptic":
+            let style = body["style"] as? String ?? "error"
+            switch style {
+            case "success":
+                UINotificationFeedbackGenerator().notificationOccurred(.success)
+            case "warning":
+                UINotificationFeedbackGenerator().notificationOccurred(.warning)
+            case "light":
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            case "medium":
+                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            case "heavy":
+                UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+            default:
+                UINotificationFeedbackGenerator().notificationOccurred(.error)
+            }
+
         case "debugLog":
             let step = body["step"] as? String ?? "?"
             let msg = body["message"] as? String ?? ""

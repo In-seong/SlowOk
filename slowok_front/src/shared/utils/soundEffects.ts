@@ -65,10 +65,8 @@ export function playWrongSound() {
   // 약간 높은 불협화음
   playNote(ctx, 220, now, 0.12, 0.06, 'triangle')
 
-  // 진동 (Android WebView 지원, iOS는 무시)
-  if (navigator.vibrate) {
-    navigator.vibrate([50, 30, 50])
-  }
+  // 진동 — 네이티브 브릿지 우선, 없으면 Vibration API fallback
+  triggerHaptic('error')
 }
 
 /** 챌린지 성공 — 팡파레 화음 */
@@ -94,4 +92,26 @@ export function playSuccessSound() {
   // 반짝이 장식음
   playNote(ctx, 2093, chordTime + 0.1, 0.3, 0.04) // C7
   playNote(ctx, 2637, chordTime + 0.15, 0.25, 0.03) // E7
+}
+
+/** 네이티브 진동/햅틱 호출 */
+function triggerHaptic(style: string = 'error') {
+  // iOS: iOSBridge
+  const webkit = (window as any).webkit
+  if (webkit?.messageHandlers?.iOSBridge) {
+    webkit.messageHandlers.iOSBridge.postMessage({ action: 'haptic', style })
+    return
+  }
+
+  // Android: AndroidBridge.vibrate()
+  const android = (window as any).AndroidBridge
+  if (android?.vibrate) {
+    android.vibrate(80)
+    return
+  }
+
+  // Web fallback
+  if (navigator.vibrate) {
+    navigator.vibrate([50, 30, 50])
+  }
 }

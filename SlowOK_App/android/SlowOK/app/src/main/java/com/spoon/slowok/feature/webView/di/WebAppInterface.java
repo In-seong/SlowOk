@@ -134,6 +134,34 @@ public class WebAppInterface {
     }
 
     /**
+     * Triggers haptic feedback / vibration
+     * @param duration vibration duration in milliseconds
+     */
+    @JavascriptInterface
+    public void vibrate(int duration) {
+        mainHandler.post(() -> {
+            try {
+                android.os.Vibrator vibrator;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    android.os.VibratorManager vm = (android.os.VibratorManager) activity.getSystemService(android.content.Context.VIBRATOR_MANAGER_SERVICE);
+                    vibrator = vm.getDefaultVibrator();
+                } else {
+                    vibrator = (android.os.Vibrator) activity.getSystemService(android.content.Context.VIBRATOR_SERVICE);
+                }
+                if (vibrator != null && vibrator.hasVibrator()) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        vibrator.vibrate(android.os.VibrationEffect.createOneShot(duration, android.os.VibrationEffect.DEFAULT_AMPLITUDE));
+                    } else {
+                        vibrator.vibrate(duration);
+                    }
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to vibrate", e);
+            }
+        });
+    }
+
+    /**
      * Closes the app
      */
     @JavascriptInterface
