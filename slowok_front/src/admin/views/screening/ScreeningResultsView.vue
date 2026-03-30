@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import api from '@shared/api'
 import { exportApi } from '@shared/api/exportApi'
 import type { ApiResponse, ScreeningResult } from '@shared/types'
@@ -23,6 +23,9 @@ const error = ref('')
 const filterLevel = ref<string>('')
 const filterUser = ref<string>('')
 
+const currentPage = ref(1)
+const perPage = 15
+
 const filteredResults = computed(() => {
   let filtered = results.value
   if (filterLevel.value) {
@@ -38,6 +41,32 @@ const filteredResults = computed(() => {
   return filtered
 })
 
+const totalPages = computed(() => Math.ceil(filteredResults.value.length / perPage))
+
+const pagedResults = computed(() => {
+  const start = (currentPage.value - 1) * perPage
+  return filteredResults.value.slice(start, start + perPage)
+})
+
+// 필터 변경 시 1페이지로 리셋
+watch([filterLevel, filterUser], () => { currentPage.value = 1 })
+
+const pageNumbers = computed(() => {
+  const total = totalPages.value
+  const cur = currentPage.value
+  const pages: (number | '...')[] = []
+
+  if (total <= 7) {
+    for (let i = 1; i <= total; i++) pages.push(i)
+  } else {
+    pages.push(1)
+    if (cur > 3) pages.push('...')
+    for (let i = Math.max(2, cur - 1); i <= Math.min(total - 1, cur + 1); i++) pages.push(i)
+    if (cur < total - 2) pages.push('...')
+    pages.push(total)
+  }
+  return pages
+})
 
 const levels = computed(() => {
   const set = new Set(results.value.map(r => r.level).filter(Boolean))
@@ -183,7 +212,7 @@ onMounted(fetchResults)
               </tr>
             </thead>
             <tbody>
-              <template v-for="result in filteredResults" :key="result.result_id">
+              <template v-for="result in pagedResults" :key="result.result_id">
               <tr class="border-b border-[#F0F0F0] hover:bg-[#FAFAFA] transition-colors">
                 <td class="px-5 py-3.5">
                   <div>
@@ -305,8 +334,40 @@ onMounted(fetchResults)
             </tbody>
           </table>
         </div>
-        <div class="px-5 py-3 border-t border-[#F0F0F0] text-[13px] text-[#888]">
-          총 {{ filteredResults.length }}건{{ filterUser || filterLevel ? ` (${[filterUser, filterLevel].filter(Boolean).join(', ')})` : '' }}
+        <div class="px-5 py-3 border-t border-[#F0F0F0] flex items-center justify-between">
+          <span class="text-[13px] text-[#888]">
+            총 {{ filteredResults.length }}건{{ filterUser || filterLevel ? ` (${[filterUser, filterLevel].filter(Boolean).join(', ')})` : '' }}
+          </span>
+          <!-- 페이징 -->
+          <div v-if="totalPages > 1" class="flex items-center gap-1">
+            <button
+              @click="currentPage = Math.max(1, currentPage - 1)"
+              :disabled="currentPage === 1"
+              class="w-8 h-8 flex items-center justify-center rounded-[8px] text-[13px] transition-colors disabled:opacity-30"
+              :class="currentPage === 1 ? 'text-[#CCC]' : 'text-[#555] hover:bg-[#F0F0F0]'"
+            >
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+            </button>
+            <template v-for="(p, idx) in pageNumbers" :key="idx">
+              <span v-if="p === '...'" class="w-8 h-8 flex items-center justify-center text-[12px] text-[#999]">...</span>
+              <button
+                v-else
+                @click="currentPage = p"
+                class="w-8 h-8 flex items-center justify-center rounded-[8px] text-[13px] font-medium transition-colors"
+                :class="currentPage === p ? 'bg-[#4CAF50] text-white' : 'text-[#555] hover:bg-[#F0F0F0]'"
+              >
+                {{ p }}
+              </button>
+            </template>
+            <button
+              @click="currentPage = Math.min(totalPages, currentPage + 1)"
+              :disabled="currentPage === totalPages"
+              class="w-8 h-8 flex items-center justify-center rounded-[8px] text-[13px] transition-colors disabled:opacity-30"
+              :class="currentPage === totalPages ? 'text-[#CCC]' : 'text-[#555] hover:bg-[#F0F0F0]'"
+            >
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6" /></svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>
