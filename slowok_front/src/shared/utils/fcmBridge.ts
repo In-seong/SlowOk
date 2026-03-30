@@ -11,27 +11,42 @@ export function isAndroidWebView(): boolean {
  * - 로그인 후 호출
  */
 export function initFcmBridge(): void {
-  if (!isAndroidWebView()) return
+  console.log('[FCM] initFcmBridge called, isAndroid:', isAndroidWebView(), 'isIOS:', isIOSWebView())
 
-  // 앱에서 토큰을 전달받는 콜백 등록
+  // 앱에서 토큰을 전달받는 콜백 등록 (Android/iOS 공통)
   window.__handleFCMToken__ = async (json: string) => {
     try {
-      const parsed: { fcm_token?: string } = JSON.parse(json)
-      const token = parsed.fcm_token
-      if (!token) return
+      console.log('[FCM] __handleFCMToken__ received:', json)
+      // iOS는 토큰 문자열 직접 전달, Android는 JSON
+      let token: string | undefined
+      try {
+        const parsed = JSON.parse(json)
+        token = parsed.fcm_token ?? parsed
+      } catch {
+        token = json // iOS: 토큰 문자열 직접
+      }
+      if (!token || typeof token !== 'string') return
 
-      // 서버에 토큰 등록
-      await deviceTokenApi.register(token, 'android')
-
-      // 로컬에 저장 (로그아웃 시 삭제용)
+      const deviceType = isAndroidWebView() ? 'android' : isIOSWebView() ? 'ios' : 'web'
+      await deviceTokenApi.register(token, deviceType)
       localStorage.setItem('fcmToken', token)
-    } catch {
-      // FCM 토큰 등록 실패는 무시 (앱 사용에 영향 없음)
+      console.log('[FCM] Token registered:', token.substring(0, 20) + '...')
+    } catch (e) {
+      console.error('[FCM] Token registration failed:', e)
     }
   }
 
   // 앱에 토큰 요청
-  window.AndroidBridge?.sendFCMToken()
+  if (isAndroidWebView()) {
+    window.AndroidBridge?.sendFCMToken()
+  } else if (isIOSWebView()) {
+    window.webkit?.messageHandlers?.iOSBridge?.postMessage({ action: 'sendFCMToken' })
+  }
+}
+
+/** iOS 웹뷰 환경인지 확인 */
+export function isIOSWebView(): boolean {
+  return !!window.webkit?.messageHandlers?.iOSBridge
 }
 
 /**

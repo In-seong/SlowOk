@@ -29,7 +29,7 @@
 		877D7E22919C2C820DB94DC1 /* Info-User.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Info-User.plist"; sourceTree = "<group>"; };
 		8E464550AEC569D3D2222E5A /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		9A7F18BC7E2E7635E40B27CD /* SlowOKApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlowOKApp.swift; sourceTree = "<group>"; };
-		B1A87D95991AE3C73967B8E4 /* SlowOK-Admin.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; name = "SlowOK-Admin.app"; path = "SlowOK Admin.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B1A87D95991AE3C73967B8E4 /* SlowOK Admin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SlowOK Admin.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC52B125DF1876011CFA9B90 /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
 		E96391B72BEB31615E25488C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -77,7 +77,7 @@
 		8CBCD3A63632D02FA479526C /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				B1A87D95991AE3C73967B8E4 /* SlowOK-Admin.app */,
+				B1A87D95991AE3C73967B8E4 /* SlowOK Admin.app */,
 				6E5D6F485D830F0D67F84FBE /* SlowOK.app */,
 			);
 			name = Products;
@@ -127,7 +127,7 @@
 			packageProductDependencies = (
 			);
 			productName = "SlowOK-Admin";
-			productReference = B1A87D95991AE3C73967B8E4 /* SlowOK-Admin.app */;
+			productReference = B1A87D95991AE3C73967B8E4 /* SlowOK Admin.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -138,11 +138,6 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1600;
-				TargetAttributes = {
-					42912541E14489A127FF1CE5 = {
-						DevelopmentTeam = "";
-					};
-				};
 			};
 			buildConfigurationList = 292AD5D7633CAB584FB98BAE /* Build configuration list for PBXProject "SlowOK" */;
 			developmentRegion = en;
@@ -216,6 +211,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = 7442SWFSSM;
 				INFOPLIST_FILE = "SlowOK/plist/Info-Admin.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -234,6 +230,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = 7442SWFSSM;
 				INFOPLIST_FILE = "SlowOK/plist/Info-Admin.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
