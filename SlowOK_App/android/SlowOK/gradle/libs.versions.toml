@@ -1,5 +1,7 @@
 [versions]
 agp = "8.7.3"
+google-services = "4.4.2"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
