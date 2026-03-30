@@ -66,9 +66,9 @@ function selectOption(index: number): void {
   const correctIdx = getCorrectIndex(currentQ.value)
 
   if (index === correctIdx) {
-    // 정답
+    // 정답 — 결국 맞췄으면 정답 처리
     answers.value[currentQuestion.value] = index
-    questionResults.value[currentQuestion.value] = mcAttemptCount.value === 0
+    questionResults.value[currentQuestion.value] = true
   } else {
     // 오답 — 흔들림 + 소리 → 선택 초기화
     mcAttemptCount.value++

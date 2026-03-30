@@ -30,7 +30,7 @@ function selectOption(option: string) {
 
   if (option === props.question.correct_answer) {
     isCorrect.value = true
-    emit('answered', { correct: attemptCount.value === 0, selected: option })
+    emit('answered', { correct: true, selected: option })
   } else {
     attemptCount.value++
     wrongShake.value = true
