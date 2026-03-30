@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "com.inseong.slowok.app-mergeUserDebugResources-30:/layout/activity_webview.xml",
+        "source": "com.inseong.slowok.app-main-33:/layout/activity_webview.xml"
+    },
+    {
+        "merged": "com.inseong.slowok.app-mergeUserDebugResources-30:/layout/activity_splash.xml",
+        "source": "com.inseong.slowok.app-main-33:/layout/activity_splash.xml"
+    }
+]

@@ -194,12 +194,7 @@ public class WebViewActivity extends AppCompatActivity {
     }
 
     private void loadUrl() {
-        String url;
-        if (BuildConfig.DEBUG) {
-            url = WebConstants.DEBUG_WebView_URL;
-        } else {
-            url = WebConstants.WebView_URL;
-        }
+        String url = WebConstants.WebView_URL;
         Log.d(TAG, "Loading URL: " + url);
         binding.webView.loadUrl(url);
     }

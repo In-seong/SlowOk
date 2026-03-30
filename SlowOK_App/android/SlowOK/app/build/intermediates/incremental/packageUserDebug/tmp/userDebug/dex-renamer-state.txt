@@ -1,0 +1,16 @@
+#Mon Mar 30 16:51:21 KST 2026
+base.0=/Users/scoop/slowok/SlowOK_App/android/SlowOK/app/build/intermediates/dex/userDebug/mergeExtDexUserDebug/classes.dex
+base.1=/Users/scoop/slowok/SlowOK_App/android/SlowOK/app/build/intermediates/dex/userDebug/mergeProjectDexUserDebug/0/classes.dex
+base.2=/Users/scoop/slowok/SlowOK_App/android/SlowOK/app/build/intermediates/dex/userDebug/mergeProjectDexUserDebug/14/classes.dex
+base.3=/Users/scoop/slowok/SlowOK_App/android/SlowOK/app/build/intermediates/dex/userDebug/mergeProjectDexUserDebug/5/classes.dex
+base.4=/Users/scoop/slowok/SlowOK_App/android/SlowOK/app/build/intermediates/dex/userDebug/mergeProjectDexUserDebug/7/classes.dex
+path.0=classes.dex
+path.1=0/classes.dex
+path.2=14/classes.dex
+path.3=5/classes.dex
+path.4=7/classes.dex
+renamed.0=classes.dex
+renamed.1=classes2.dex
+renamed.2=classes3.dex
+renamed.3=classes4.dex
+renamed.4=classes5.dex
