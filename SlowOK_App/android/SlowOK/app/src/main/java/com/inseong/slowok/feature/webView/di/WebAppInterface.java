@@ -1,4 +1,4 @@
-package com.spoon.slowok.feature.webView.di;
+package com.inseong.slowok.feature.webView.di;
 
 import android.Manifest;
 import android.app.Activity;

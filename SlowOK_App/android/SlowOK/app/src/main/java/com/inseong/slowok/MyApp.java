@@ -1,4 +1,4 @@
-package com.spoon.slowok;
+package com.inseong.slowok;
 
 import android.app.Application;
 import android.app.NotificationChannel;

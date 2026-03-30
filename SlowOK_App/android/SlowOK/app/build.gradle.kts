@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.spoon.slowok"
+    namespace = "com.inseong.slowok"
     compileSdk = 36
 
     defaultConfig {
@@ -36,11 +36,11 @@ android {
     productFlavors {
         create("user") {
             dimension = "version"
-            applicationId = "com.spoon.slowok.user"
+            applicationId = "com.inseong.slowok.user"
         }
         create("admin") {
             dimension = "version"
-            applicationId = "com.spoon.slowok.admin"
+            applicationId = "com.inseong.slowok.admin"
         }
     }
 

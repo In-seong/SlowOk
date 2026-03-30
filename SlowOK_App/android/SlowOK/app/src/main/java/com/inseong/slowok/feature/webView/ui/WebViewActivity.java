@@ -1,4 +1,4 @@
-package com.spoon.slowok.feature.webView.ui;
+package com.inseong.slowok.feature.webView.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -21,11 +21,11 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.spoon.slowok.BuildConfig;
-import com.spoon.slowok.R;
-import com.spoon.slowok.databinding.ActivityWebviewBinding;
-import com.spoon.slowok.feature.webView.di.WebAppInterface;
-import com.spoon.slowok.feature.webView.di.WebConstants;
+import com.inseong.slowok.BuildConfig;
+import com.inseong.slowok.R;
+import com.inseong.slowok.databinding.ActivityWebviewBinding;
+import com.inseong.slowok.feature.webView.di.WebAppInterface;
+import com.inseong.slowok.feature.webView.di.WebConstants;
 
 public class WebViewActivity extends AppCompatActivity {
 

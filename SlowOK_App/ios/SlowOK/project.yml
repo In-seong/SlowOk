@@ -1,6 +1,6 @@
 name: SlowOK
 options:
-  bundleIdPrefix: com.spoon.slowok
+  bundleIdPrefix: com.inseong.slowok
   deploymentTarget:
     iOS: "15.0"
   xcodeVersion: "16.0"
@@ -22,7 +22,7 @@ targets:
           - plist/Info-Admin.plist
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.spoon.slowok.user
+        PRODUCT_BUNDLE_IDENTIFIER: com.inseong.slowok.user
         INFOPLIST_FILE: SlowOK/plist/Info-User.plist
         PRODUCT_NAME: SlowOK
         SWIFT_ACTIVE_COMPILATION_CONDITIONS: USER
@@ -39,7 +39,7 @@ targets:
           - plist/Info-User.plist
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.spoon.slowok.admin
+        PRODUCT_BUNDLE_IDENTIFIER: com.inseong.slowok.admin
         INFOPLIST_FILE: SlowOK/plist/Info-Admin.plist
         PRODUCT_NAME: SlowOK Admin
         SWIFT_ACTIVE_COMPILATION_CONDITIONS: ADMIN

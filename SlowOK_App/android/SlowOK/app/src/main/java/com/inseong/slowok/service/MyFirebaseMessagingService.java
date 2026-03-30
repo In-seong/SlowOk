@@ -1,4 +1,4 @@
-package com.spoon.slowok.service;
+package com.inseong.slowok.service;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -12,9 +12,9 @@ import androidx.core.app.NotificationCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.spoon.slowok.MyApp;
-import com.spoon.slowok.R;
-import com.spoon.slowok.feature.splash.ui.SplashActivity;
+import com.inseong.slowok.MyApp;
+import com.inseong.slowok.R;
+import com.inseong.slowok.feature.splash.ui.SplashActivity;
 
 import java.util.Map;
 

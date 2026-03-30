@@ -221,7 +221,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.spoon.slowok.admin;
+				PRODUCT_BUNDLE_IDENTIFIER = com.inseong.slowok.admin;
 				PRODUCT_NAME = "SlowOK Admin";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = ADMIN;
@@ -239,7 +239,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.spoon.slowok.admin;
+				PRODUCT_BUNDLE_IDENTIFIER = com.inseong.slowok.admin;
 				PRODUCT_NAME = "SlowOK Admin";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = ADMIN;
@@ -317,15 +317,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 92L3HRKJ3R;
 				INFOPLIST_FILE = "SlowOK/plist/Info-User.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.spoon.slowok.user;
+				PRODUCT_BUNDLE_IDENTIFIER = com.inseong.slowok.user;
 				PRODUCT_NAME = SlowOK;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = USER;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -336,15 +338,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 92L3HRKJ3R;
 				INFOPLIST_FILE = "SlowOK/plist/Info-User.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.spoon.slowok.user;
+				PRODUCT_BUNDLE_IDENTIFIER = com.inseong.slowok.user;
 				PRODUCT_NAME = SlowOK;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = USER;
 				TARGETED_DEVICE_FAMILY = "1,2";

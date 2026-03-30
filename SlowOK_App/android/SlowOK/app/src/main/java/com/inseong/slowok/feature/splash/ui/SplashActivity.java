@@ -1,4 +1,4 @@
-package com.spoon.slowok.feature.splash.ui;
+package com.inseong.slowok.feature.splash.ui;
 
 import android.Manifest;
 import android.content.Intent;
@@ -15,8 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-import com.spoon.slowok.R;
-import com.spoon.slowok.feature.webView.ui.WebViewActivity;
+import com.inseong.slowok.R;
+import com.inseong.slowok.feature.webView.ui.WebViewActivity;
 
 public class SplashActivity extends AppCompatActivity {
 

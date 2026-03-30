@@ -6,7 +6,7 @@
 # WebView
 # ============================================================
 # Keep JavaScript interface methods
--keepclassmembers class com.spoon.slowok.feature.webView.di.WebAppInterface {
+-keepclassmembers class com.inseong.slowok.feature.webView.di.WebAppInterface {
     @android.webkit.JavascriptInterface <methods>;
 }
 
@@ -36,14 +36,14 @@
 # General
 # ============================================================
 # Keep the application class
--keep class com.spoon.slowok.MyApp { *; }
+-keep class com.inseong.slowok.MyApp { *; }
 
 # Keep activity classes
--keep class com.spoon.slowok.feature.splash.ui.SplashActivity { *; }
--keep class com.spoon.slowok.feature.webView.ui.WebViewActivity { *; }
+-keep class com.inseong.slowok.feature.splash.ui.SplashActivity { *; }
+-keep class com.inseong.slowok.feature.webView.ui.WebViewActivity { *; }
 
 # Keep service classes
--keep class com.spoon.slowok.service.MyFirebaseMessagingService { *; }
+-keep class com.inseong.slowok.service.MyFirebaseMessagingService { *; }
 
 # Remove logging in release
 -assumenosideeffects class android.util.Log {
