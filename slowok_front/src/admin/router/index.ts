@@ -27,24 +27,25 @@ const router = createRouter({
       component: () => import('../views/users/UserDetailView.vue'),
       meta: { requiresAuth: true, permissionKey: 'user_manage' },
     },
-    {
-      path: '/content',
-      name: 'content',
-      component: () => import('../views/content/ContentListView.vue'),
-      meta: { requiresAuth: true, permissionKey: 'content_manage' },
-    },
-    {
-      path: '/content/create',
-      name: 'content-create',
-      component: () => import('../views/content/ContentFormView.vue'),
-      meta: { requiresAuth: true, permissionKey: 'content_manage' },
-    },
-    {
-      path: '/content/:id/edit',
-      name: 'content-edit',
-      component: () => import('../views/content/ContentFormView.vue'),
-      meta: { requiresAuth: true, permissionKey: 'content_manage' },
-    },
+    // [미사용] 사용자 앱에서 학습 콘텐츠 진입 경로 없음 — 추후 활성화 시 복원
+    // {
+    //   path: '/content',
+    //   name: 'content',
+    //   component: () => import('../views/content/ContentListView.vue'),
+    //   meta: { requiresAuth: true, permissionKey: 'content_manage' },
+    // },
+    // {
+    //   path: '/content/create',
+    //   name: 'content-create',
+    //   component: () => import('../views/content/ContentFormView.vue'),
+    //   meta: { requiresAuth: true, permissionKey: 'content_manage' },
+    // },
+    // {
+    //   path: '/content/:id/edit',
+    //   name: 'content-edit',
+    //   component: () => import('../views/content/ContentFormView.vue'),
+    //   meta: { requiresAuth: true, permissionKey: 'content_manage' },
+    // },
     {
       path: '/screening',
       name: 'screening',
@@ -115,12 +116,13 @@ const router = createRouter({
     //   component: () => import('../views/package/ContentPackageManageView.vue'),
     //   meta: { requiresAuth: true, permissionKey: 'package_manage' },
     // },
-    {
-      path: '/ai-content',
-      name: 'ai-content',
-      component: () => import('../views/ai/AiContentGenerateView.vue'),
-      meta: { requiresAuth: true, permissionKey: 'content_manage' },
-    },
+    // [미사용] 콘텐츠 관리 비활성화에 따라 함께 비활성화
+    // {
+    //   path: '/ai-content',
+    //   name: 'ai-content',
+    //   component: () => import('../views/ai/AiContentGenerateView.vue'),
+    //   meta: { requiresAuth: true, permissionKey: 'content_manage' },
+    // },
     {
       path: '/recommendation-rules',
       name: 'recommendation-rules',
