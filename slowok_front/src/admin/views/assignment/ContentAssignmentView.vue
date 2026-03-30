@@ -228,9 +228,34 @@ const currentItems = computed(() => {
   return challenges.value.map((c) => ({ id: c.challenge_id, title: c.title, sub: c.challenge_type }))
 })
 
-// 현재 탭의 기존 할당 목록 (해제용)
+// 현재 탭의 기존 할당 목록 (해제용 — 단일 선택 시)
 const currentTabAssignments = computed(() => {
   return existingAssignments.value.filter((a) => a.assignable_type === activeTab.value)
+})
+
+const isMultiSelect = computed(() => selectedProfileIds.value.size > 1)
+
+// 복수 선택 시: 항목별 할당 요약 (N명 중 M명 할당됨)
+const assignmentSummary = computed(() => {
+  if (!isMultiSelect.value) return []
+  const totalUsers = selectedProfileIds.value.size
+  const profileIds = Array.from(selectedProfileIds.value)
+
+  // 현재 탭의 할당 내역에서 assignable_id별로 몇 명에게 할당되었는지 집계
+  const countMap = new Map<number, number>()
+  for (const a of existingAssignments.value) {
+    if (a.assignable_type !== activeTab.value) continue
+    if (!profileIds.includes(a.profile_id)) continue
+    countMap.set(a.assignable_id, (countMap.get(a.assignable_id) ?? 0) + 1)
+  }
+
+  // 할당된 항목만 반환
+  const result: { id: number; name: string; assignedCount: number; totalUsers: number }[] = []
+  for (const [id, count] of countMap) {
+    const fakeAssignment = { assignable_type: activeTab.value, assignable_id: id } as ContentAssignment
+    result.push({ id, name: getAssignableName(fakeAssignment), assignedCount: count, totalUsers })
+  }
+  return result.sort((a, b) => a.name.localeCompare(b.name))
 })
 
 type TabKey = 'learning_content' | 'screening_test' | 'challenge' | 'package'
@@ -390,8 +415,37 @@ onMounted(fetchData)
       </button>
     </div>
 
-    <!-- 기존 할당 목록 -->
-    <div v-if="activeTab !== 'package' && selectedProfileIds.size > 0 && currentTabAssignments.length > 0" class="mt-6">
+    <!-- 복수 선택: 할당 요약 -->
+    <div v-if="activeTab !== 'package' && isMultiSelect && assignmentSummary.length > 0" class="mt-6">
+      <h3 class="text-[15px] font-semibold text-[#333] mb-3">현재 {{ assignableTypeLabel(activeTab) }} 할당 현황</h3>
+      <div class="bg-white rounded-[16px] border border-[#E8E8E8] overflow-hidden">
+        <table class="w-full text-[14px]">
+          <thead>
+            <tr class="bg-[#F8F8F8] text-[#666]">
+              <th class="text-left px-4 py-3 font-medium">이름</th>
+              <th class="text-left px-4 py-3 font-medium">할당 현황</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="s in assignmentSummary" :key="s.id" class="border-t border-[#F0F0F0]">
+              <td class="px-4 py-3 font-medium text-[#333]">{{ s.name }}</td>
+              <td class="px-4 py-3">
+                <span
+                  class="px-2 py-0.5 rounded-full text-[12px] font-medium"
+                  :class="s.assignedCount === s.totalUsers ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'"
+                >
+                  {{ s.totalUsers }}명 중 {{ s.assignedCount }}명 할당됨
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-[12px] text-[#888] mt-2">개별 할당 해제는 사용자를 1명만 선택해주세요.</p>
+    </div>
+
+    <!-- 단일 선택: 기존 할당 목록 + 해제 -->
+    <div v-if="activeTab !== 'package' && selectedProfileIds.size === 1 && currentTabAssignments.length > 0" class="mt-6">
       <h3 class="text-[15px] font-semibold text-[#333] mb-3">현재 {{ assignableTypeLabel(activeTab) }} 할당 목록</h3>
       <div class="bg-white rounded-[16px] border border-[#E8E8E8] overflow-hidden">
         <table class="w-full text-[14px]">

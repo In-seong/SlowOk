@@ -122,16 +122,11 @@ const subDomainDescriptions = computed<Record<string, string>>(() => {
   return map
 })
 
-function goRetake() {
-  if (result.value) {
-    router.push({ name: 'screening-test', params: { id: result.value.test_id } })
-  }
-}
 </script>
 
 <template>
   <div class="min-h-screen bg-[#F5F5F5] max-w-[402px] mx-auto">
-    <BackHeader title="진단 결과 상세" :on-back="() => router.push({ name: 'screening-results' })" />
+    <BackHeader title="진단 결과 상세" :on-back="() => router.back()" />
 
     <main class="px-5 pb-[80px] pt-4 space-y-4">
       <!-- 로딩 -->
@@ -276,21 +271,6 @@ function goRetake() {
           </div>
         </CardSection>
 
-        <!-- 하단 버튼 -->
-        <div class="flex gap-3">
-          <button
-            @click="router.push({ name: 'screening-results' })"
-            class="flex-1 py-3 rounded-[12px] text-[14px] font-semibold text-[#555] bg-white border border-[#E0E0E0] transition-colors active:scale-[0.98]"
-          >
-            전체 결과
-          </button>
-          <button
-            @click="goRetake"
-            class="flex-1 py-3 rounded-[12px] text-[14px] font-semibold text-white bg-[#4CAF50] transition-colors active:scale-[0.98]"
-          >
-            다시 검사하기
-          </button>
-        </div>
       </template>
     </main>
 

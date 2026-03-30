@@ -108,7 +108,7 @@ const router = createRouter({
       path: '/how-to-use',
       name: 'how-to-use',
       component: () => import('../views/HowToUseView.vue'),
-      meta: { requiresAuth: true },
+      meta: { requiresAuth: false },
     },
     {
       path: '/:pathMatch(.*)*',
