@@ -19,7 +19,7 @@ android {
     buildTypes {
         debug {
             isDebuggable = true
-            applicationIdSuffix = ".dev"
+            // applicationIdSuffix = ".dev" // Firebase google-services.json 매칭을 위해 제거
             resValue("string", "app_name_suffix", " (Dev)")
         }
         release {
