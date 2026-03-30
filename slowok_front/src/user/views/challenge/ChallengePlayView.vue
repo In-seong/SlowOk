@@ -368,14 +368,14 @@ onUnmounted(() => {
 
       <!-- ===== COMPLETION STATE: Stars + Score ===== -->
       <template v-else-if="isCompleted">
-        <div class="flex-1 flex flex-col items-center justify-center px-6">
+        <div class="flex-1 flex flex-col items-center justify-start pt-8 px-6">
           <div v-if="submitting" class="mb-4">
             <div class="w-[24px] h-[24px] border-3 border-[#4CAF50] border-t-transparent rounded-full animate-spin mx-auto" />
             <p class="text-[11px] text-[#999] mt-2">결과를 저장하는 중...</p>
           </div>
 
           <!-- 거북이 캐릭터 -->
-          <img :src="turtleSuccessImg" alt="참 잘했어요!" class="w-[140px] h-[140px] object-contain mb-2" />
+          <img :src="turtleSuccessImg" alt="참 잘했어요!" class="w-[180px] h-[180px] object-contain mb-1" />
 
           <!-- Stars -->
           <div class="flex gap-2 mb-4">
