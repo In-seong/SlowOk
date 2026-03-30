@@ -375,7 +375,7 @@ onUnmounted(() => {
           </div>
 
           <!-- 거북이 캐릭터 -->
-          <img :src="turtleSuccessImg" alt="참 잘했어요!" class="w-[180px] h-[180px] object-contain mb-1" />
+          <img :src="turtleSuccessImg" alt="참 잘했어요!" class="w-[270px] h-[270px] object-contain mb-1" />
 
           <!-- Stars -->
           <div class="flex gap-2 mb-4">
