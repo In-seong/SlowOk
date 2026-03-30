@@ -150,6 +150,12 @@ class ScreeningController extends Controller
             'sub_scores' => $subScores,
         ]);
 
+        // 할당 상태 업데이트
+        ContentAssignment::where('profile_id', $profile->profile_id)
+            ->where('assignable_type', 'screening_test')
+            ->where('assignable_id', $id)
+            ->update(['status' => 'COMPLETED']);
+
         // 진단 완료 알림
         $testTitle = $test->title ?? '진단 검사';
         app(NotificationService::class)->notifyWithParent(

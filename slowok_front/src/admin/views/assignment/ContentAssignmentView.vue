@@ -408,10 +408,10 @@ onMounted(fetchData)
               <td class="px-4 py-3 font-medium text-[#333]">{{ getAssignableName(a) }}</td>
               <td class="px-4 py-3">
                 <span
-                  class="px-2 py-0.5 rounded-full text-[12px]"
+                  class="px-2 py-0.5 rounded-full text-[12px] font-medium"
                   :class="a.status === 'COMPLETED' ? 'bg-green-50 text-green-600' : a.status === 'IN_PROGRESS' ? 'bg-blue-50 text-blue-600' : 'bg-gray-100 text-gray-600'"
                 >
-                  {{ a.status }}
+                  {{ a.status === 'COMPLETED' ? '완료' : a.status === 'IN_PROGRESS' ? '진행중' : '할당됨' }}
                 </span>
               </td>
               <td class="px-4 py-3">{{ a.assigned_at?.slice(0, 10) ?? '-' }}</td>

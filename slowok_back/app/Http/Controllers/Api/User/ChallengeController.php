@@ -110,6 +110,12 @@ class ChallengeController extends Controller
             'time_spent' => $request->time_spent,
         ]);
 
+        // 할당 상태 업데이트
+        ContentAssignment::where('profile_id', $profile->profile_id)
+            ->where('assignable_type', 'challenge')
+            ->where('assignable_id', $id)
+            ->update(['status' => $request->is_passed ? 'COMPLETED' : 'IN_PROGRESS']);
+
         // 챌린지 합격 알림
         if ($request->is_passed) {
             $challenge = Challenge::find($id);
