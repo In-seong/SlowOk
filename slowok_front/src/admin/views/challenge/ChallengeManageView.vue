@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@shared/api'
 import type { Challenge, LearningCategory, ApiResponse } from '@shared/types'
@@ -148,6 +148,46 @@ function goToQuestionEdit(challengeId: number) {
   router.push({ name: 'challenge-question-edit', params: { id: challengeId } })
 }
 
+// 검색 + 페이징
+const searchQuery = ref('')
+const currentPage = ref(1)
+const perPage = 15
+
+const filteredChallenges = computed(() => {
+  if (!searchQuery.value.trim()) return challenges.value
+  const q = searchQuery.value.toLowerCase()
+  return challenges.value.filter(c =>
+    c.title.toLowerCase().includes(q) ||
+    c.challenge_type.toLowerCase().includes(q) ||
+    (c.category?.name ?? '').toLowerCase().includes(q)
+  )
+})
+
+const totalPages = computed(() => Math.ceil(filteredChallenges.value.length / perPage))
+
+const pagedChallenges = computed(() => {
+  const start = (currentPage.value - 1) * perPage
+  return filteredChallenges.value.slice(start, start + perPage)
+})
+
+watch(searchQuery, () => { currentPage.value = 1 })
+
+const pageNumbers = computed(() => {
+  const total = totalPages.value
+  const cur = currentPage.value
+  const pages: (number | '...')[] = []
+  if (total <= 7) {
+    for (let i = 1; i <= total; i++) pages.push(i)
+  } else {
+    pages.push(1)
+    if (cur > 3) pages.push('...')
+    for (let i = Math.max(2, cur - 1); i <= Math.min(total - 1, cur + 1); i++) pages.push(i)
+    if (cur < total - 2) pages.push('...')
+    pages.push(total)
+  }
+  return pages
+})
+
 onMounted(fetchData)
 </script>
 
@@ -156,7 +196,21 @@ onMounted(fetchData)
     <div class="max-w-[1200px] mx-auto">
       <!-- 상단 -->
       <div class="flex items-center justify-between mb-4">
-        <p class="text-[14px] text-[#888]">챌린지를 관리합니다.</p>
+        <div class="flex items-center gap-3">
+          <p class="text-[14px] text-[#888]">챌린지를 관리합니다.</p>
+          <div class="relative">
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="제목/카테고리 검색..."
+              class="bg-white border border-[#E8E8E8] rounded-[10px] pl-8 pr-8 py-2 text-[13px] w-[200px] focus:border-[#4CAF50] focus:outline-none"
+            />
+            <svg class="w-4 h-4 text-[#999] absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+            <button v-if="searchQuery" @click="searchQuery = ''" class="absolute right-2 top-1/2 -translate-y-1/2 text-[#999] hover:text-[#555]">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+        </div>
         <button
           @click="openCreateModal"
           class="bg-[#4CAF50] hover:bg-[#388E3C] text-white rounded-[12px] px-5 py-2.5 text-[14px] font-medium active:scale-[0.98] transition-all"
@@ -182,8 +236,8 @@ onMounted(fetchData)
       </div>
 
       <!-- 빈 상태 -->
-      <div v-else-if="challenges.length === 0" class="bg-white rounded-[16px] shadow-[0_0_10px_rgba(0,0,0,0.1)] p-8 text-center">
-        <p class="text-[#888]">등록된 챌린지가 없습니다.</p>
+      <div v-else-if="filteredChallenges.length === 0" class="bg-white rounded-[16px] shadow-[0_0_10px_rgba(0,0,0,0.1)] p-8 text-center">
+        <p class="text-[#888]">{{ searchQuery ? '검색 결과가 없습니다.' : '등록된 챌린지가 없습니다.' }}</p>
       </div>
 
       <!-- 테이블 -->
@@ -202,7 +256,7 @@ onMounted(fetchData)
             </thead>
             <tbody>
               <tr
-                v-for="challenge in challenges"
+                v-for="challenge in pagedChallenges"
                 :key="challenge.challenge_id"
                 class="border-b border-[#F0F0F0] hover:bg-[#FAFAFA] transition-colors"
               >
@@ -250,8 +304,20 @@ onMounted(fetchData)
             </tbody>
           </table>
         </div>
-        <div class="px-5 py-3 border-t border-[#F0F0F0] text-[13px] text-[#888]">
-          총 {{ challenges.length }}개
+        <div class="px-5 py-3 border-t border-[#F0F0F0] flex items-center justify-between">
+          <span class="text-[13px] text-[#888]">총 {{ filteredChallenges.length }}개{{ searchQuery ? ` (검색: "${searchQuery}")` : '' }}</span>
+          <div v-if="totalPages > 1" class="flex items-center gap-1">
+            <button @click="currentPage = Math.max(1, currentPage - 1)" :disabled="currentPage === 1" class="w-8 h-8 flex items-center justify-center rounded-[8px] text-[13px] transition-colors disabled:opacity-30" :class="currentPage === 1 ? 'text-[#CCC]' : 'text-[#555] hover:bg-[#F0F0F0]'">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+            </button>
+            <template v-for="(p, idx) in pageNumbers" :key="idx">
+              <span v-if="p === '...'" class="w-8 h-8 flex items-center justify-center text-[12px] text-[#999]">...</span>
+              <button v-else @click="currentPage = p" class="w-8 h-8 flex items-center justify-center rounded-[8px] text-[13px] font-medium transition-colors" :class="currentPage === p ? 'bg-[#4CAF50] text-white' : 'text-[#555] hover:bg-[#F0F0F0]'">{{ p }}</button>
+            </template>
+            <button @click="currentPage = Math.min(totalPages, currentPage + 1)" :disabled="currentPage === totalPages" class="w-8 h-8 flex items-center justify-center rounded-[8px] text-[13px] transition-colors disabled:opacity-30" :class="currentPage === totalPages ? 'text-[#CCC]' : 'text-[#555] hover:bg-[#F0F0F0]'">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6" /></svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>
