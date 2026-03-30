@@ -29,7 +29,8 @@ const fetchError = ref(false)
 const showFeedback = ref(false)
 const feedbackCorrect = ref(false)
 const feedbackAnswer = ref('')
-const wrongAnswerIndices = ref<Set<number>>(new Set())
+const wrongShake = ref(false)
+const mcAttemptCount = ref(0)
 
 const challenge = computed<Challenge | null>(() => challengeStore.currentChallenge)
 const questions = computed<ChallengeQuestion[]>(() => challenge.value?.questions ?? [])
@@ -59,7 +60,7 @@ function stopTimer(): void {
 
 function selectOption(index: number): void {
   if (showFeedback.value) return
-  if (wrongAnswerIndices.value.has(index)) return
+  if (wrongShake.value) return
   if (!currentQ.value) return
 
   const correctIdx = getCorrectIndex(currentQ.value)
@@ -67,18 +68,18 @@ function selectOption(index: number): void {
   if (index === correctIdx) {
     // 정답
     answers.value[currentQuestion.value] = index
-    questionResults.value[currentQuestion.value] = wrongAnswerIndices.value.size === 0 // 한번에 맞추면 true
+    questionResults.value[currentQuestion.value] = mcAttemptCount.value === 0
   } else {
-    // 오답 — X 표시하고 계속
-    wrongAnswerIndices.value.add(index)
-    wrongAnswerIndices.value = new Set(wrongAnswerIndices.value)
+    // 오답 — 흔들림 + 소리 → 선택 초기화
+    mcAttemptCount.value++
+    wrongShake.value = true
+    playWrongSound()
+    answers.value[currentQuestion.value] = index // 잠깐 빨간색 표시
 
-    // 모든 보기를 틀리면 자동으로 정답 표시
-    const totalOptions = currentQ.value.options?.length ?? 0
-    if (wrongAnswerIndices.value.size >= totalOptions - 1) {
-      answers.value[currentQuestion.value] = correctIdx
-      questionResults.value[currentQuestion.value] = false
-    }
+    setTimeout(() => {
+      delete answers.value[currentQuestion.value] // 선택 초기화
+      wrongShake.value = false
+    }, 500)
   }
 }
 
@@ -122,7 +123,8 @@ function checkAnswer(): void {
 // "계속하기" 버튼 → 다음 문항 or 완료
 function continueNext(): void {
   showFeedback.value = false
-  wrongAnswerIndices.value = new Set()
+  wrongShake.value = false
+  mcAttemptCount.value = 0
 
   if (currentQuestion.value >= totalQuestions.value - 1) {
     finishChallenge()
@@ -286,28 +288,26 @@ onUnmounted(() => {
                 v-for="(option, index) in currentQ.options"
                 :key="index"
                 @click="selectOption(index)"
-                :disabled="showFeedback || wrongAnswerIndices.has(index) || answers[currentQuestion] !== undefined"
+                :disabled="showFeedback || wrongShake"
                 :class="[
-                  answers[currentQuestion] === index
+                  answers[currentQuestion] === index && questionResults[currentQuestion] !== undefined
                     ? 'border-[#4CAF50] bg-[#E8F5E9] shadow-[0_3px_0_#388E3C]'
-                    : wrongAnswerIndices.has(index)
-                      ? 'border-[#F44336] bg-[#FFEBEE] shadow-[0_3px_0_#C62828] opacity-50'
-                      : 'border-[#E0E0E0] bg-white shadow-[0_3px_0_#E0E0E0]',
+                    : answers[currentQuestion] === index && wrongShake
+                      ? 'border-[#F44336] bg-[#FFEBEE] shadow-[0_3px_0_#C62828] animate-shake'
+                      : answers[currentQuestion] === index
+                        ? 'border-[#4CAF50] bg-[#E8F5E9] shadow-[0_3px_0_#388E3C]'
+                        : 'border-[#E0E0E0] bg-white shadow-[0_3px_0_#E0E0E0]',
                   showFeedback ? 'pointer-events-none' : ''
                 ]"
                 class="w-full border-2 rounded-2xl p-4 text-left transition-all duration-150 flex items-center gap-3 active:translate-y-[2px] active:shadow-none"
               >
                 <span
-                  :class="answers[currentQuestion] === index ? 'bg-[#4CAF50] text-white' : wrongAnswerIndices.has(index) ? 'bg-[#F44336] text-white' : 'bg-[#F0F0F0] text-[#888]'"
+                  :class="answers[currentQuestion] === index && wrongShake ? 'bg-[#F44336] text-white' : answers[currentQuestion] === index ? 'bg-[#4CAF50] text-white' : 'bg-[#F0F0F0] text-[#888]'"
                   class="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[13px] font-bold shrink-0 transition-colors"
                 >
                   {{ index + 1 }}
                 </span>
-                <span class="text-[16px] flex-1" :class="answers[currentQuestion] === index ? 'text-[#333] font-semibold' : 'text-[#333]'">
-                  {{ option }}
-                </span>
-                <svg v-if="answers[currentQuestion] === index" class="w-5 h-5 text-[#4CAF50] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7" /></svg>
-                <svg v-else-if="wrongAnswerIndices.has(index)" class="w-5 h-5 text-[#F44336] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M6 6l12 12" /></svg>
+                <span class="text-[16px] flex-1 text-[#333]">{{ option }}</span>
               </button>
             </div>
           </template>
@@ -476,5 +476,15 @@ onUnmounted(() => {
 }
 .animate-slide-up {
   animation: slide-up 0.3s ease-out;
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
 }
 </style>
