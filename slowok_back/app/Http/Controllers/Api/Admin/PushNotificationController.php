@@ -25,11 +25,11 @@ class PushNotificationController extends BaseAdminController
         $title = $request->input('title');
         $body = $request->input('body');
         $target = $request->input('target');
+        $debug = [];
 
         $fcm = new FcmService();
 
         if ($target === 'all') {
-            // 기관 내 전체 USER에게 발송
             $query = Account::where('role', 'USER');
             if ($instId) {
                 $query->where('institution_id', $instId);
@@ -39,16 +39,48 @@ class PushNotificationController extends BaseAdminController
             $accountIds = $request->input('account_ids', []);
         }
 
+        $debug['account_ids'] = $accountIds;
+
         if (empty($accountIds)) {
             return response()->json([
                 'success' => false,
                 'message' => '발송 대상이 없습니다.',
+                'debug' => $debug,
             ], 422);
         }
 
-        $sent = $fcm->sendToAccounts($accountIds, $title, $body);
+        // 토큰 조회
+        $tokens = DeviceToken::whereIn('account_id', $accountIds)->get();
+        $debug['tokens_found'] = $tokens->count();
+        $debug['token_details'] = $tokens->map(fn($t) => [
+            'account_id' => $t->account_id,
+            'device_type' => $t->device_type,
+            'token_prefix' => substr($t->fcm_token, 0, 20) . '...',
+        ])->toArray();
 
-        // 인앱 알림도 함께 저장
+        if ($tokens->isEmpty()) {
+            // 인앱 알림은 저장
+            $notificationService = app(NotificationService::class);
+            foreach ($accountIds as $accountId) {
+                $notificationService->notify($accountId, 'admin_push', $title, $body);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'target_count' => count($accountIds),
+                    'sent_count' => 0,
+                ],
+                'message' => count($accountIds) . "명에게 인앱 알림 저장 (푸시 토큰 없음 — 앱에서 로그인 필요)",
+                'debug' => $debug,
+            ]);
+        }
+
+        // FCM 발송 (상세 결과 포함)
+        $sendResults = $fcm->sendToAccountsWithDebug($accountIds, $title, $body);
+        $debug['fcm_results'] = $sendResults['details'];
+
+        // 인앱 알림 저장
         $notificationService = app(NotificationService::class);
         foreach ($accountIds as $accountId) {
             $notificationService->notify($accountId, 'admin_push', $title, $body);
@@ -58,9 +90,10 @@ class PushNotificationController extends BaseAdminController
             'success' => true,
             'data' => [
                 'target_count' => count($accountIds),
-                'sent_count' => $sent,
+                'sent_count' => $sendResults['sent'],
             ],
-            'message' => count($accountIds) . "명에게 발송 완료 (푸시 {$sent}건)",
+            'message' => count($accountIds) . "명에게 발송 완료 (푸시 {$sendResults['sent']}건)",
+            'debug' => $debug,
         ]);
     }
 

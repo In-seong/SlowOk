@@ -4,7 +4,7 @@
     "type": "LINKED_RESOURCES_BINARY_FORMAT",
     "kind": "Directory"
   },
-  "applicationId": "com.inseong.slowok.user",
+  "applicationId": "com.inseong.slowok.personal",
   "variantName": "userDebug",
   "elements": [
     {

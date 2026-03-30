@@ -53,6 +53,81 @@ class FcmService
     }
 
     /**
+     * 여러 계정에 푸시 발송 (디버그 정보 포함)
+     */
+    public function sendToAccountsWithDebug(array $accountIds, string $title, string $body, array $data = []): array
+    {
+        $tokens = DeviceToken::whereIn('account_id', $accountIds)->get();
+        $sent = 0;
+        $details = [];
+
+        foreach ($tokens as $tokenRecord) {
+            $result = $this->sendToTokenWithDebug($tokenRecord->fcm_token, $title, $body, $data);
+            $details[] = [
+                'account_id' => $tokenRecord->account_id,
+                'device_type' => $tokenRecord->device_type,
+                'token_prefix' => substr($tokenRecord->fcm_token, 0, 20) . '...',
+                'success' => $result['success'],
+                'error' => $result['error'] ?? null,
+            ];
+            if ($result['success']) $sent++;
+        }
+
+        return ['sent' => $sent, 'details' => $details];
+    }
+
+    /**
+     * 단일 토큰 발송 + 디버그
+     */
+    private function sendToTokenWithDebug(string $token, string $title, string $body, array $data = []): array
+    {
+        if (!$this->credentialsPath || !$this->projectId) {
+            return ['success' => false, 'error' => 'credentials 또는 project_id 미설정'];
+        }
+        if (!file_exists($this->credentialsPath)) {
+            return ['success' => false, 'error' => 'credentials 파일 없음: ' . $this->credentialsPath];
+        }
+
+        try {
+            $accessToken = $this->getAccessToken();
+            if (!$accessToken) {
+                return ['success' => false, 'error' => 'access token 발급 실패'];
+            }
+
+            $url = "https://fcm.googleapis.com/v1/projects/{$this->projectId}/messages:send";
+            $message = [
+                'message' => [
+                    'token' => $token,
+                    'notification' => ['title' => $title, 'body' => $body],
+                    'data' => array_map('strval', $data),
+                    'android' => [
+                        'priority' => 'high',
+                        'notification' => ['channel_id' => 'slowok_notifications', 'sound' => 'default'],
+                    ],
+                ],
+            ];
+
+            $response = Http::withToken($accessToken)->timeout(10)->post($url, $message);
+
+            if ($response->successful()) {
+                return ['success' => true];
+            }
+
+            $errorBody = $response->json();
+            $errorCode = $errorBody['error']['details'][0]['errorCode'] ?? ($errorBody['error']['status'] ?? 'UNKNOWN');
+            $errorMsg = $errorBody['error']['message'] ?? 'Unknown error';
+
+            if (in_array($errorCode, ['UNREGISTERED', 'INVALID_ARGUMENT', 'NOT_FOUND'])) {
+                DeviceToken::where('fcm_token', $token)->delete();
+            }
+
+            return ['success' => false, 'error' => "[{$errorCode}] {$errorMsg}"];
+        } catch (\Throwable $e) {
+            return ['success' => false, 'error' => 'Exception: ' . $e->getMessage()];
+        }
+    }
+
+    /**
      * 단일 FCM 토큰에 발송 (FCM v1 HTTP API)
      */
     private function sendToToken(string $token, string $title, string $body, array $data = []): bool

@@ -12,6 +12,7 @@ const body = ref('')
 const target = ref<'all' | 'specific'>('all')
 const sending = ref(false)
 const error = ref('')
+const debugInfo = ref<Record<string, unknown> | null>(null)
 
 // 통계
 const stats = ref<{ total_tokens: number; unique_accounts: number } | null>(null)
@@ -85,6 +86,7 @@ async function handleSend() {
 
   sending.value = true
   error.value = ''
+  debugInfo.value = null
 
   try {
     const res = await adminApi.sendPush({
@@ -93,14 +95,14 @@ async function handleSend() {
       target: target.value,
       account_ids: target.value === 'specific' ? Array.from(selectedIds.value) : undefined,
     })
+    debugInfo.value = (res.data as any).debug ?? null
     if (res.data.success) {
       toast.success(res.data.message || '발송 완료!')
-      title.value = ''
-      body.value = ''
-      selectedIds.value = new Set()
+      fetchStats()
     }
   } catch (e: any) {
     error.value = e.response?.data?.message || '발송에 실패했습니다.'
+    debugInfo.value = e.response?.data?.debug ?? null
   } finally {
     sending.value = false
   }
@@ -219,6 +221,55 @@ async function handleSend() {
           <svg v-if="sending" class="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" /><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
           {{ sending ? '발송 중...' : target === 'all' ? '전체 발송' : `${selectedIds.size}명에게 발송` }}
         </button>
+      </div>
+
+      <!-- 디버그 정보 -->
+      <div v-if="debugInfo" class="bg-[#F8F8F8] rounded-[16px] border border-[#E0E0E0] p-4 mt-4">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-[14px] font-bold text-[#333]">발송 디버그</h3>
+          <button @click="debugInfo = null" class="text-[12px] text-[#999] hover:text-[#555]">닫기</button>
+        </div>
+
+        <div class="space-y-2 text-[12px]">
+          <!-- 대상 계정 -->
+          <div>
+            <span class="text-[#888]">대상 account_ids:</span>
+            <span class="text-[#333] font-mono ml-1">{{ (debugInfo as any).account_ids?.join(', ') || 'N/A' }}</span>
+          </div>
+
+          <!-- 토큰 수 -->
+          <div>
+            <span class="text-[#888]">등록된 토큰:</span>
+            <span class="text-[#333] font-bold ml-1" :class="(debugInfo as any).tokens_found === 0 ? 'text-red-500' : 'text-[#4CAF50]'">
+              {{ (debugInfo as any).tokens_found ?? 'N/A' }}개
+            </span>
+          </div>
+
+          <!-- 토큰 상세 -->
+          <div v-if="(debugInfo as any).token_details?.length">
+            <p class="text-[#888] mb-1">토큰 상세:</p>
+            <div v-for="(t, i) in (debugInfo as any).token_details" :key="i" class="bg-white rounded-[8px] p-2 mb-1 font-mono text-[11px]">
+              account:{{ t.account_id }} | {{ t.device_type }} | {{ t.token_prefix }}
+            </div>
+          </div>
+
+          <!-- FCM 발송 결과 -->
+          <div v-if="(debugInfo as any).fcm_results?.length">
+            <p class="text-[#888] mb-1">FCM 발송 결과:</p>
+            <div v-for="(r, i) in (debugInfo as any).fcm_results" :key="i" class="bg-white rounded-[8px] p-2 mb-1">
+              <span :class="r.success ? 'text-[#4CAF50]' : 'text-red-500'" class="font-bold">{{ r.success ? '성공' : '실패' }}</span>
+              <span class="text-[#888] ml-2">account:{{ r.account_id }} ({{ r.device_type }})</span>
+              <span v-if="r.error" class="text-red-500 ml-2">{{ r.error }}</span>
+            </div>
+          </div>
+
+          <!-- 토큰 없는 경우 안내 -->
+          <div v-if="(debugInfo as any).tokens_found === 0" class="bg-red-50 rounded-[8px] p-3 text-red-600">
+            <p class="font-bold mb-1">토큰이 없습니다</p>
+            <p>사용자가 앱에서 로그인해야 FCM 토큰이 등록됩니다.</p>
+            <p>앱을 열고 로그인 후 다시 시도해주세요.</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.inseong.slowok.user"
+    package="com.inseong.slowok.personal"
     android:versionCode="1"
     android:versionName="1.0.0" >
 
@@ -19,10 +19,10 @@
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
     <permission
-        android:name="com.inseong.slowok.user.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+        android:name="com.inseong.slowok.personal.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
         android:protectionLevel="signature" />
 
-    <uses-permission android:name="com.inseong.slowok.user.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+    <uses-permission android:name="com.inseong.slowok.personal.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
 
     <application
         android:name="com.inseong.slowok.MyApp"
@@ -141,13 +141,13 @@
 
         <provider
             android:name="com.google.firebase.provider.FirebaseInitProvider"
-            android:authorities="com.inseong.slowok.user.firebaseinitprovider"
+            android:authorities="com.inseong.slowok.personal.firebaseinitprovider"
             android:directBootAware="true"
             android:exported="false"
             android:initOrder="100" />
         <provider
             android:name="androidx.startup.InitializationProvider"
-            android:authorities="com.inseong.slowok.user.androidx-startup"
+            android:authorities="com.inseong.slowok.personal.androidx-startup"
             android:exported="false" >
             <meta-data
                 android:name="androidx.emoji2.text.EmojiCompatInitializer"

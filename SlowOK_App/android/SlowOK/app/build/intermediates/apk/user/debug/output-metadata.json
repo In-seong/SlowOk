@@ -4,7 +4,7 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.inseong.slowok.user",
+  "applicationId": "com.inseong.slowok.personal",
   "variantName": "userDebug",
   "elements": [
     {
