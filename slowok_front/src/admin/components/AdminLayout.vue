@@ -90,6 +90,8 @@ const sidebarStructure: SidebarEntry[] = [
       // [미사용] 음성 기능 비활성화
       // { label: '음성 녹음 관리', path: '/voice-recordings', name: 'voice-recordings', permissionKey: 'user_manage',
       //   icon: 'M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z' },
+      { label: '푸시 알림', path: '/push', name: 'push-send',
+        icon: 'M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0' },
     ],
   }},
   { type: 'group', group: {

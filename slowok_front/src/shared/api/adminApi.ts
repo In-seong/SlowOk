@@ -169,6 +169,14 @@ export const adminApi = {
     return api.post<ApiResponse<{ counts: { challenges: number; screening_tests: number } }>>('/admin/ai-content/save', data)
   },
 
+  // 푸시 알림
+  sendPush(data: { title: string; body: string; target: 'all' | 'specific'; account_ids?: number[] }) {
+    return api.post<ApiResponse<{ target_count: number; sent_count: number }>>('/admin/push/send', data)
+  },
+  getPushStats() {
+    return api.get<ApiResponse<{ total_tokens: number; unique_accounts: number }>>('/admin/push/stats')
+  },
+
   // MASTER 전용 - 권한 관리
   getPermissions() {
     return api.get<ApiResponse<AdminPermission[]>>('/admin/master/permissions')

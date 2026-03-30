@@ -251,6 +251,12 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/save', [AiContentController::class, 'save']);
         });
 
+        // 푸시 알림 발송
+        Route::prefix('push')->group(function () {
+            Route::post('/send', [\App\Http\Controllers\Api\Admin\PushNotificationController::class, 'send']);
+            Route::get('/stats', [\App\Http\Controllers\Api\Admin\PushNotificationController::class, 'stats']);
+        });
+
         // MASTER 전용 - 관리자 관리
         Route::prefix('master')->middleware('role:MASTER')->group(function () {
             Route::get('/admins', [AdminManagementController::class, 'index']);

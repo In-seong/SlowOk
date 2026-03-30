@@ -1,4 +1,4 @@
-#Mon Mar 30 16:59:01 KST 2026
+#Mon Mar 30 17:00:36 KST 2026
 base.0=/Users/scoop/slowok/SlowOK_App/android/SlowOK/app/build/intermediates/dex/userDebug/mergeExtDexUserDebug/classes.dex
 base.1=/Users/scoop/slowok/SlowOK_App/android/SlowOK/app/build/intermediates/dex/userDebug/mergeProjectDexUserDebug/0/classes.dex
 base.2=/Users/scoop/slowok/SlowOK_App/android/SlowOK/app/build/intermediates/dex/userDebug/mergeProjectDexUserDebug/14/classes.dex
