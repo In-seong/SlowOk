@@ -29,6 +29,7 @@ const fetchError = ref(false)
 const showFeedback = ref(false)
 const feedbackCorrect = ref(false)
 const feedbackAnswer = ref('')
+const wrongAnswerIndices = ref<Set<number>>(new Set())
 
 const challenge = computed<Challenge | null>(() => challengeStore.currentChallenge)
 const questions = computed<ChallengeQuestion[]>(() => challenge.value?.questions ?? [])
@@ -58,7 +59,27 @@ function stopTimer(): void {
 
 function selectOption(index: number): void {
   if (showFeedback.value) return
-  answers.value[currentQuestion.value] = index
+  if (wrongAnswerIndices.value.has(index)) return
+  if (!currentQ.value) return
+
+  const correctIdx = getCorrectIndex(currentQ.value)
+
+  if (index === correctIdx) {
+    // 정답
+    answers.value[currentQuestion.value] = index
+    questionResults.value[currentQuestion.value] = wrongAnswerIndices.value.size === 0 // 한번에 맞추면 true
+  } else {
+    // 오답 — X 표시하고 계속
+    wrongAnswerIndices.value.add(index)
+    wrongAnswerIndices.value = new Set(wrongAnswerIndices.value)
+
+    // 모든 보기를 틀리면 자동으로 정답 표시
+    const totalOptions = currentQ.value.options?.length ?? 0
+    if (wrongAnswerIndices.value.size >= totalOptions - 1) {
+      answers.value[currentQuestion.value] = correctIdx
+      questionResults.value[currentQuestion.value] = false
+    }
+  }
 }
 
 function getCorrectIndex(q: ChallengeQuestion): number {
@@ -75,11 +96,8 @@ function checkAnswer(): void {
   const type = q.question_type ?? 'multiple_choice'
 
   if (type === 'multiple_choice') {
-    const selectedIdx = answers.value[idx]
-    const correctIdx = getCorrectIndex(q)
-    const correct = selectedIdx === correctIdx
-    questionResults.value[idx] = correct
-    feedbackCorrect.value = correct
+    // questionResults는 selectOption에서 이미 설정됨
+    feedbackCorrect.value = questionResults.value[idx] ?? false
     feedbackAnswer.value = q.correct_answer ?? ''
   } else if (questionResults.value[idx] !== undefined) {
     // image_choice, matching, image_text, image_voice — 컴포넌트가 이미 판정
@@ -104,6 +122,7 @@ function checkAnswer(): void {
 // "계속하기" 버튼 → 다음 문항 or 완료
 function continueNext(): void {
   showFeedback.value = false
+  wrongAnswerIndices.value = new Set()
 
   if (currentQuestion.value >= totalQuestions.value - 1) {
     finishChallenge()
@@ -144,7 +163,7 @@ async function finishChallenge(): Promise<void> {
 
     const type = q.question_type ?? 'multiple_choice'
     if (type === 'multiple_choice') {
-      if (answers.value[i] === getCorrectIndex(q)) correctCount++
+      if (questionResults.value[i]) correctCount++
     } else {
       if (questionResults.value[i]) correctCount++
     }
@@ -267,27 +286,28 @@ onUnmounted(() => {
                 v-for="(option, index) in currentQ.options"
                 :key="index"
                 @click="selectOption(index)"
-                :disabled="showFeedback"
+                :disabled="showFeedback || wrongAnswerIndices.has(index) || answers[currentQuestion] !== undefined"
                 :class="[
                   answers[currentQuestion] === index
                     ? 'border-[#4CAF50] bg-[#E8F5E9] shadow-[0_3px_0_#388E3C]'
-                    : 'border-[#E0E0E0] bg-white shadow-[0_3px_0_#E0E0E0]',
+                    : wrongAnswerIndices.has(index)
+                      ? 'border-[#F44336] bg-[#FFEBEE] shadow-[0_3px_0_#C62828] opacity-50'
+                      : 'border-[#E0E0E0] bg-white shadow-[0_3px_0_#E0E0E0]',
                   showFeedback ? 'pointer-events-none' : ''
                 ]"
                 class="w-full border-2 rounded-2xl p-4 text-left transition-all duration-150 flex items-center gap-3 active:translate-y-[2px] active:shadow-none"
               >
                 <span
-                  :class="answers[currentQuestion] === index ? 'bg-[#4CAF50] text-white' : 'bg-[#F0F0F0] text-[#888]'"
+                  :class="answers[currentQuestion] === index ? 'bg-[#4CAF50] text-white' : wrongAnswerIndices.has(index) ? 'bg-[#F44336] text-white' : 'bg-[#F0F0F0] text-[#888]'"
                   class="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[13px] font-bold shrink-0 transition-colors"
                 >
                   {{ index + 1 }}
                 </span>
-                <span
-                  :class="answers[currentQuestion] === index ? 'text-[#333] font-semibold' : 'text-[#333]'"
-                  class="text-[16px] transition-colors"
-                >
+                <span class="text-[16px] flex-1" :class="answers[currentQuestion] === index ? 'text-[#333] font-semibold' : 'text-[#333]'">
                   {{ option }}
                 </span>
+                <svg v-if="answers[currentQuestion] === index" class="w-5 h-5 text-[#4CAF50] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7" /></svg>
+                <svg v-else-if="wrongAnswerIndices.has(index)" class="w-5 h-5 text-[#F44336] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
           </template>
