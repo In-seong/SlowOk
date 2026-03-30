@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.widget.Toast;
 import android.webkit.CookieManager;
 import android.webkit.ValueCallback;
 import android.webkit.PermissionRequest;
@@ -33,6 +34,7 @@ public class WebViewActivity extends AppCompatActivity {
 
     private ActivityWebviewBinding binding;
     private WebAppInterface webAppInterface;
+    private long backPressedTime = 0;
 
     // File upload support
     private ValueCallback<Uri[]> fileUploadCallback;
@@ -197,6 +199,18 @@ public class WebViewActivity extends AppCompatActivity {
         String url = WebConstants.WebView_URL;
         Log.d(TAG, "Loading URL: " + url);
         binding.webView.loadUrl(url);
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onBackPressed() {
+        if (System.currentTimeMillis() - backPressedTime < 2000) {
+            super.onBackPressed();
+            finishAffinity();
+        } else {
+            backPressedTime = System.currentTimeMillis();
+            Toast.makeText(this, "한 번 더 누르면 앱이 종료됩니다", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
