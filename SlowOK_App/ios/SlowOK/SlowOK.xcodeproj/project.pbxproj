@@ -35,6 +35,7 @@
 		8E464550AEC569D3D2222E5A /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		9A7F18BC7E2E7635E40B27CD /* SlowOKApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlowOKApp.swift; sourceTree = "<group>"; };
 		9D8539022F7A71AF0005D97D /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		9DF453A62F7A76A5007E31F8 /* SlowOK-Admin.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "SlowOK-Admin.entitlements"; sourceTree = "<group>"; };
 		A4B33B9D42990F142C8B37E5 /* Pods-SlowOK-User.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SlowOK-User.debug.xcconfig"; path = "Target Support Files/Pods-SlowOK-User/Pods-SlowOK-User.debug.xcconfig"; sourceTree = "<group>"; };
 		B1A87D95991AE3C73967B8E4 /* SlowOK Admin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SlowOK Admin.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BBF8187D61DB66E5D983D025 /* Pods_SlowOK_User.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SlowOK_User.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -126,6 +127,7 @@
 		C74A1181DF3C7260BE6CAEC9 = {
 			isa = PBXGroup;
 			children = (
+				9DF453A62F7A76A5007E31F8 /* SlowOK-Admin.entitlements */,
 				9D8539022F7A71AF0005D97D /* GoogleService-Info.plist */,
 				4AF6A838C57BB9E12EB93AC4 /* SlowOK */,
 				8CBCD3A63632D02FA479526C /* Products */,
@@ -355,6 +357,7 @@
 			baseConfigurationReference = 11E27CEA94379135B0AEBFB6 /* Pods-SlowOK-Admin.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "SlowOK-Admin.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = 7442SWFSSM;
 				INFOPLIST_FILE = "SlowOK/plist/Info-Admin.plist";
@@ -375,6 +378,7 @@
 			baseConfigurationReference = 66BBF39D989AE080A5EC01B0 /* Pods-SlowOK-Admin.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "SlowOK-Admin.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = 7442SWFSSM;
 				INFOPLIST_FILE = "SlowOK/plist/Info-Admin.plist";
