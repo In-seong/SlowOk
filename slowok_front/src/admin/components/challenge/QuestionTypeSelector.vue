@@ -8,7 +8,7 @@ const types = [
   { value: 'matching', label: '매칭 게임', icon: '🔗', desc: '좌측 멘트와 우측 답을 연결' },
   { value: 'image_choice', label: '그림카드 택1', icon: '🖼️', desc: '이미지 보고 보기 중 선택' },
   { value: 'image_text', label: '그림카드 텍스트', icon: '✏️', desc: '이미지 보고 텍스트 입력' },
-  { value: 'image_voice', label: '그림카드 음성', icon: '🎤', desc: '이미지 보고 음성 답변' },
+  // { value: 'image_voice', label: '그림카드 음성', icon: '🎤', desc: '이미지 보고 음성 답변' }, // [미사용] 음성 기능 비활성화
 ] as const
 </script>
 

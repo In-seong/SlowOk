@@ -19,7 +19,7 @@ const QUESTION_TYPES = [
   { value: 'matching', label: '매칭 게임' },
   { value: 'image_choice', label: '그림카드 택1' },
   { value: 'image_text', label: '그림카드 텍스트 입력' },
-  { value: 'image_voice', label: '그림카드 음성 답변' },
+  // { value: 'image_voice', label: '그림카드 음성 답변' }, // [미사용] 음성 기능 비활성화
 ] as const
 
 const saving = ref(false)

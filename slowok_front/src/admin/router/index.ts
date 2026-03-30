@@ -127,12 +127,13 @@ const router = createRouter({
       component: () => import('../views/recommendation/RecommendationRuleView.vue'),
       meta: { requiresAuth: true, permissionKey: 'recommendation_manage' },
     },
-    {
-      path: '/voice-recordings',
-      name: 'voice-recordings',
-      component: () => import('../views/voice-recording/VoiceRecordingManageView.vue'),
-      meta: { requiresAuth: true, permissionKey: 'user_manage' },
-    },
+    // [미사용] 음성 기능 비활성화 — 추후 활성화 시 복원
+    // {
+    //   path: '/voice-recordings',
+    //   name: 'voice-recordings',
+    //   component: () => import('../views/voice-recording/VoiceRecordingManageView.vue'),
+    //   meta: { requiresAuth: true, permissionKey: 'user_manage' },
+    // },
     {
       path: '/plan-manage',
       name: 'plan-manage',

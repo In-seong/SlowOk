@@ -85,8 +85,9 @@ const sidebarStructure: SidebarEntry[] = [
       // [미사용] 리포트 생성 로직 미구현
       // { label: '학습 리포트', path: '/reports', name: 'reports', permissionKey: 'report_view',
       //   icon: 'M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z' },
-      { label: '음성 녹음 관리', path: '/voice-recordings', name: 'voice-recordings', permissionKey: 'user_manage',
-        icon: 'M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z' },
+      // [미사용] 음성 기능 비활성화
+      // { label: '음성 녹음 관리', path: '/voice-recordings', name: 'voice-recordings', permissionKey: 'user_manage',
+      //   icon: 'M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z' },
     ],
   }},
   { type: 'group', group: {

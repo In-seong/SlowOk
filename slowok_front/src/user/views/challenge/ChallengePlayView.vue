@@ -5,7 +5,7 @@ import type { Challenge, ChallengeQuestion } from '@shared/types'
 import MatchingGameQuestion from '@user/components/challenge/MatchingGameQuestion.vue'
 import ImageChoiceQuestion from '@user/components/challenge/ImageChoiceQuestion.vue'
 import ImageTextQuestion from '@user/components/challenge/ImageTextQuestion.vue'
-import ImageVoiceQuestion from '@user/components/challenge/ImageVoiceQuestion.vue'
+// import ImageVoiceQuestion from '@user/components/challenge/ImageVoiceQuestion.vue' // [미사용] 음성 기능 비활성화
 import { useChallengeStore } from '@user/stores/challengeStore'
 
 const route = useRoute()
@@ -119,10 +119,11 @@ function onImageTextAnswered(result: { correct: boolean }) {
   questionResults.value[idx] = result.correct
 }
 
-function onImageVoiceAnswered(result: { correct: boolean }) {
-  const idx = currentQuestion.value
-  questionResults.value[idx] = result.correct
-}
+// [미사용] 음성 기능 비활성화
+// function onImageVoiceAnswered(result: { correct: boolean }) {
+//   const idx = currentQuestion.value
+//   questionResults.value[idx] = result.correct
+// }
 
 async function finishChallenge(): Promise<void> {
   stopTimer()
@@ -295,13 +296,7 @@ onUnmounted(() => {
             @answered="onImageTextAnswered"
           />
 
-          <!-- 그림카드 음성 -->
-          <ImageVoiceQuestion
-            v-else-if="currentType === 'image_voice'"
-            :question="currentQ"
-            :challenge-id="challengeId"
-            @answered="onImageVoiceAnswered"
-          />
+          <!-- [미사용] 음성 기능 비활성화 -->
         </div>
 
         <!-- ===== BOTTOM: Big "확인" button ===== -->
