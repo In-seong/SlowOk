@@ -21,10 +21,27 @@ const results = ref<ScreeningResultWithProfile[]>([])
 const loading = ref(true)
 const error = ref('')
 const filterLevel = ref<string>('')
+const filterUser = ref<string>('')
 
 const filteredResults = computed(() => {
-  if (!filterLevel.value) return results.value
-  return results.value.filter(r => r.level === filterLevel.value)
+  let filtered = results.value
+  if (filterLevel.value) {
+    filtered = filtered.filter(r => r.level === filterLevel.value)
+  }
+  if (filterUser.value) {
+    filtered = filtered.filter(r => r.profile?.name === filterUser.value)
+  }
+  return filtered
+})
+
+const users = computed(() => {
+  const map = new Map<string, string>()
+  for (const r of results.value) {
+    if (r.profile?.name) {
+      map.set(r.profile.name, r.profile.name)
+    }
+  }
+  return Array.from(map.values()).sort()
 })
 
 const levels = computed(() => {
@@ -98,6 +115,14 @@ onMounted(fetchResults)
       <div class="flex items-center justify-between mb-4">
         <p class="text-[14px] text-[#888]">진단 검사 결과를 조회합니다.</p>
         <div class="flex items-center gap-3">
+          <!-- 사용자 필터 -->
+          <select
+            v-model="filterUser"
+            class="bg-white border border-[#E8E8E8] rounded-[10px] px-3 py-2 text-[13px] focus:border-[#4CAF50] focus:outline-none"
+          >
+            <option value="">전체 사용자</option>
+            <option v-for="name in users" :key="name" :value="name">{{ name }}</option>
+          </select>
           <!-- 레벨 필터 -->
           <select
             v-model="filterLevel"
@@ -277,7 +302,7 @@ onMounted(fetchResults)
           </table>
         </div>
         <div class="px-5 py-3 border-t border-[#F0F0F0] text-[13px] text-[#888]">
-          총 {{ filteredResults.length }}건{{ filterLevel ? ` (필터: ${filterLevel})` : '' }}
+          총 {{ filteredResults.length }}건{{ filterUser || filterLevel ? ` (${[filterUser, filterLevel].filter(Boolean).join(', ')})` : '' }}
         </div>
       </div>
     </div>
