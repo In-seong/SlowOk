@@ -229,16 +229,7 @@ public class WebViewActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (binding.webView.canGoBack()) {
-                binding.webView.goBack();
-                return true;
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
+    // WebView 뒤로가기 비활성화 — onBackPressed에서 2번 누르면 종료 처리
 
     @Override
     protected void onResume() {
