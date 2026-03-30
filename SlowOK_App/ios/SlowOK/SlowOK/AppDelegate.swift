@@ -29,7 +29,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // 푸시 알림 권한 요청
         UNUserNotificationCenter.current().delegate = self
 
-        application.registerForRemoteNotifications()
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
+            print("[FCM] 알림 권한 요청 결과: \(granted), error: \(String(describing: error))")
+            DispatchQueue.main.async {
+                application.registerForRemoteNotifications()
+            }
+        }
         return true
     }
 

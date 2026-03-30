@@ -53,9 +53,8 @@ struct MainView: View {
             }
             .onReceive(NotificationCenter.default.publisher(for: Notification.Name("FCMTokenReceived"))) { notification in
                 if let token = notification.userInfo?["token"] as? String {
-                    if isWebViewLoaded {
-                        sendFCMTokenToWebView(token: token)
-                    }
+                    print("[FCM] 토큰 수신 노티: \(token.prefix(20))...")
+                    sendFCMTokenToWebView(token: token)
                 }
             }
 
@@ -139,6 +138,9 @@ extension MainView {
         case "sendFCMToken":
             if let savedToken = UserDefaults.standard.string(forKey: "fcmToken") {
                 sendFCMTokenToWebView(token: savedToken)
+            } else {
+                print("[FCM] 토큰 아직 없음 — 토큰 도착 시 자동 전달 대기")
+                // 토큰이 나중에 도착하면 FCMTokenReceived 노티로 자동 전달됨
             }
 
         case "sendDeviceType":

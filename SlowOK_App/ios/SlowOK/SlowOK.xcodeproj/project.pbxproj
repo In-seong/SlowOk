@@ -12,27 +12,56 @@
 		5C43E6194BD36F02CF524734 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC52B125DF1876011CFA9B90 /* WebView.swift */; };
 		6908E0C6C78CCF3A316C1E96 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E464550AEC569D3D2222E5A /* MainView.swift */; };
 		8D565C310F89B4F93DD6A6F3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A063CD24B7166A3DAEC1A35 /* Assets.xcassets */; };
+		9D8539032F7A71AF0005D97D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9D8539022F7A71AF0005D97D /* GoogleService-Info.plist */; };
 		A57FA14F905F99F049532530 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96391B72BEB31615E25488C /* ContentView.swift */; };
 		AC7B919D4FA774A68C942E8F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE0474B232850ED43FAE8F7 /* AppDelegate.swift */; };
 		B0A6644D9037C19D6F9419AF /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC52B125DF1876011CFA9B90 /* WebView.swift */; };
+		BBC2238BFD176920CC9F8F74 /* Pods_SlowOK_Admin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0511DBF0FEF9221ADD937FF /* Pods_SlowOK_Admin.framework */; };
 		C152BA9E17F0AD3D11EB3BDD /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E464550AEC569D3D2222E5A /* MainView.swift */; };
+		C772D388F3670497F1D5BD6E /* Pods_SlowOK_User.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BBF8187D61DB66E5D983D025 /* Pods_SlowOK_User.framework */; };
 		CF96291F250C36BEA34E5C37 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A063CD24B7166A3DAEC1A35 /* Assets.xcassets */; };
 		EE3EBD5FB8E5F12DA5C687E2 /* SlowOKApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7F18BC7E2E7635E40B27CD /* SlowOKApp.swift */; };
 		FC2346253A7C6453E67C2E72 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE0474B232850ED43FAE8F7 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		11E27CEA94379135B0AEBFB6 /* Pods-SlowOK-Admin.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SlowOK-Admin.release.xcconfig"; path = "Target Support Files/Pods-SlowOK-Admin/Pods-SlowOK-Admin.release.xcconfig"; sourceTree = "<group>"; };
 		1A063CD24B7166A3DAEC1A35 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5AE0474B232850ED43FAE8F7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		66BBF39D989AE080A5EC01B0 /* Pods-SlowOK-Admin.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SlowOK-Admin.debug.xcconfig"; path = "Target Support Files/Pods-SlowOK-Admin/Pods-SlowOK-Admin.debug.xcconfig"; sourceTree = "<group>"; };
 		6A1A8D1D45706569D276B342 /* Info-Admin.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Info-Admin.plist"; sourceTree = "<group>"; };
 		6E5D6F485D830F0D67F84FBE /* SlowOK.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SlowOK.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		877D7E22919C2C820DB94DC1 /* Info-User.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Info-User.plist"; sourceTree = "<group>"; };
 		8E464550AEC569D3D2222E5A /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		9A7F18BC7E2E7635E40B27CD /* SlowOKApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlowOKApp.swift; sourceTree = "<group>"; };
+		9D8539022F7A71AF0005D97D /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		A4B33B9D42990F142C8B37E5 /* Pods-SlowOK-User.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SlowOK-User.debug.xcconfig"; path = "Target Support Files/Pods-SlowOK-User/Pods-SlowOK-User.debug.xcconfig"; sourceTree = "<group>"; };
 		B1A87D95991AE3C73967B8E4 /* SlowOK Admin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SlowOK Admin.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BBF8187D61DB66E5D983D025 /* Pods_SlowOK_User.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SlowOK_User.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC52B125DF1876011CFA9B90 /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
+		E0FDF57A41E9F4F7F3612C3E /* Pods-SlowOK-User.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SlowOK-User.release.xcconfig"; path = "Target Support Files/Pods-SlowOK-User/Pods-SlowOK-User.release.xcconfig"; sourceTree = "<group>"; };
 		E96391B72BEB31615E25488C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		F0511DBF0FEF9221ADD937FF /* Pods_SlowOK_Admin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SlowOK_Admin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		35839DBE116BE18B53816FE1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C772D388F3670497F1D5BD6E /* Pods_SlowOK_User.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EB4363B16CA938F12BD1F8CB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BBC2238BFD176920CC9F8F74 /* Pods_SlowOK_Admin.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		32248B231B19EC1BFB00E5D6 /* Utils */ = {
@@ -66,6 +95,17 @@
 			path = plist;
 			sourceTree = "<group>";
 		};
+		739747C0EDEA56C8975BF07E /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				66BBF39D989AE080A5EC01B0 /* Pods-SlowOK-Admin.debug.xcconfig */,
+				11E27CEA94379135B0AEBFB6 /* Pods-SlowOK-Admin.release.xcconfig */,
+				A4B33B9D42990F142C8B37E5 /* Pods-SlowOK-User.debug.xcconfig */,
+				E0FDF57A41E9F4F7F3612C3E /* Pods-SlowOK-User.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		83BFFDE549F4DD63230D8BDC /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -86,9 +126,21 @@
 		C74A1181DF3C7260BE6CAEC9 = {
 			isa = PBXGroup;
 			children = (
+				9D8539022F7A71AF0005D97D /* GoogleService-Info.plist */,
 				4AF6A838C57BB9E12EB93AC4 /* SlowOK */,
 				8CBCD3A63632D02FA479526C /* Products */,
+				739747C0EDEA56C8975BF07E /* Pods */,
+				EE81EC200F39CD076B4E9330 /* Frameworks */,
 			);
+			sourceTree = "<group>";
+		};
+		EE81EC200F39CD076B4E9330 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F0511DBF0FEF9221ADD937FF /* Pods_SlowOK_Admin.framework */,
+				BBF8187D61DB66E5D983D025 /* Pods_SlowOK_User.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -98,16 +150,17 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 8258ECC37F499D6553505A2D /* Build configuration list for PBXNativeTarget "SlowOK-User" */;
 			buildPhases = (
+				6C3123CF0D9E6B72126389F1 /* [CP] Check Pods Manifest.lock */,
 				5D269D2EB2304035EDADD246 /* Sources */,
 				FDD55F575067D6CBC263C17D /* Resources */,
+				35839DBE116BE18B53816FE1 /* Frameworks */,
+				8BFD5B323887B1C4583E0CB6 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = "SlowOK-User";
-			packageProductDependencies = (
-			);
 			productName = "SlowOK-User";
 			productReference = 6E5D6F485D830F0D67F84FBE /* SlowOK.app */;
 			productType = "com.apple.product-type.application";
@@ -116,16 +169,17 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 24FEDADF7C8AB3B450BD272D /* Build configuration list for PBXNativeTarget "SlowOK-Admin" */;
 			buildPhases = (
+				93031D8AD55FE4CE03F468BE /* [CP] Check Pods Manifest.lock */,
 				21F1E1F8011A74ECBA70B253 /* Sources */,
 				FEA57E2E761F8610061536FB /* Resources */,
+				EB4363B16CA938F12BD1F8CB /* Frameworks */,
+				73728DF95F06605FA0B49E69 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = "SlowOK-Admin";
-			packageProductDependencies = (
-			);
 			productName = "SlowOK-Admin";
 			productReference = B1A87D95991AE3C73967B8E4 /* SlowOK Admin.app */;
 			productType = "com.apple.product-type.application";
@@ -165,6 +219,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8D565C310F89B4F93DD6A6F3 /* Assets.xcassets in Resources */,
+				9D8539032F7A71AF0005D97D /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -177,6 +232,95 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		6C3123CF0D9E6B72126389F1 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SlowOK-User-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		73728DF95F06605FA0B49E69 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SlowOK-Admin/Pods-SlowOK-Admin-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SlowOK-Admin/Pods-SlowOK-Admin-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SlowOK-Admin/Pods-SlowOK-Admin-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		8BFD5B323887B1C4583E0CB6 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SlowOK-User/Pods-SlowOK-User-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SlowOK-User/Pods-SlowOK-User-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SlowOK-User/Pods-SlowOK-User-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		93031D8AD55FE4CE03F468BE /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SlowOK-Admin-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		21F1E1F8011A74ECBA70B253 /* Sources */ = {
@@ -208,6 +352,7 @@
 /* Begin XCBuildConfiguration section */
 		0FFBB3FD4A0FC6B2708C9533 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 11E27CEA94379135B0AEBFB6 /* Pods-SlowOK-Admin.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -227,6 +372,7 @@
 		};
 		1737B3E580D768AB6B0975D6 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 66BBF39D989AE080A5EC01B0 /* Pods-SlowOK-Admin.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -312,6 +458,7 @@
 		};
 		94E8D46E13C18E0D5160B06E /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E0FDF57A41E9F4F7F3612C3E /* Pods-SlowOK-User.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -333,6 +480,7 @@
 		};
 		9F95AEA37853AD8C60F8829C /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A4B33B9D42990F142C8B37E5 /* Pods-SlowOK-User.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Apple Development";
