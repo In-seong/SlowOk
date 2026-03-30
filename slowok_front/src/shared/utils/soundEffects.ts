@@ -52,7 +52,7 @@ export function playCorrectSound() {
   playNote(ctx, 261.63, now, 0.3, 0.08, 'triangle') // C4
 }
 
-/** 오답 — 짧은 불협화음 버즈 */
+/** 오답 — 짧은 불협화음 버즈 + 진동 */
 export function playWrongSound() {
   const ctx = getCtx()
   if (!ctx) return
@@ -64,6 +64,11 @@ export function playWrongSound() {
 
   // 약간 높은 불협화음
   playNote(ctx, 220, now, 0.12, 0.06, 'triangle')
+
+  // 진동 (Android WebView 지원, iOS는 무시)
+  if (navigator.vibrate) {
+    navigator.vibrate([50, 30, 50])
+  }
 }
 
 /** 챌린지 성공 — 팡파레 화음 */
