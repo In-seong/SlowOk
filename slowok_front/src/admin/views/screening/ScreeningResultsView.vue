@@ -29,20 +29,15 @@ const filteredResults = computed(() => {
     filtered = filtered.filter(r => r.level === filterLevel.value)
   }
   if (filterUser.value) {
-    filtered = filtered.filter(r => r.profile?.name === filterUser.value)
+    const q = filterUser.value.toLowerCase()
+    filtered = filtered.filter(r =>
+      r.profile?.name?.toLowerCase().includes(q) ||
+      r.profile?.email?.toLowerCase().includes(q)
+    )
   }
   return filtered
 })
 
-const users = computed(() => {
-  const map = new Map<string, string>()
-  for (const r of results.value) {
-    if (r.profile?.name) {
-      map.set(r.profile.name, r.profile.name)
-    }
-  }
-  return Array.from(map.values()).sort()
-})
 
 const levels = computed(() => {
   const set = new Set(results.value.map(r => r.level).filter(Boolean))
@@ -115,14 +110,23 @@ onMounted(fetchResults)
       <div class="flex items-center justify-between mb-4">
         <p class="text-[14px] text-[#888]">진단 검사 결과를 조회합니다.</p>
         <div class="flex items-center gap-3">
-          <!-- 사용자 필터 -->
-          <select
-            v-model="filterUser"
-            class="bg-white border border-[#E8E8E8] rounded-[10px] px-3 py-2 text-[13px] focus:border-[#4CAF50] focus:outline-none"
-          >
-            <option value="">전체 사용자</option>
-            <option v-for="name in users" :key="name" :value="name">{{ name }}</option>
-          </select>
+          <!-- 사용자 검색 -->
+          <div class="relative">
+            <input
+              v-model="filterUser"
+              type="text"
+              placeholder="사용자 검색..."
+              class="bg-white border border-[#E8E8E8] rounded-[10px] pl-8 pr-8 py-2 text-[13px] w-[180px] focus:border-[#4CAF50] focus:outline-none"
+            />
+            <svg class="w-4 h-4 text-[#999] absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+            <button
+              v-if="filterUser"
+              @click="filterUser = ''"
+              class="absolute right-2 top-1/2 -translate-y-1/2 text-[#999] hover:text-[#555]"
+            >
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
           <!-- 레벨 필터 -->
           <select
             v-model="filterLevel"
