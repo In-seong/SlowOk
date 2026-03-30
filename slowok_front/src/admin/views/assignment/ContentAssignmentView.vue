@@ -9,7 +9,7 @@ import { useToastStore } from '@shared/stores/toastStore'
 
 const toast = useToastStore()
 
-const activeTab = ref<'learning_content' | 'screening_test' | 'challenge' | 'package'>('learning_content')
+const activeTab = ref<'learning_content' | 'screening_test' | 'challenge' | 'package'>('challenge')
 const users = ref<Account[]>([])
 const contents = ref<LearningContent[]>([])
 const screenings = ref<ScreeningTest[]>([])
@@ -236,10 +236,10 @@ const currentTabAssignments = computed(() => {
 type TabKey = 'learning_content' | 'screening_test' | 'challenge' | 'package'
 
 const tabOptions: { key: TabKey; label: string }[] = [
-  { key: 'learning_content', label: '학습 콘텐츠' },
+  // { key: 'learning_content', label: '학습 콘텐츠' }, // [미사용]
   { key: 'screening_test', label: '진단' },
   { key: 'challenge', label: '챌린지' },
-  { key: 'package', label: '패키지' },
+  // { key: 'package', label: '패키지' }, // [미사용]
 ]
 
 function switchTab(tab: TabKey) {
@@ -255,6 +255,21 @@ function assignableTypeLabel(type: string): string {
     challenge: '챌린지',
   }
   return map[type] ?? type
+}
+
+function getAssignableName(assignment: ContentAssignment): string {
+  const type = assignment.assignable_type
+  const id = assignment.assignable_id
+  if (type === 'challenge') {
+    return challenges.value.find(c => c.challenge_id === id)?.title ?? `챌린지 #${id}`
+  }
+  if (type === 'screening_test') {
+    return screenings.value.find(s => s.test_id === id)?.title ?? `진단 #${id}`
+  }
+  if (type === 'learning_content') {
+    return contents.value.find(c => c.content_id === id)?.title ?? `콘텐츠 #${id}`
+  }
+  return `#${id}`
 }
 
 onMounted(fetchData)
@@ -382,7 +397,7 @@ onMounted(fetchData)
         <table class="w-full text-[14px]">
           <thead>
             <tr class="bg-[#F8F8F8] text-[#666]">
-              <th class="text-left px-4 py-3 font-medium">ID</th>
+              <th class="text-left px-4 py-3 font-medium">이름</th>
               <th class="text-left px-4 py-3 font-medium">상태</th>
               <th class="text-left px-4 py-3 font-medium">할당일</th>
               <th class="text-left px-4 py-3 font-medium">마감일</th>
@@ -391,7 +406,7 @@ onMounted(fetchData)
           </thead>
           <tbody>
             <tr v-for="a in currentTabAssignments" :key="a.assignment_id" class="border-t border-[#F0F0F0]">
-              <td class="px-4 py-3">{{ a.assignable_id }}</td>
+              <td class="px-4 py-3 font-medium text-[#333]">{{ getAssignableName(a) }}</td>
               <td class="px-4 py-3">
                 <span
                   class="px-2 py-0.5 rounded-full text-[12px]"
