@@ -133,10 +133,8 @@ extension MainView {
     private func handleBridgeMessage(action: String, body: [String: Any]) {
         switch action {
         case "closeApp":
+            // iOS는 프로그래밍 방식 앱 종료 금지 (Apple 정책) — 백그라운드로 전환
             UIApplication.shared.perform(#selector(NSXPCConnection.suspend))
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                exit(0)
-            }
 
         case "sendFCMToken":
             if let savedToken = UserDefaults.standard.string(forKey: "fcmToken") {

@@ -185,12 +185,8 @@ extension WebViewCoordinator: WKUIDelegate {
     }
 
     func webView(_ webView: WKWebView, requestMediaCapturePermissionFor origin: WKSecurityOrigin, initiatedByFrame frame: WKFrameInfo, type: WKMediaCaptureType, decisionHandler: @escaping (WKPermissionDecision) -> Void) {
-        switch type {
-        case .microphone:
-            decisionHandler(.grant)
-        default:
-            decisionHandler(.deny)
-        }
+        // 음성 기능 비활성화 — 모든 미디어 권한 거부
+        decisionHandler(.deny)
     }
 
     func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String, defaultText: String?, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (String?) -> Void) {

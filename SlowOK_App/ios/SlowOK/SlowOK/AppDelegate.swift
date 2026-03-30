@@ -7,9 +7,8 @@
 
 import UIKit
 import UserNotifications
-// TODO: Firebase 설정 후 아래 import 주석 해제
-// import FirebaseCore
-// import FirebaseMessaging
+import FirebaseCore
+import FirebaseMessaging
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -21,12 +20,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
 
-        // TODO: Firebase 설정 후 아래 코드 주석 해제
         // Firebase 초기화
-        // FirebaseApp.configure()
+        FirebaseApp.configure()
 
         // FCM 메시징 델리게이트 등록
-        // Messaging.messaging().delegate = self
+        Messaging.messaging().delegate = self
 
         // 푸시 알림 권한 요청
         UNUserNotificationCenter.current().delegate = self
@@ -38,9 +36,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: - APNs 토큰 등록
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         print("✅ APNs token: \(deviceToken.map { String(format: "%02.2hhx", $0) }.joined())")
-        // TODO: Firebase 설정 후 아래 코드 주석 해제
         // FCM에 APNs 토큰 전달
-        // Messaging.messaging().apnsToken = deviceToken
+        Messaging.messaging().apnsToken = deviceToken
     }
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
@@ -49,8 +46,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 
 // MARK: - Messaging Delegate
-// TODO: Firebase 설정 후 아래 extension 주석 해제
-/*
 extension AppDelegate: MessagingDelegate {
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         guard let token = fcmToken else { return }
@@ -68,7 +63,6 @@ extension AppDelegate: MessagingDelegate {
         )
     }
 }
-*/
 
 // MARK: - Notification Delegate
 extension AppDelegate: UNUserNotificationCenterDelegate {

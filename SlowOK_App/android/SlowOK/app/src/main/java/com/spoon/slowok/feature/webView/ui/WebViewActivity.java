@@ -182,13 +182,7 @@ public class WebViewActivity extends AppCompatActivity {
 
             @Override
             public void onPermissionRequest(final PermissionRequest request) {
-                String[] resources = request.getResources();
-                for (String resource : resources) {
-                    if (PermissionRequest.RESOURCE_AUDIO_CAPTURE.equals(resource)) {
-                        request.grant(new String[]{PermissionRequest.RESOURCE_AUDIO_CAPTURE});
-                        return;
-                    }
-                }
+                // 음성 기능 비활성화 — 모든 미디어 권한 거부
                 request.deny();
             }
         });

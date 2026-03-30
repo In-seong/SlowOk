@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "62304648993",
+    "project_id": "slowok-537ae",
+    "storage_bucket": "slowok-537ae.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:62304648993:android:ddedc4e8c6333d4a624860",
+        "android_client_info": {
+          "package_name": "com.spoon.slowok"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4tzjWQ2JKIkvEGahQuHkU0hGfK6_PcGQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:62304648993:android:ffbdfd0e4c076e95624860",
+        "android_client_info": {
+          "package_name": "com.spoon.slowok.user"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4tzjWQ2JKIkvEGahQuHkU0hGfK6_PcGQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
