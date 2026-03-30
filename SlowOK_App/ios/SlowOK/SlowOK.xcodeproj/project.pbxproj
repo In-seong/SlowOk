@@ -217,7 +217,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.inseong.slowok.admin;
+				PRODUCT_BUNDLE_IDENTIFIER = com.inseong.slowok.personal;
 				PRODUCT_NAME = "SlowOK Admin";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = ADMIN;
@@ -236,7 +236,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.inseong.slowok.admin;
+				PRODUCT_BUNDLE_IDENTIFIER = com.inseong.slowok.personal;
 				PRODUCT_NAME = "SlowOK Admin";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = ADMIN;
@@ -322,7 +322,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.inseong.slowok.user;
+				PRODUCT_BUNDLE_IDENTIFIER = com.inseong.slowok.personal;
 				PRODUCT_NAME = SlowOK;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
@@ -343,7 +343,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.inseong.slowok.user;
+				PRODUCT_BUNDLE_IDENTIFIER = com.inseong.slowok.personal;
 				PRODUCT_NAME = SlowOK;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;

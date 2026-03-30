@@ -36,7 +36,7 @@ android {
     productFlavors {
         create("user") {
             dimension = "version"
-            applicationId = "com.inseong.slowok.user"
+            applicationId = "com.inseong.slowok.personal"
         }
         create("admin") {
             dimension = "version"

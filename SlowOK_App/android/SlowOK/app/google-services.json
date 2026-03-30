@@ -7,9 +7,28 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:62304648993:android:7c42f3c4172e988c624860",
+        "mobilesdk_app_id": "1:62304648993:android:f758e1e391197332624860",
         "android_client_info": {
-          "package_name": "com.inseong.slowok.user"
+          "package_name": "com.inseong.slowok.personal"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4tzjWQ2JKIkvEGahQuHkU0hGfK6_PcGQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:62304648993:android:cff5ff2005640f7e624860",
+        "android_client_info": {
+          "package_name": "com.inseong.slowok.presonal"
         }
       },
       "oauth_client": [],

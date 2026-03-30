@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.inseong.slowok.user</string>
+	<string>com.inseong.slowok.personal</string>
 	<key>PROJECT_ID</key>
 	<string>slowok-537ae</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:62304648993:ios:f8b08011677936cf624860</string>
+	<string>1:62304648993:ios:ead6ea5e2cc49978624860</string>
 </dict>
 </plist>

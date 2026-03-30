@@ -22,7 +22,7 @@ targets:
           - plist/Info-Admin.plist
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.inseong.slowok.user
+        PRODUCT_BUNDLE_IDENTIFIER: com.inseong.slowok.personal
         INFOPLIST_FILE: SlowOK/plist/Info-User.plist
         PRODUCT_NAME: SlowOK
         SWIFT_ACTIVE_COMPILATION_CONDITIONS: USER
