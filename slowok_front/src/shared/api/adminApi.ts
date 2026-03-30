@@ -155,15 +155,15 @@ export const adminApi = {
     return api.delete<ApiResponse<null>>(`/admin/master/admins/${id}`)
   },
 
-  // AI 콘텐츠 생성
+  // AI 생성
   getAiUsage() {
     return api.get<ApiResponse<{ today: { requests: number; success: number; tokens: number; limit: number }; month: { requests: number; success: number; tokens: number } }>>('/admin/ai-content/usage')
   },
-  generateAiContent(prompt: string) {
-    return api.post<ApiResponse<Record<string, unknown>>>('/admin/ai-content/generate', { prompt }, { timeout: 120000 })
+  generateAiContent(prompt: string, mode: 'challenge' | 'screening' | 'all' = 'all') {
+    return api.post<ApiResponse<Record<string, unknown>>>('/admin/ai-content/generate', { prompt, mode }, { timeout: 120000 })
   },
   saveAiContent(data: Record<string, unknown>) {
-    return api.post<ApiResponse<{ package_id: number; package_name: string; counts: { learning_contents: number; challenges: number; screening_tests: number } }>>('/admin/ai-content/save', data)
+    return api.post<ApiResponse<{ counts: { challenges: number; screening_tests: number } }>>('/admin/ai-content/save', data)
   },
 
   // MASTER 전용 - 권한 관리

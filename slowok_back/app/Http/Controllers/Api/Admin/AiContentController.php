@@ -4,9 +4,6 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Models\Challenge;
 use App\Models\ChallengeQuestion;
-use App\Models\ContentPackage;
-use App\Models\ContentPackageItem;
-use App\Models\LearningContent;
 use App\Models\ScreeningQuestion;
 use App\Models\ScreeningTest;
 use App\Services\GeminiService;
@@ -20,6 +17,7 @@ class AiContentController extends BaseAdminController
     {
         $request->validate([
             'prompt' => 'required|string|min:10|max:2000',
+            'mode' => 'nullable|string|in:challenge,screening,all',
         ]);
 
         $instId = $this->getInstitutionId($request);
@@ -30,10 +28,12 @@ class AiContentController extends BaseAdminController
             ], 422);
         }
 
+        $mode = $request->input('mode', 'all');
+
         try {
             $service = new GeminiService();
             $accountId = $request->user()->account_id;
-            $data = $service->generateContentPackage($request->input('prompt'), $instId, $accountId);
+            $data = $service->generateContentPackage($request->input('prompt'), $instId, $accountId, $mode);
 
             return response()->json([
                 'success' => true,
@@ -75,19 +75,9 @@ class AiContentController extends BaseAdminController
     public function save(Request $request): JsonResponse
     {
         $request->validate([
-            'package' => 'nullable|array',
-            'package.name' => 'nullable|string',
-            'learning_contents' => 'nullable|array',
             'challenge' => 'nullable|array',
             'screening_test' => 'nullable|array',
         ]);
-
-        // package가 없으면 자동 생성
-        if (!$request->input('package.name')) {
-            $request->merge([
-                'package' => ['name' => 'AI 생성 패키지 (' . now()->format('Y-m-d H:i') . ')'],
-            ]);
-        }
 
         $instId = $this->getInstitutionId($request);
         if (!$instId) {
@@ -101,29 +91,10 @@ class AiContentController extends BaseAdminController
         $accountId = $request->user()->account_id;
 
         try {
-            $result = DB::transaction(function () use ($data, $instId, $accountId) {
-                $counts = ['learning_contents' => 0, 'challenges' => 0, 'screening_tests' => 0];
-                $packageItems = [];
-                $sortOrder = 1;
+            $result = DB::transaction(function () use ($data, $instId) {
+                $counts = ['challenges' => 0, 'screening_tests' => 0];
 
-                // 1. LearningContent 생성
-                if (!empty($data['learning_contents'])) {
-                    foreach ($data['learning_contents'] as $lc) {
-                        $content = LearningContent::create([
-                            'category_id' => $lc['category_id'],
-                            'title' => $lc['title'],
-                            'content_type' => $lc['content_type'],
-                            'content_data' => $lc['content_data'] ?? null,
-                            'difficulty_level' => $lc['difficulty_level'] ?? 1,
-                            'institution_id' => $instId,
-                            'is_active' => true,
-                        ]);
-                        $packageItems[] = ['type' => 'learning_content', 'id' => $content->content_id, 'order' => $sortOrder++];
-                        $counts['learning_contents']++;
-                    }
-                }
-
-                // 2. Challenge + Questions 생성
+                // 1. Challenge + Questions 생성
                 if (!empty($data['challenge'])) {
                     $ch = $data['challenge'];
                     $challenge = Challenge::create([
@@ -144,16 +115,16 @@ class AiContentController extends BaseAdminController
                                 'options' => $q['options'] ?? null,
                                 'correct_answer' => $q['correct_answer'] ?? null,
                                 'match_pairs' => $q['match_pairs'] ?? null,
+                                'accept_answers' => $q['accept_answers'] ?? null,
                                 'order' => $q['order'] ?? 1,
                             ]);
                         }
                     }
 
-                    $packageItems[] = ['type' => 'challenge', 'id' => $challenge->challenge_id, 'order' => $sortOrder++];
                     $counts['challenges'] = 1;
                 }
 
-                // 3. ScreeningTest + Questions 생성
+                // 2. ScreeningTest + Questions 생성
                 if (!empty($data['screening_test'])) {
                     $st = $data['screening_test'];
                     $questions = $st['questions'] ?? [];
@@ -182,40 +153,20 @@ class AiContentController extends BaseAdminController
                         ]);
                     }
 
-                    $packageItems[] = ['type' => 'screening_test', 'id' => $test->test_id, 'order' => $sortOrder++];
                     $counts['screening_tests'] = 1;
                 }
 
-                // 4. ContentPackage 생성 + Items 연결
-                $pkg = $data['package'];
-                $package = ContentPackage::create([
-                    'name' => $pkg['name'],
-                    'description' => $pkg['description'] ?? '',
-                    'created_by' => $accountId,
-                    'institution_id' => $instId,
-                    'is_active' => true,
-                ]);
-
-                foreach ($packageItems as $item) {
-                    ContentPackageItem::create([
-                        'package_id' => $package->package_id,
-                        'assignable_type' => $item['type'],
-                        'assignable_id' => $item['id'],
-                        'sort_order' => $item['order'],
-                    ]);
-                }
-
-                return [
-                    'package_id' => $package->package_id,
-                    'package_name' => $package->name,
-                    'counts' => $counts,
-                ];
+                return ['counts' => $counts];
             });
+
+            $parts = [];
+            if ($result['counts']['challenges'] > 0) $parts[] = "챌린지 {$result['counts']['challenges']}개";
+            if ($result['counts']['screening_tests'] > 0) $parts[] = "진단검사 {$result['counts']['screening_tests']}개";
 
             return response()->json([
                 'success' => true,
                 'data' => $result,
-                'message' => "콘텐츠 패키지가 생성되었습니다. (학습 {$result['counts']['learning_contents']}개, 챌린지 {$result['counts']['challenges']}개, 검사 {$result['counts']['screening_tests']}개)",
+                'message' => 'AI 생성 완료! (' . implode(', ', $parts) . ')',
             ], 201);
         } catch (\Exception $e) {
             return response()->json([

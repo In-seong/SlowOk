@@ -116,13 +116,12 @@ const router = createRouter({
     //   component: () => import('../views/package/ContentPackageManageView.vue'),
     //   meta: { requiresAuth: true, permissionKey: 'package_manage' },
     // },
-    // [미사용] 콘텐츠 관리 비활성화에 따라 함께 비활성화
-    // {
-    //   path: '/ai-content',
-    //   name: 'ai-content',
-    //   component: () => import('../views/ai/AiContentGenerateView.vue'),
-    //   meta: { requiresAuth: true, permissionKey: 'content_manage' },
-    // },
+    {
+      path: '/ai-content',
+      name: 'ai-content',
+      component: () => import('../views/ai/AiContentGenerateView.vue'),
+      meta: { requiresAuth: true, permissionKey: 'content_manage' },
+    },
     {
       path: '/recommendation-rules',
       name: 'recommendation-rules',
