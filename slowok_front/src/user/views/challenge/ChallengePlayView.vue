@@ -97,12 +97,12 @@ function checkAnswer(): void {
   const type = q.question_type ?? 'multiple_choice'
 
   if (type === 'multiple_choice') {
-    // questionResults는 selectOption에서 이미 설정됨
-    feedbackCorrect.value = questionResults.value[idx] ?? false
+    // 정답을 맞춰야만 확인 버튼이 활성화되므로 항상 정답 피드백
+    feedbackCorrect.value = true
     feedbackAnswer.value = q.correct_answer ?? ''
   } else if (questionResults.value[idx] !== undefined) {
-    // image_choice, matching, image_text, image_voice — 컴포넌트가 이미 판정
-    feedbackCorrect.value = questionResults.value[idx]
+    // image_choice: 정답 맞춰야만 emit하므로 항상 true, matching/image_text는 컴포넌트 판정
+    feedbackCorrect.value = (type === 'image_choice') ? true : questionResults.value[idx]
     feedbackAnswer.value = q.correct_answer ?? q.accept_answers?.[0] ?? ''
   } else {
     // 컴포넌트가 아직 결과를 emit하지 않은 경우 (방어)
