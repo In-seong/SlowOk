@@ -6,7 +6,7 @@ import BackHeader from '@shared/components/layout/BackHeader.vue'
 import BottomNav from '@shared/components/layout/BottomNav.vue'
 import CardSection from '@shared/components/ui/CardSection.vue'
 import StatusBadge from '@shared/components/ui/StatusBadge.vue'
-import SectionTitle from '@shared/components/ui/SectionTitle.vue'
+// import SectionTitle from '@shared/components/ui/SectionTitle.vue' // [미사용] 보상카드 비활성화
 import { useChallengeStore } from '../../stores/challengeStore'
 
 const router = useRouter()
@@ -15,10 +15,7 @@ const challengeStore = useChallengeStore()
 const activeCategory = ref('전체')
 
 onMounted(async () => {
-  await Promise.all([
-    challengeStore.fetchChallenges(),
-    challengeStore.fetchRewardCards(),
-  ])
+  await challengeStore.fetchChallenges()
 })
 
 /** Build unique category list from fetched challenges */
@@ -72,16 +69,8 @@ function getCategoryBadgeVariant(category: string | undefined): 'warning' | 'inf
   }
 }
 
-/** Reward color gradient for cards by rarity */
-function getRewardColor(rarity: string): string {
-  switch (rarity) {
-    case 'COMMON': return 'from-green-400 to-emerald-500'
-    case 'RARE': return 'from-cyan-400 to-blue-500'
-    case 'EPIC': return 'from-purple-400 to-indigo-500'
-    case 'LEGENDARY': return 'from-amber-400 to-orange-500'
-    default: return 'from-pink-400 to-rose-500'
-  }
-}
+// [미사용] 보상카드 비활성화
+// function getRewardColor(rarity: string): string { ... }
 </script>
 
 <template>
@@ -244,39 +233,7 @@ function getRewardColor(rarity: string): string {
           <p class="text-[13px] text-[#999]">해당 카테고리에 챌린지가 없습니다</p>
         </div>
 
-        <!-- Earned reward cards (horizontal scroll) -->
-        <div v-if="challengeStore.rewardCards.length > 0" class="mt-8">
-          <SectionTitle title="획득한 보상 카드">
-            <template #icon>
-              <svg class="w-[18px] h-[18px] text-[#FF9800]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-              </svg>
-            </template>
-          </SectionTitle>
-          <div class="flex gap-3 overflow-x-auto pb-2 mt-3 scrollbar-hide">
-            <div
-              v-for="card in challengeStore.rewardCards"
-              :key="'reward-' + card.card_id"
-              :class="'bg-gradient-to-br ' + getRewardColor(card.rarity)"
-              class="w-[100px] h-[130px] rounded-[16px] p-3 flex flex-col justify-between text-white shrink-0 relative overflow-hidden"
-            >
-              <!-- Decorative -->
-              <div class="absolute -right-3 -bottom-3 w-[40px] h-[40px] bg-white/10 rounded-full" />
-              <div class="absolute right-2 top-2 w-[16px] h-[16px] bg-white/10 rounded-full" />
-              <!-- Card icon -->
-              <div class="w-[28px] h-[28px] bg-white/20 rounded-full flex items-center justify-center relative z-[1]">
-                <svg class="w-[14px] h-[14px] text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                </svg>
-              </div>
-              <!-- Card info -->
-              <div class="relative z-[1]">
-                <p class="text-[11px] font-bold leading-tight mb-1">{{ card.name }}</p>
-                <p v-if="card.description" class="text-[9px] text-white/70 truncate">{{ card.description }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <!-- [미사용] 보상카드 부여 로직 미구현 — 추후 완성 시 활성화 -->
       </template>
     </main>
 

@@ -18,10 +18,7 @@ const pageLoading = ref(true)
 onMounted(async () => {
   try {
     await authStore.fetchUser()
-    await Promise.all([
-      challengeStore.fetchChallenges(),
-      challengeStore.fetchRewardCards(),
-    ])
+    await challengeStore.fetchChallenges()
   } catch (e: any) {
     toast.error(e.response?.data?.message || '데이터를 불러오지 못했습니다.')
   } finally {

@@ -75,12 +75,13 @@ const router = createRouter({
       component: () => import('../views/challenge/ChallengeQuestionEditView.vue'),
       meta: { requiresAuth: true, permissionKey: 'challenge_manage' },
     },
-    {
-      path: '/reward-cards',
-      name: 'reward-cards',
-      component: () => import('../views/reward/RewardCardManageView.vue'),
-      meta: { requiresAuth: true, permissionKey: 'reward_manage' },
-    },
+    // [미사용] 보상카드 부여 로직 미구현 — 추후 완성 시 활성화
+    // {
+    //   path: '/reward-cards',
+    //   name: 'reward-cards',
+    //   component: () => import('../views/reward/RewardCardManageView.vue'),
+    //   meta: { requiresAuth: true, permissionKey: 'reward_manage' },
+    // },
     {
       path: '/institutions',
       name: 'institutions',
