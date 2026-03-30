@@ -87,12 +87,13 @@ const router = createRouter({
       component: () => import('../views/institution/InstitutionManageView.vue'),
       meta: { requiresAuth: true, permissionKey: 'institution_manage' },
     },
-    {
-      path: '/subscriptions',
-      name: 'subscriptions',
-      component: () => import('../views/subscription/SubscriptionManageView.vue'),
-      meta: { requiresAuth: true, permissionKey: 'subscription_manage' },
-    },
+    // [미사용] 사용자 앱에서 구독 기능 미사용 — 추후 과금 모델 도입 시 활성화
+    // {
+    //   path: '/subscriptions',
+    //   name: 'subscriptions',
+    //   component: () => import('../views/subscription/SubscriptionManageView.vue'),
+    //   meta: { requiresAuth: true, permissionKey: 'subscription_manage' },
+    // },
     {
       path: '/reports',
       name: 'reports',
@@ -105,12 +106,13 @@ const router = createRouter({
       component: () => import('../views/assignment/ContentAssignmentView.vue'),
       meta: { requiresAuth: true, permissionKey: 'content_assign' },
     },
-    {
-      path: '/content-packages',
-      name: 'content-packages',
-      component: () => import('../views/package/ContentPackageManageView.vue'),
-      meta: { requiresAuth: true, permissionKey: 'package_manage' },
-    },
+    // [미사용] 사용자 앱에서 패키지 기능 미사용 — 추후 필요 시 활성화
+    // {
+    //   path: '/content-packages',
+    //   name: 'content-packages',
+    //   component: () => import('../views/package/ContentPackageManageView.vue'),
+    //   meta: { requiresAuth: true, permissionKey: 'package_manage' },
+    // },
     {
       path: '/ai-content',
       name: 'ai-content',
