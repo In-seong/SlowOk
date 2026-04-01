@@ -129,6 +129,16 @@ const subDomainDescriptions = computed<Record<string, string>>(() => {
     <BackHeader title="진단 결과 상세" :on-back="() => router.back()" />
 
     <main class="px-5 pb-[80px] pt-4 space-y-4">
+      <!-- 면책 + 출처 -->
+      <div class="bg-[#FFF8E1] rounded-[12px] p-3">
+        <p class="text-[11px] text-[#F57F17] leading-relaxed">
+          본 결과는 의료 진단이 아닌 <strong>교육 목적의 발달 선별 결과</strong>입니다.
+        </p>
+        <p class="text-[10px] text-[#999] mt-1.5 leading-relaxed">
+          참고: Social Skills Rating System (Gresham & Elliott, 1990), 한국판 사회성숙도검사(SMS), 국립특수교육원 가이드라인
+        </p>
+      </div>
+
       <!-- 로딩 -->
       <div v-if="loading" class="flex items-center justify-center py-20">
         <p class="text-[14px] text-[#999]">불러오는 중...</p>

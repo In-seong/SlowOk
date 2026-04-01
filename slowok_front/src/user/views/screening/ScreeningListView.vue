@@ -65,6 +65,15 @@ const isEmpty = computed(() => !screeningStore.loading && screeningStore.tests.l
     <BackHeader title="진단 검사" />
 
     <main class="px-5 pb-[80px] pt-4 space-y-3">
+      <!-- 면책 안내 -->
+      <div class="bg-[#FFF8E1] rounded-[12px] p-3">
+        <p class="text-[11px] text-[#F57F17] leading-relaxed">
+          본 검사는 의료 진단이 아닌 <strong>교육 목적의 발달 선별 도구</strong>입니다.
+          정확한 진단은 전문 의료기관을 방문해주세요.
+          <a href="https://slowokuser.revuplan.com/privacy.html" class="underline">참고 정보</a>
+        </p>
+      </div>
+
       <!-- Loading State -->
       <div v-if="screeningStore.loading" class="flex items-center justify-center py-20">
         <p class="text-[14px] text-[#999]">불러오는 중...</p>
