@@ -47,3 +47,7 @@ storage/app/public/audios/*
 storage/app/public/thumbnails/*
 storage/app/public/recordings/*
 !storage/app/public/.gitkeep
+SlowOK_App/android/SlowOK/app/build/
+SlowOK_App/android/SlowOK/.gradle/
+SlowOK_App/android/SlowOK/build/
+SlowOK_App/android/SlowOK/local.properties
