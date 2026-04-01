@@ -70,7 +70,9 @@ const isEmpty = computed(() => !screeningStore.loading && screeningStore.tests.l
         <p class="text-[11px] text-[#F57F17] leading-relaxed">
           본 검사는 의료 진단이 아닌 <strong>교육 목적의 발달 선별 도구</strong>입니다.
           정확한 진단은 전문 의료기관을 방문해주세요.
-          <a href="https://slowokuser.revuplan.com/privacy.html" class="underline">참고 정보</a>
+        </p>
+        <p class="text-[10px] text-[#999] mt-1">
+          참고: Social Skills Rating System (Gresham & Elliott, 1990), 한국판 사회성숙도검사(SMS)
         </p>
       </div>
 
