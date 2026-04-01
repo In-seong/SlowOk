@@ -108,12 +108,14 @@ class PushNotificationController extends BaseAdminController
 
         $totalTokens = $query->count();
         $uniqueAccounts = (clone $query)->distinct('account_id')->count('account_id');
+        $accountIdsWithToken = (clone $query)->distinct()->pluck('account_id')->toArray();
 
         return response()->json([
             'success' => true,
             'data' => [
                 'total_tokens' => $totalTokens,
                 'unique_accounts' => $uniqueAccounts,
+                'account_ids_with_token' => $accountIdsWithToken,
             ],
         ]);
     }

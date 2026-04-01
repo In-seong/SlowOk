@@ -15,7 +15,7 @@ const error = ref('')
 const debugInfo = ref<Record<string, unknown> | null>(null)
 
 // 통계
-const stats = ref<{ total_tokens: number; unique_accounts: number } | null>(null)
+const stats = ref<{ total_tokens: number; unique_accounts: number; account_ids_with_token?: number[] } | null>(null)
 
 // 사용자 목록 (specific 모드용)
 const users = ref<Account[]>([])
@@ -203,6 +203,8 @@ async function handleSend() {
                 <input type="checkbox" :checked="selectedIds.has(u.account_id)" class="w-3.5 h-3.5 accent-[#4CAF50] pointer-events-none" />
                 <span class="text-[13px]">{{ u.profile?.name ?? u.username }}</span>
                 <span class="text-[11px] text-[#999]">({{ u.username }})</span>
+                <span v-if="stats?.account_ids_with_token?.includes(u.account_id)" class="ml-auto text-[10px] px-1.5 py-0.5 rounded-full bg-green-50 text-green-600 font-medium">푸시 가능</span>
+                <span v-else class="ml-auto text-[10px] px-1.5 py-0.5 rounded-full bg-gray-100 text-[#999] font-medium">토큰 없음</span>
               </div>
             </div>
             <p class="text-[11px] text-[#888] mt-2">{{ selectedIds.size }}명 선택</p>
