@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/authStore'
+import turtleImg from '@shared/assets/turtle.png'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -23,17 +24,9 @@ async function handleLogin(): Promise<void> {
   <div class="min-h-screen bg-gradient-to-b from-[#E8F5E9] to-white flex flex-col">
     <!-- Logo Section -->
     <div class="flex-1 flex flex-col items-center justify-center pt-16 pb-8">
-      <div class="w-[72px] h-[72px] rounded-full bg-[#4CAF50] flex items-center justify-center mb-5">
-        <svg class="w-9 h-9 text-white" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M18 8V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-          <path d="M14.5 10L13 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-          <path d="M21.5 10L23 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-          <path d="M18 30C15.5 30 13.5 29.2 12 28C10 26 9 23.5 9 20C9 18.5 9.3 17.2 9.8 16C10.5 14.5 11.5 13.2 13 12.5C14 12 15.2 11.5 16.5 11.2C17 11.1 17.5 11 18 11C18.5 11 19 11.1 19.5 11.2C20.8 11.5 22 12 23 12.5C24.5 13.2 25.5 14.5 26.2 16C26.7 17.2 27 18.5 27 20C27 23.5 26 26 24 28C22.5 29.2 20.5 30 18 30Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-          <path d="M18 18V25M18 25L15.5 22.5M18 25L20.5 22.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-      </div>
+      <img :src="turtleImg" alt="느려도 괜찮아" class="w-[120px] h-[120px] object-contain mb-3" />
       <h1 class="text-[24px] font-bold text-[#333]">느려도 괜찮아</h1>
-      <p class="text-[14px] text-[#888] mt-1">맞춤형 학습지원 플랫폼</p>
+      <p class="text-[14px] text-[#888] mt-1">아이의 속도에 맞춘 사회성 발달 학습 플랫폼</p>
     </div>
 
     <!-- Login Card -->
