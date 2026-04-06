@@ -24,7 +24,7 @@ async function handleLogin(): Promise<void> {
   <div class="min-h-screen bg-gradient-to-b from-[#E8F5E9] to-white flex flex-col">
     <!-- Logo Section -->
     <div class="flex-1 flex flex-col items-center justify-center pt-16 pb-8">
-      <img :src="turtleImg" alt="느려도 괜찮아" class="w-[120px] h-[120px] object-contain mb-3" />
+      <img :src="turtleImg" alt="느려도 괜찮아" class="w-[240px] h-[240px] object-contain mb-3" />
       <h1 class="text-[24px] font-bold text-[#333]">느려도 괜찮아</h1>
       <p class="text-[14px] text-[#888] mt-1">아이의 속도에 맞춘 사회성 발달 학습 플랫폼</p>
     </div>
