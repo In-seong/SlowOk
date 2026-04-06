@@ -46,6 +46,7 @@ export default defineConfig({
       }
     }
   },
+  publicDir: 'public-admin',
   build: {
     outDir: '../slowok_back/public/admin',
     emptyOutDir: true,
