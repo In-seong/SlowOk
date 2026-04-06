@@ -134,9 +134,11 @@ const subDomainDescriptions = computed<Record<string, string>>(() => {
         <p class="text-[11px] text-[#F57F17] leading-relaxed">
           본 결과는 의료 진단이 아닌 <strong>교육 목적의 발달 선별 결과</strong>입니다.
         </p>
-        <p class="text-[10px] text-[#999] mt-1.5 leading-relaxed">
-          참고: Social Skills Rating System (Gresham & Elliott, 1990), 한국판 사회성숙도검사(SMS), 국립특수교육원 가이드라인
-        </p>
+        <div class="mt-1.5 space-y-0.5">
+          <p class="text-[10px] text-[#888]">참고문헌:</p>
+          <a href="https://psycnet.apa.org/record/1990-98005-000" target="_blank" rel="noopener" class="block text-[10px] text-[#2196F3] underline">• Gresham & Elliott (1990). SSRS</a>
+          <a href="https://www.nise.go.kr" target="_blank" rel="noopener" class="block text-[10px] text-[#2196F3] underline">• 국립특수교육원 가이드라인</a>
+        </div>
       </div>
 
       <!-- 로딩 -->

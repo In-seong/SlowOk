@@ -18,7 +18,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="max-w-[402px] mx-auto min-h-screen bg-[#FAFAFA] relative">
+  <div class="max-w-[600px] mx-auto min-h-screen bg-[#FAFAFA] relative">
     <template v-if="initialized">
       <RouterView />
     </template>
