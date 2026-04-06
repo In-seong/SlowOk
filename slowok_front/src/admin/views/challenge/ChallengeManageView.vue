@@ -32,6 +32,7 @@ const form = ref({
   challenge_type: '',
   difficulty_level: 1,
   allow_retry: true,
+  sort_order: 0,
 })
 
 function resetForm() {
@@ -41,6 +42,7 @@ function resetForm() {
     challenge_type: '',
     difficulty_level: 1,
     allow_retry: true,
+    sort_order: 0,
   }
   modalError.value = ''
   editingId.value = null
@@ -61,6 +63,7 @@ function openEditModal(challenge: Challenge) {
     challenge_type: challenge.challenge_type,
     difficulty_level: challenge.difficulty_level,
     allow_retry: challenge.allow_retry !== false,
+    sort_order: (challenge as any).sort_order ?? 0,
   }
   modalError.value = ''
   showModal.value = true
@@ -111,6 +114,7 @@ async function handleSubmit() {
     challenge_type: form.value.challenge_type.trim(),
     difficulty_level: form.value.difficulty_level,
     allow_retry: form.value.allow_retry,
+    sort_order: form.value.sort_order,
   }
 
   try {
@@ -176,7 +180,7 @@ async function duplicateChallenge(challenge: Challenge) {
 // 검색 + 유형 필터 + 정렬 + 페이징
 const searchQuery = ref('')
 const filterType = ref('')
-const sortBy = ref<'type' | 'title' | 'difficulty'>('type')
+const sortBy = ref<'sort' | 'type' | 'title' | 'difficulty'>('sort')
 const currentPage = ref(1)
 const perPage = 15
 
@@ -205,6 +209,11 @@ const filteredChallenges = computed(() => {
   }
   // 정렬
   return [...filtered].sort((a, b) => {
+    if (sortBy.value === 'sort') {
+      const wDiff = weekOrder(a.challenge_type ?? '') - weekOrder(b.challenge_type ?? '')
+      if (wDiff !== 0) return wDiff
+      return ((a as any).sort_order ?? 0) - ((b as any).sort_order ?? 0)
+    }
     if (sortBy.value === 'type') {
       const diff = weekOrder(a.challenge_type ?? '') - weekOrder(b.challenge_type ?? '')
       return diff !== 0 ? diff : a.title.localeCompare(b.title)
@@ -276,6 +285,7 @@ onMounted(fetchData)
             v-model="sortBy"
             class="bg-white border border-[#E8E8E8] rounded-[10px] px-3 py-2 text-[13px] focus:border-[#4CAF50] focus:outline-none"
           >
+            <option value="sort">순서순</option>
             <option value="type">주차순</option>
             <option value="title">제목순</option>
             <option value="difficulty">난이도순</option>
@@ -321,6 +331,7 @@ onMounted(fetchData)
                 <th class="px-5 py-3 font-semibold text-[#555]">카테고리</th>
                 <th class="px-5 py-3 font-semibold text-[#555]">유형</th>
                 <th class="px-5 py-3 font-semibold text-[#555]">문항</th>
+                <th class="px-3 py-3 font-semibold text-[#555] w-[60px]">순서</th>
                 <th class="px-5 py-3 font-semibold text-[#555]">난이도</th>
                 <th class="px-5 py-3 font-semibold text-[#555]">재도전</th>
                 <th class="px-5 py-3 font-semibold text-[#555]">액션</th>
@@ -344,6 +355,9 @@ onMounted(fetchData)
                   <span class="text-[13px] font-medium" :class="(challenge.questions?.length ?? 0) === 0 ? 'text-red-400' : 'text-[#555]'">
                     {{ challenge.questions?.length ?? 0 }}개
                   </span>
+                </td>
+                <td class="px-3 py-3.5 text-center">
+                  <span class="text-[13px] font-bold text-[#4CAF50]">{{ (challenge as any).sort_order ?? 0 }}</span>
                 </td>
                 <td class="px-5 py-3.5 text-[#888] text-[13px]">
                   {{ difficultyStars(challenge.difficulty_level) }}
@@ -462,6 +476,19 @@ onMounted(fetchData)
                 <option value="" disabled>주차 선택</option>
                 <option v-for="opt in CHALLENGE_TYPE_OPTIONS" :key="opt" :value="opt">{{ opt }}</option>
               </select>
+            </div>
+
+            <!-- 순서 -->
+            <div class="mb-4">
+              <label class="block text-[14px] font-semibold text-[#333] mb-1.5">순서 (같은 주차 내 정렬)</label>
+              <input
+                v-model.number="form.sort_order"
+                type="number"
+                min="0"
+                placeholder="0"
+                class="w-full bg-[#F8F8F8] border border-[#E8E8E8] rounded-[12px] px-4 py-3 text-[15px] focus:border-[#4CAF50] focus:outline-none transition-colors"
+              />
+              <p class="text-[11px] text-[#999] mt-1">숫자가 작을수록 앞에 표시됩니다</p>
             </div>
 
             <!-- 난이도 -->
