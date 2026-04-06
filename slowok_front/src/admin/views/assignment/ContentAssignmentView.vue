@@ -225,7 +225,16 @@ async function handleRemoveAssignment(assignmentId: number) {
 const currentItems = computed(() => {
   if (activeTab.value === 'learning_content') return contents.value.map((c) => ({ id: c.content_id, title: c.title, sub: c.content_type }))
   if (activeTab.value === 'screening_test') return screenings.value.map((s) => ({ id: s.test_id, title: s.title, sub: `${s.question_count}문항` }))
-  return challenges.value.map((c) => ({ id: c.challenge_id, title: c.title, sub: c.challenge_type }))
+  return challenges.value
+    .slice()
+    .sort((a, b) => {
+      const wA = (a.challenge_type ?? '').match(/(\d+)주차/)?.[1]
+      const wB = (b.challenge_type ?? '').match(/(\d+)주차/)?.[1]
+      const weekDiff = (wA ? parseInt(wA) : 999) - (wB ? parseInt(wB) : 999)
+      if (weekDiff !== 0) return weekDiff
+      return ((a as any).sort_order ?? 0) - ((b as any).sort_order ?? 0)
+    })
+    .map((c) => ({ id: c.challenge_id, title: c.title, sub: `${c.challenge_type ?? ''} #${(c as any).sort_order ?? 0}` }))
 })
 
 // 현재 탭의 기존 할당 목록 (해제용 — 단일 선택 시)
@@ -286,7 +295,9 @@ function getAssignableName(assignment: ContentAssignment): string {
   const type = assignment.assignable_type
   const id = assignment.assignable_id
   if (type === 'challenge') {
-    return challenges.value.find(c => c.challenge_id === id)?.title ?? `챌린지 #${id}`
+    const c = challenges.value.find(c => c.challenge_id === id)
+    if (c) return `[${c.challenge_type ?? ''} #${(c as any).sort_order ?? 0}] ${c.title}`
+    return `챌린지 #${id}`
   }
   if (type === 'screening_test') {
     return screenings.value.find(s => s.test_id === id)?.title ?? `진단 #${id}`

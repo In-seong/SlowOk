@@ -60,7 +60,9 @@ class ContentAssignment extends Model
         return match ($this->assignable_type) {
             'screening_test' => $this->screeningTest?->title,
             'learning_content' => $this->learningContent?->title,
-            'challenge' => $this->challenge?->title,
+            'challenge' => $this->challenge
+                ? '[' . ($this->challenge->challenge_type ?? '') . ' #' . ($this->challenge->sort_order ?? 0) . '] ' . $this->challenge->title
+                : null,
             default => null,
         };
     }
