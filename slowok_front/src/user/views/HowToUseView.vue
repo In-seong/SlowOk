@@ -164,7 +164,7 @@ function getPreviewTextColor(variant?: string): string {
 
 <template>
   <div class="min-h-screen bg-[#F5F5F5] flex justify-center">
-    <div class="w-full max-w-[402px] min-h-screen relative bg-[#F5F5F5] flex flex-col">
+    <div class="w-full max-w-[402px] md:max-w-[600px] min-h-screen relative bg-[#F5F5F5] flex flex-col">
       <BackHeader title="사용 가이드" />
 
       <main class="flex-1 px-5 pb-[80px] pt-3 space-y-4 overflow-y-auto">

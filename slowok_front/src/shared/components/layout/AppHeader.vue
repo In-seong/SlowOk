@@ -6,7 +6,7 @@ const router = useRouter()
 </script>
 
 <template>
-  <header class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[402px] h-[66px] bg-[#E8F5E9] z-40 flex justify-between items-center px-5 border-b border-[#C8E6C9]">
+  <header class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[402px] md:max-w-[600px] h-[66px] bg-[#E8F5E9] z-40 flex justify-between items-center px-5 border-b border-[#C8E6C9]">
     <div class="flex items-center gap-0">
       <img :src="turtleImg" alt="느려도 괜찮아" class="w-[90px] h-[90px] -my-4 -ml-4" />
       <span class="text-[17px] font-bold text-[#333]"><slot name="title">느려도 괜찮아</slot></span>

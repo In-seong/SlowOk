@@ -27,7 +27,7 @@ function navigateTo(item: NavItem): void {
 
 <template>
   <nav
-    class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[402px] bg-white border-t border-[#E0E0E0] flex items-center justify-around z-50"
+    class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[402px] md:max-w-[600px] bg-white border-t border-[#E0E0E0] flex items-center justify-around z-50"
     :style="{ paddingBottom: 'env(safe-area-inset-bottom)' }"
   >
     <button

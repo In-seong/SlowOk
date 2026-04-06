@@ -158,7 +158,7 @@ function closeTest(): void {
 </script>
 
 <template>
-  <div class="min-h-screen bg-white max-w-[402px] mx-auto flex flex-col">
+  <div class="min-h-screen bg-white max-w-[402px] md:max-w-[600px] mx-auto flex flex-col">
     <!-- 로딩 상태 -->
     <div v-if="questionsLoading" class="flex-1 flex items-center justify-center">
       <p class="text-[14px] text-[#888]">문항을 불러오는 중...</p>

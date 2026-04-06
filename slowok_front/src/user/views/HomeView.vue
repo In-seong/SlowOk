@@ -45,7 +45,7 @@ function onPlayChallenge(challengeId: number) {
 
 <template>
   <div class="min-h-screen flex justify-center bg-gradient-to-b from-[#F1F8E9] to-[#C8E6C9]">
-    <div class="w-full max-w-[402px] min-h-screen relative">
+    <div class="w-full max-w-[402px] md:max-w-[600px] min-h-screen relative">
       <!-- Header -->
       <AppHeader>
         <template #title>{{ profileName }}님, 반가워요!</template>

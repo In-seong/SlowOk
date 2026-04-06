@@ -74,7 +74,7 @@ function getCategoryBadgeVariant(category: string | undefined): 'warning' | 'inf
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#F8F8F8] max-w-[402px] mx-auto">
+  <div class="min-h-screen bg-[#F8F8F8] max-w-[402px] md:max-w-[600px] mx-auto">
     <BackHeader title="챌린지" />
 
     <main class="px-5 pb-[80px] pt-4">

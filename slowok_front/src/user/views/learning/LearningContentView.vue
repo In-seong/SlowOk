@@ -275,7 +275,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#F8F8F8] max-w-[402px] mx-auto flex flex-col font-['Pretendard']">
+  <div class="min-h-screen bg-[#F8F8F8] max-w-[402px] md:max-w-[600px] mx-auto flex flex-col font-['Pretendard']">
     <!-- Loading -->
     <div v-if="initialLoading || learningStore.loading" class="flex-1 flex items-center justify-center">
       <div class="text-center">

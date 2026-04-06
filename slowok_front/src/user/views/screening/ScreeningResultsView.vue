@@ -159,7 +159,7 @@ function goToResultDetail(resultId: number): void {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#F5F5F5] max-w-[402px] mx-auto">
+  <div class="min-h-screen bg-[#F5F5F5] max-w-[402px] md:max-w-[600px] mx-auto">
     <BackHeader title="진단 결과" />
 
     <main class="px-5 pb-[80px] pt-4 space-y-4">

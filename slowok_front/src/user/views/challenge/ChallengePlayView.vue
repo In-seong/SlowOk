@@ -219,7 +219,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#F8F8F8] max-w-[402px] mx-auto flex flex-col font-['Pretendard']">
+  <div class="min-h-screen bg-[#F8F8F8] max-w-[402px] md:max-w-[600px] mx-auto flex flex-col font-['Pretendard']">
     <!-- Loading -->
     <div v-if="!dataReady || challengeStore.loading" class="flex-1 flex flex-col items-center justify-center">
       <div class="w-[40px] h-[40px] border-4 border-[#4CAF50] border-t-transparent rounded-full animate-spin mb-4" />
@@ -339,7 +339,7 @@ onUnmounted(() => {
         <!-- ===== BOTTOM: Big "확인" button ===== -->
         <div
           v-if="!showFeedback"
-          class="fixed bottom-0 inset-x-0 mx-auto w-full max-w-[402px] bg-white border-t border-[#F0F0F0] px-5 py-4 z-20"
+          class="fixed bottom-0 inset-x-0 mx-auto w-full max-w-[402px] md:max-w-[600px] bg-white border-t border-[#F0F0F0] px-5 py-4 z-20"
         >
           <button
             @click="checkAnswer"
@@ -356,7 +356,7 @@ onUnmounted(() => {
         <!-- ===== FEEDBACK BANNER (slides up from bottom) ===== -->
         <div
           v-if="showFeedback"
-          class="fixed bottom-0 inset-x-0 mx-auto w-full max-w-[402px] z-30 animate-slide-up"
+          class="fixed bottom-0 inset-x-0 mx-auto w-full max-w-[402px] md:max-w-[600px] z-30 animate-slide-up"
           :class="feedbackCorrect ? 'bg-[#E8F5E9]' : 'bg-[#FFEBEE]'"
         >
           <div class="px-5 py-5">

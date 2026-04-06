@@ -5,7 +5,7 @@ const router = useRouter()
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#F5F5F5] max-w-[402px] mx-auto flex flex-col items-center justify-center px-[20px]">
+  <div class="min-h-screen bg-[#F5F5F5] max-w-[402px] md:max-w-[600px] mx-auto flex flex-col items-center justify-center px-[20px]">
     <div class="bg-white rounded-[20px] shadow-[0_0_10px_rgba(0,0,0,0.1)] p-[32px] w-full text-center">
       <!-- 404 아이콘 -->
       <div class="w-[80px] h-[80px] rounded-full bg-[#F5F5F5] flex items-center justify-center mx-auto mb-[20px]">

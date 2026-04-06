@@ -96,7 +96,7 @@ function getScoreVariant(score: number): string {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#F5F5F5] max-w-[402px] mx-auto">
+  <div class="min-h-screen bg-[#F5F5F5] max-w-[402px] md:max-w-[600px] mx-auto">
     <!-- Back Header -->
     <header class="bg-white sticky top-0 z-10">
       <div class="flex items-center gap-[12px] px-[20px] py-[16px]">
