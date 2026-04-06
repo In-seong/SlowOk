@@ -172,7 +172,7 @@ function goToResultDetail(resultId: number): void {
         <div class="mt-1.5 space-y-0.5">
           <p class="text-[10px] text-[#888]">참고문헌:</p>
           <a href="https://psycnet.apa.org/record/1990-98005-000" target="_blank" rel="noopener" class="block text-[10px] text-[#2196F3] underline">• Gresham & Elliott (1990). Social Skills Rating System (SSRS)</a>
-          <a href="https://www.nise.go.kr" target="_blank" rel="noopener" class="block text-[10px] text-[#2196F3] underline">• 국립특수교육원 발달선별검사 가이드라인</a>
+          <a href="https://doi.org/10.1007/978-1-4419-1698-3" target="_blank" rel="noopener" class="block text-[10px] text-[#2196F3] underline">• Elliott & Gresham (2008). Social Skills Improvement System (SSIS)</a>
         </div>
       </div>
 
