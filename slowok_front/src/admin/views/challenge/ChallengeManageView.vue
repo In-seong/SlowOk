@@ -21,6 +21,11 @@ const saving = ref(false)
 const modalError = ref('')
 const editingId = ref<number | null>(null)
 
+const CHALLENGE_TYPE_OPTIONS = [
+  '1주차', '2주차', '3주차', '4주차', '5주차', '6주차', '7주차', '8주차',
+  '9주차', '10주차', '11주차', '12주차', '기타',
+]
+
 const form = ref({
   title: '',
   category_id: '' as number | '',
@@ -86,7 +91,7 @@ async function fetchData() {
 function validateForm(): string | null {
   if (!form.value.title.trim()) return '제목을 입력해주세요.'
   if (!form.value.category_id) return '카테고리를 선택해주세요.'
-  if (!form.value.challenge_type.trim()) return '챌린지 유형을 입력해주세요.'
+  if (!form.value.challenge_type) return '주차를 선택해주세요.'
   return null
 }
 
@@ -168,9 +173,10 @@ async function duplicateChallenge(challenge: Challenge) {
   }
 }
 
-// 검색 + 유형 필터 + 페이징
+// 검색 + 유형 필터 + 정렬 + 페이징
 const searchQuery = ref('')
 const filterType = ref('')
+const sortBy = ref<'type' | 'title' | 'difficulty'>('type')
 const currentPage = ref(1)
 const perPage = 15
 
@@ -178,6 +184,11 @@ const challengeTypes = computed(() => {
   const types = new Set(challenges.value.map(c => c.challenge_type).filter(Boolean))
   return Array.from(types).sort()
 })
+
+function weekOrder(type: string): number {
+  const match = type.match(/(\d+)주차/)
+  return match?.[1] ? parseInt(match[1]) : 999
+}
 
 const filteredChallenges = computed(() => {
   let filtered = challenges.value
@@ -188,11 +199,20 @@ const filteredChallenges = computed(() => {
     const q = searchQuery.value.toLowerCase()
     filtered = filtered.filter(c =>
       c.title.toLowerCase().includes(q) ||
-      c.challenge_type.toLowerCase().includes(q) ||
+      (c.challenge_type ?? '').toLowerCase().includes(q) ||
       (c.category?.name ?? '').toLowerCase().includes(q)
     )
   }
-  return filtered
+  // 정렬
+  return [...filtered].sort((a, b) => {
+    if (sortBy.value === 'type') {
+      const diff = weekOrder(a.challenge_type ?? '') - weekOrder(b.challenge_type ?? '')
+      return diff !== 0 ? diff : a.title.localeCompare(b.title)
+    }
+    if (sortBy.value === 'title') return a.title.localeCompare(b.title)
+    if (sortBy.value === 'difficulty') return a.difficulty_level - b.difficulty_level
+    return 0
+  })
 })
 
 const totalPages = computed(() => Math.ceil(filteredChallenges.value.length / perPage))
@@ -202,7 +222,7 @@ const pagedChallenges = computed(() => {
   return filteredChallenges.value.slice(start, start + perPage)
 })
 
-watch([searchQuery, filterType], () => { currentPage.value = 1 })
+watch([searchQuery, filterType, sortBy], () => { currentPage.value = 1 })
 
 const pageNumbers = computed(() => {
   const total = totalPages.value
@@ -242,14 +262,23 @@ onMounted(fetchData)
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           </div>
-          <!-- 유형(주차) 필터 -->
+          <!-- 주차 필터 -->
           <select
             v-if="challengeTypes.length > 0"
             v-model="filterType"
             class="bg-white border border-[#E8E8E8] rounded-[10px] px-3 py-2 text-[13px] focus:border-[#4CAF50] focus:outline-none"
           >
-            <option value="">전체 유형</option>
+            <option value="">전체 주차</option>
             <option v-for="t in challengeTypes" :key="t" :value="t">{{ t }}</option>
+          </select>
+          <!-- 정렬 -->
+          <select
+            v-model="sortBy"
+            class="bg-white border border-[#E8E8E8] rounded-[10px] px-3 py-2 text-[13px] focus:border-[#4CAF50] focus:outline-none"
+          >
+            <option value="type">주차순</option>
+            <option value="title">제목순</option>
+            <option value="difficulty">난이도순</option>
           </select>
         </div>
         <button
@@ -287,6 +316,7 @@ onMounted(fetchData)
           <table class="w-full text-left text-[14px]">
             <thead>
               <tr class="border-b border-[#E8E8E8] bg-[#FAFAFA]">
+                <th class="px-3 py-3 font-semibold text-[#555] w-[50px]">#</th>
                 <th class="px-5 py-3 font-semibold text-[#555]">제목</th>
                 <th class="px-5 py-3 font-semibold text-[#555]">카테고리</th>
                 <th class="px-5 py-3 font-semibold text-[#555]">유형</th>
@@ -298,10 +328,11 @@ onMounted(fetchData)
             </thead>
             <tbody>
               <tr
-                v-for="challenge in pagedChallenges"
+                v-for="(challenge, idx) in pagedChallenges"
                 :key="challenge.challenge_id"
                 class="border-b border-[#F0F0F0] hover:bg-[#FAFAFA] transition-colors"
               >
+                <td class="px-3 py-3.5 text-[12px] text-[#999] font-mono">{{ (currentPage - 1) * perPage + idx + 1 }}</td>
                 <td class="px-5 py-3.5 text-[#333] font-medium">{{ challenge.title }}</td>
                 <td class="px-5 py-3.5 text-[#555]">{{ challenge.category?.name || getCategoryName(challenge.category_id) }}</td>
                 <td class="px-5 py-3.5">
@@ -421,15 +452,16 @@ onMounted(fetchData)
               </select>
             </div>
 
-            <!-- 챌린지 유형 -->
+            <!-- 챌린지 유형 (주차) -->
             <div class="mb-4">
-              <label class="block text-[14px] font-semibold text-[#333] mb-1.5">챌린지 유형</label>
-              <input
+              <label class="block text-[14px] font-semibold text-[#333] mb-1.5">주차 구분</label>
+              <select
                 v-model="form.challenge_type"
-                type="text"
-                placeholder="예: DAILY, WEEKLY, SPECIAL"
                 class="w-full bg-[#F8F8F8] border border-[#E8E8E8] rounded-[12px] px-4 py-3 text-[15px] focus:border-[#4CAF50] focus:outline-none transition-colors"
-              />
+              >
+                <option value="" disabled>주차 선택</option>
+                <option v-for="opt in CHALLENGE_TYPE_OPTIONS" :key="opt" :value="opt">{{ opt }}</option>
+              </select>
             </div>
 
             <!-- 난이도 -->
