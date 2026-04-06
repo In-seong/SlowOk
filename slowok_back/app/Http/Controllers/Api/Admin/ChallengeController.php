@@ -27,6 +27,7 @@ class ChallengeController extends BaseAdminController
             ...$request->only(['category_id', 'title', 'challenge_type', 'difficulty_level']),
             'institution_id' => $this->getInstitutionId($request),
         ]);
+        $challenge->load(['category', 'questions']);
         return response()->json(['success' => true, 'data' => $challenge], 201);
     }
 
@@ -48,6 +49,7 @@ class ChallengeController extends BaseAdminController
         $instId = $this->getInstitutionId($request);
         $challenge = Challenge::forInstitution($instId)->findOrFail($id);
         $challenge->update($request->only(['category_id', 'title', 'challenge_type', 'difficulty_level', 'is_active']));
+        $challenge->load(['category', 'questions']);
         return response()->json(['success' => true, 'data' => $challenge]);
     }
 
