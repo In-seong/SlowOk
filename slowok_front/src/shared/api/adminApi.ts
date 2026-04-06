@@ -60,6 +60,9 @@ export const adminApi = {
   deleteChallenge(id: number) {
     return api.delete<ApiResponse<null>>(`/admin/challenges/${id}`)
   },
+  duplicateChallenge(id: number) {
+    return api.post<ApiResponse<Challenge>>(`/admin/challenges/${id}/duplicate`)
+  },
 
   // 진단 문항 관리
   getScreeningQuestions(testId: number) {

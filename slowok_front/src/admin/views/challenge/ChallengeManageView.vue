@@ -2,6 +2,7 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@shared/api'
+import { adminApi } from '@shared/api/adminApi'
 import type { Challenge, LearningCategory, ApiResponse } from '@shared/types'
 import { useToastStore } from '@shared/stores/toastStore'
 
@@ -116,7 +117,13 @@ async function handleSubmit() {
       }
     } else {
       const res = await api.post<ApiResponse<Challenge>>('/admin/challenges', payload)
-      if (res.data.success) challenges.value.push(res.data.data)
+      if (res.data.success) {
+        challenges.value.push(res.data.data)
+        closeModal()
+        // 생성 후 바로 문항 편집으로 이동
+        goToQuestionEdit(res.data.data.challenge_id)
+        return
+      }
     }
     closeModal()
   } catch (e: any) {
@@ -148,19 +155,44 @@ function goToQuestionEdit(challengeId: number) {
   router.push({ name: 'challenge-question-edit', params: { id: challengeId } })
 }
 
-// 검색 + 페이징
+async function duplicateChallenge(challenge: Challenge) {
+  if (!confirm(`"${challenge.title}"을(를) 복제하시겠습니까?\n문항도 함께 복제됩니다.`)) return
+  try {
+    const res = await adminApi.duplicateChallenge(challenge.challenge_id)
+    if (res.data.success) {
+      challenges.value.push(res.data.data)
+      toast.success(res.data.message || '복제 완료!')
+    }
+  } catch (e: any) {
+    toast.error(e.response?.data?.message || '복제에 실패했습니다.')
+  }
+}
+
+// 검색 + 유형 필터 + 페이징
 const searchQuery = ref('')
+const filterType = ref('')
 const currentPage = ref(1)
 const perPage = 15
 
+const challengeTypes = computed(() => {
+  const types = new Set(challenges.value.map(c => c.challenge_type).filter(Boolean))
+  return Array.from(types).sort()
+})
+
 const filteredChallenges = computed(() => {
-  if (!searchQuery.value.trim()) return challenges.value
-  const q = searchQuery.value.toLowerCase()
-  return challenges.value.filter(c =>
-    c.title.toLowerCase().includes(q) ||
-    c.challenge_type.toLowerCase().includes(q) ||
-    (c.category?.name ?? '').toLowerCase().includes(q)
-  )
+  let filtered = challenges.value
+  if (filterType.value) {
+    filtered = filtered.filter(c => c.challenge_type === filterType.value)
+  }
+  if (searchQuery.value.trim()) {
+    const q = searchQuery.value.toLowerCase()
+    filtered = filtered.filter(c =>
+      c.title.toLowerCase().includes(q) ||
+      c.challenge_type.toLowerCase().includes(q) ||
+      (c.category?.name ?? '').toLowerCase().includes(q)
+    )
+  }
+  return filtered
 })
 
 const totalPages = computed(() => Math.ceil(filteredChallenges.value.length / perPage))
@@ -170,7 +202,7 @@ const pagedChallenges = computed(() => {
   return filteredChallenges.value.slice(start, start + perPage)
 })
 
-watch(searchQuery, () => { currentPage.value = 1 })
+watch([searchQuery, filterType], () => { currentPage.value = 1 })
 
 const pageNumbers = computed(() => {
   const total = totalPages.value
@@ -210,6 +242,15 @@ onMounted(fetchData)
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           </div>
+          <!-- 유형(주차) 필터 -->
+          <select
+            v-if="challengeTypes.length > 0"
+            v-model="filterType"
+            class="bg-white border border-[#E8E8E8] rounded-[10px] px-3 py-2 text-[13px] focus:border-[#4CAF50] focus:outline-none"
+          >
+            <option value="">전체 유형</option>
+            <option v-for="t in challengeTypes" :key="t" :value="t">{{ t }}</option>
+          </select>
         </div>
         <button
           @click="openCreateModal"
@@ -249,6 +290,7 @@ onMounted(fetchData)
                 <th class="px-5 py-3 font-semibold text-[#555]">제목</th>
                 <th class="px-5 py-3 font-semibold text-[#555]">카테고리</th>
                 <th class="px-5 py-3 font-semibold text-[#555]">유형</th>
+                <th class="px-5 py-3 font-semibold text-[#555]">문항</th>
                 <th class="px-5 py-3 font-semibold text-[#555]">난이도</th>
                 <th class="px-5 py-3 font-semibold text-[#555]">재도전</th>
                 <th class="px-5 py-3 font-semibold text-[#555]">액션</th>
@@ -265,6 +307,11 @@ onMounted(fetchData)
                 <td class="px-5 py-3.5">
                   <span class="px-2 py-0.5 rounded-full text-[12px] font-medium bg-indigo-50 text-indigo-600">
                     {{ challenge.challenge_type }}
+                  </span>
+                </td>
+                <td class="px-5 py-3.5">
+                  <span class="text-[13px] font-medium" :class="(challenge.questions?.length ?? 0) === 0 ? 'text-red-400' : 'text-[#555]'">
+                    {{ challenge.questions?.length ?? 0 }}개
                   </span>
                 </td>
                 <td class="px-5 py-3.5 text-[#888] text-[13px]">
@@ -291,6 +338,12 @@ onMounted(fetchData)
                       class="text-[#4CAF50] hover:text-[#388E3C] text-[13px] font-medium transition-colors"
                     >
                       수정
+                    </button>
+                    <button
+                      @click="duplicateChallenge(challenge)"
+                      class="text-[#2196F3] hover:text-[#1976D2] text-[13px] font-medium transition-colors"
+                    >
+                      복제
                     </button>
                     <button
                       @click="deleteChallenge(challenge)"

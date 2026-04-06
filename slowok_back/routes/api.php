@@ -169,6 +169,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // 챌린지 관리
         Route::apiResource('challenges', AdminChallengeController::class)->middleware('perm:challenge_manage');
+        Route::post('challenges/{id}/duplicate', [AdminChallengeController::class, 'duplicate'])->middleware('perm:challenge_manage');
 
         // 챌린지 문항 관리
         Route::middleware('perm:challenge_manage')->group(function () {
