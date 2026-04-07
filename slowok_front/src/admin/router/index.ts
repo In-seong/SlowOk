@@ -109,6 +109,12 @@ const router = createRouter({
       component: () => import('../views/assignment/ContentAssignmentView.vue'),
       meta: { requiresAuth: true, permissionKey: 'content_assign' },
     },
+    {
+      path: '/progress',
+      name: 'progress-overview',
+      component: () => import('../views/progress/ProgressOverviewView.vue'),
+      meta: { requiresAuth: true },
+    },
     // [미사용] 사용자 앱에서 패키지 기능 미사용 — 추후 필요 시 활성화
     // {
     //   path: '/content-packages',

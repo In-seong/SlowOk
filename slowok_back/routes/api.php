@@ -252,6 +252,9 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/save', [AiContentController::class, 'save']);
         });
 
+        // 진행 현황 대시보드
+        Route::get('progress-overview', [\App\Http\Controllers\Api\Admin\ProgressOverviewController::class, 'index']);
+
         // 푸시 알림 발송
         Route::prefix('push')->group(function () {
             Route::post('/send', [\App\Http\Controllers\Api\Admin\PushNotificationController::class, 'send']);
