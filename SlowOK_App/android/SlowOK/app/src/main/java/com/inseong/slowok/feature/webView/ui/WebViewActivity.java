@@ -73,7 +73,9 @@ public class WebViewActivity extends AppCompatActivity {
 
         // JavaScript
         webSettings.setJavaScriptEnabled(true);
-        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+        // 새 창 자동 열기 비활성화 — target="_blank" 링크가 shouldOverrideUrlLoading으로 들어오도록
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(false);
+        webSettings.setSupportMultipleWindows(false);
 
         // DOM Storage & Database
         webSettings.setDomStorageEnabled(true);
@@ -140,6 +142,18 @@ public class WebViewActivity extends AppCompatActivity {
                         startActivity(intent);
                     } catch (Exception e) {
                         Log.e(TAG, "Failed to open market: " + url, e);
+                    }
+                    return true;
+                }
+
+                // Handle external http(s) links — open in external browser
+                if ((url.startsWith("http://") || url.startsWith("https://"))
+                        && !url.contains("revuplan.com")) {
+                    try {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        startActivity(intent);
+                    } catch (Exception e) {
+                        Log.e(TAG, "Failed to open external URL: " + url, e);
                     }
                     return true;
                 }

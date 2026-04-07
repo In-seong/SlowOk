@@ -108,6 +108,27 @@ class WebViewCoordinator: NSObject {
 
 // MARK: - WebView Navigation Delegate
 extension WebViewCoordinator: WKNavigationDelegate {
+    // 외부 호스트 링크는 Safari로 열기 (앱 도메인 외 모든 http/https는 외부)
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        guard let url = navigationAction.request.url else {
+            decisionHandler(.allow)
+            return
+        }
+
+        // 사용자 액션으로 발생한 링크 클릭만 검사
+        if navigationAction.navigationType == .linkActivated,
+           let host = url.host,
+           !host.contains("revuplan.com") {
+            if UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            }
+            decisionHandler(.cancel)
+            return
+        }
+
+        decisionHandler(.allow)
+    }
+
     // 정상 로드 시
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         parent.isError = false
@@ -153,6 +174,16 @@ extension WebViewCoordinator: WKScriptMessageHandler {
 
 // MARK: - WKUIDelegate (alert, confirm, prompt 처리)
 extension WebViewCoordinator: WKUIDelegate {
+    // target="_blank" 또는 window.open() 으로 새 창 열기 요청 시 외부 브라우저(Safari)로 열기
+    func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+        if let url = navigationAction.request.url {
+            if UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            }
+        }
+        return nil
+    }
+
     func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Void) {
         let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "확인", style: .default) { _ in
