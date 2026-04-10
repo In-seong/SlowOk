@@ -327,6 +327,43 @@ onMounted(fetchResults)
                         <p class="text-[11px] text-[#888] mt-1">{{ data.score }}점 / {{ data.max }}점</p>
                       </div>
                     </div>
+
+                    <!-- 문항별 응답 상세 -->
+                    <div v-if="result.analysis && (result.test as any)?.questions?.length" class="mt-4">
+                      <p class="text-[13px] font-semibold text-[#333] mb-3">문항별 응답</p>
+                      <div class="space-y-2">
+                        <div
+                          v-for="q in (result.test as any).questions"
+                          :key="q.question_id"
+                          class="bg-white rounded-[10px] border border-[#E8E8E8] p-3 flex items-start gap-3"
+                        >
+                          <span class="shrink-0 w-6 h-6 flex items-center justify-center bg-[#F0F0F0] text-[#888] text-[11px] font-bold rounded-full">{{ q.order }}</span>
+                          <div class="flex-1 min-w-0">
+                            <p class="text-[12px] text-[#333] mb-1">{{ q.content }}</p>
+                            <div v-if="q.sub_domain" class="text-[10px] text-[#999] mb-1">{{ q.sub_domain }}</div>
+                            <!-- 리커트 응답 -->
+                            <div v-if="q.question_type === 'likert_5'" class="flex gap-1">
+                              <span
+                                v-for="n in 5"
+                                :key="n"
+                                class="px-2 py-0.5 rounded-full text-[10px] font-medium"
+                                :class="Number(result.analysis[q.question_id]) === n
+                                  ? 'bg-[#4CAF50] text-white'
+                                  : 'bg-[#F5F5F5] text-[#CCC]'"
+                              >
+                                {{ n }}
+                              </span>
+                            </div>
+                            <!-- 객관식 응답 -->
+                            <div v-else-if="result.analysis[q.question_id] !== undefined">
+                              <span class="text-[11px] px-2 py-0.5 rounded-full bg-[#E3F2FD] text-[#2196F3] font-medium">
+                                {{ result.analysis[q.question_id] }}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </td>
               </tr>

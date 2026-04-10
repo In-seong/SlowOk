@@ -470,6 +470,7 @@
 				CODE_SIGN_ENTITLEMENTS = "SlowOK-User.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 7442SWFSSM;
 				INFOPLIST_FILE = "SlowOK/plist/Info-User.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -493,6 +494,7 @@
 				CODE_SIGN_ENTITLEMENTS = "SlowOK-User.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 7442SWFSSM;
 				INFOPLIST_FILE = "SlowOK/plist/Info-User.plist";
 				LD_RUNPATH_SEARCH_PATHS = (

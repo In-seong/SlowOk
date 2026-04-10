@@ -11,7 +11,7 @@ class ScreeningResultController extends BaseAdminController
     {
         $instId = $this->getInstitutionId($request);
 
-        $results = ScreeningResult::with(['test', 'profile'])
+        $results = ScreeningResult::with(['test.questions', 'profile'])
             ->when($instId, function ($q) use ($instId) {
                 $q->whereHas('profile', function ($pq) use ($instId) {
                     $pq->whereHas('account', fn ($aq) => $aq->where('institution_id', $instId));
