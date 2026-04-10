@@ -441,7 +441,7 @@ onMounted(fetchData)
                   <td class="px-5 py-3.5">
                     <span
                       :class="test.test_type === 'LIKERT' ? 'bg-[#E3F2FD] text-[#2196F3]' : 'bg-[#F3E5F5] text-[#9C27B0]'"
-                      class="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold"
+                      class="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap"
                     >
                       {{ test.test_type === 'LIKERT' ? '리커트' : '객관식' }}
                     </span>
