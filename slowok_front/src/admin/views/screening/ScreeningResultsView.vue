@@ -110,9 +110,26 @@ function levelColor(level: string | null): string {
 }
 
 const expandedResultId = ref<number | null>(null)
+const domainModalResult = ref<ScreeningResultWithProfile | null>(null)
+const domainModalName = ref('')
 
 function toggleResultDetail(resultId: number) {
   expandedResultId.value = expandedResultId.value === resultId ? null : resultId
+}
+
+function openDomainModal(result: ScreeningResultWithProfile, domain: string) {
+  domainModalResult.value = result
+  domainModalName.value = domain
+}
+
+function closeDomainModal() {
+  domainModalResult.value = null
+  domainModalName.value = ''
+}
+
+function getDomainQuestions(result: ScreeningResultWithProfile, domain: string) {
+  const questions = (result.test as any)?.questions ?? []
+  return questions.filter((q: any) => q.sub_domain === domain)
 }
 
 const exportLoading = ref(false)
@@ -308,15 +325,19 @@ onMounted(fetchResults)
                       </svg>
                     </div>
 
-                    <!-- 바 차트 -->
-                    <p class="text-[13px] font-semibold text-[#333] mb-3">하위영역 점수</p>
+                    <!-- 바 차트 (클릭하면 해당 영역 문항 모달) -->
+                    <p class="text-[13px] font-semibold text-[#333] mb-2">하위영역 점수 <span class="text-[11px] text-[#999] font-normal">클릭하면 문항별 응답을 볼 수 있습니다</span></p>
                     <div class="grid grid-cols-2 gap-3">
                       <div
                         v-for="(data, domain) in result.sub_scores"
                         :key="String(domain)"
-                        class="bg-white rounded-[10px] border border-[#E8E8E8] p-3"
+                        class="bg-white rounded-[10px] border border-[#E8E8E8] p-3 cursor-pointer hover:border-[#4CAF50] hover:shadow-sm transition-all"
+                        @click="openDomainModal(result, String(domain))"
                       >
-                        <p class="text-[12px] font-semibold text-[#555] mb-1">{{ domain }}</p>
+                        <div class="flex items-center justify-between mb-1">
+                          <p class="text-[12px] font-semibold text-[#555]">{{ domain }}</p>
+                          <svg class="w-3.5 h-3.5 text-[#CCC]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6" /></svg>
+                        </div>
                         <div class="flex items-baseline gap-1">
                           <span class="text-[18px] font-bold text-[#333]">{{ data.avg }}</span>
                           <span class="text-[12px] text-[#888]">/ 5.0</span>
@@ -325,43 +346,6 @@ onMounted(fetchResults)
                           <div class="h-full rounded-full bg-[#4CAF50] transition-all" :style="{ width: `${(data.avg / 5) * 100}%` }" />
                         </div>
                         <p class="text-[11px] text-[#888] mt-1">{{ data.score }}점 / {{ data.max }}점</p>
-                      </div>
-                    </div>
-
-                    <!-- 문항별 응답 상세 -->
-                    <div v-if="result.analysis && (result.test as any)?.questions?.length" class="mt-4">
-                      <p class="text-[13px] font-semibold text-[#333] mb-3">문항별 응답</p>
-                      <div class="space-y-2">
-                        <div
-                          v-for="q in (result.test as any).questions"
-                          :key="q.question_id"
-                          class="bg-white rounded-[10px] border border-[#E8E8E8] p-3 flex items-start gap-3"
-                        >
-                          <span class="shrink-0 w-6 h-6 flex items-center justify-center bg-[#F0F0F0] text-[#888] text-[11px] font-bold rounded-full">{{ q.order }}</span>
-                          <div class="flex-1 min-w-0">
-                            <p class="text-[12px] text-[#333] mb-1">{{ q.content }}</p>
-                            <div v-if="q.sub_domain" class="text-[10px] text-[#999] mb-1">{{ q.sub_domain }}</div>
-                            <!-- 리커트 응답 -->
-                            <div v-if="q.question_type === 'likert_5'" class="flex gap-1">
-                              <span
-                                v-for="n in 5"
-                                :key="n"
-                                class="px-2 py-0.5 rounded-full text-[10px] font-medium"
-                                :class="Number(result.analysis[q.question_id]) === n
-                                  ? 'bg-[#4CAF50] text-white'
-                                  : 'bg-[#F5F5F5] text-[#CCC]'"
-                              >
-                                {{ n }}
-                              </span>
-                            </div>
-                            <!-- 객관식 응답 -->
-                            <div v-else-if="result.analysis[q.question_id] !== undefined">
-                              <span class="text-[11px] px-2 py-0.5 rounded-full bg-[#E3F2FD] text-[#2196F3] font-medium">
-                                {{ result.analysis[q.question_id] }}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -408,5 +392,66 @@ onMounted(fetchResults)
         </div>
       </div>
     </div>
+
+    <!-- 하위영역 문항 모달 -->
+    <Teleport to="body">
+      <div v-if="domainModalResult" class="fixed inset-0 z-50 flex items-center justify-center">
+        <div class="absolute inset-0 bg-black/40" @click="closeDomainModal"></div>
+        <div class="relative bg-white rounded-[16px] shadow-[0_0_30px_rgba(0,0,0,0.2)] w-full max-w-[520px] mx-4 max-h-[80vh] flex flex-col">
+          <!-- 헤더 -->
+          <div class="flex items-center justify-between px-5 py-4 border-b border-[#E8E8E8]">
+            <div>
+              <h3 class="text-[16px] font-bold text-[#333]">{{ domainModalName }}</h3>
+              <p class="text-[12px] text-[#888] mt-0.5">
+                {{ domainModalResult.profile?.name }} · {{ (domainModalResult.sub_scores as any)?.[domainModalName]?.avg ?? '-' }}/5.0 평균
+              </p>
+            </div>
+            <button @click="closeDomainModal" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#F0F0F0]">
+              <svg class="w-5 h-5 text-[#999]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+          <!-- 문항 목록 -->
+          <div class="flex-1 overflow-y-auto p-5 space-y-3">
+            <div
+              v-for="q in getDomainQuestions(domainModalResult, domainModalName)"
+              :key="q.question_id"
+              class="bg-[#F8F8F8] rounded-[10px] p-3"
+            >
+              <div class="flex items-start gap-2 mb-2">
+                <span class="shrink-0 w-6 h-6 flex items-center justify-center bg-[#4CAF50] text-white text-[11px] font-bold rounded-full">{{ q.order }}</span>
+                <p class="text-[13px] text-[#333] leading-relaxed">{{ q.content }}</p>
+              </div>
+              <!-- 리커트 응답 -->
+              <div v-if="q.question_type === 'likert_5'" class="flex gap-1.5 ml-8">
+                <div
+                  v-for="n in 5"
+                  :key="n"
+                  class="flex flex-col items-center gap-0.5"
+                >
+                  <span
+                    class="w-8 h-8 flex items-center justify-center rounded-full text-[12px] font-bold transition-all"
+                    :class="Number(domainModalResult.analysis?.[q.question_id]) === n
+                      ? 'bg-[#4CAF50] text-white scale-110'
+                      : 'bg-white border border-[#E0E0E0] text-[#CCC]'"
+                  >
+                    {{ n }}
+                  </span>
+                  <span class="text-[8px] text-[#BBB]">{{ ['', '전혀', '아니', '보통', '그렇', '매우'][n] }}</span>
+                </div>
+              </div>
+              <!-- 객관식 응답 -->
+              <div v-else-if="domainModalResult.analysis?.[q.question_id] !== undefined" class="ml-8">
+                <span class="text-[12px] px-2.5 py-1 rounded-full bg-[#E3F2FD] text-[#2196F3] font-medium">
+                  {{ domainModalResult.analysis[q.question_id] }}
+                </span>
+              </div>
+            </div>
+            <div v-if="getDomainQuestions(domainModalResult, domainModalName).length === 0" class="text-center py-8 text-[#888] text-[13px]">
+              해당 영역의 문항이 없습니다.
+            </div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
