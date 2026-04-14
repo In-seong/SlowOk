@@ -115,8 +115,10 @@ class ContentAssignmentController extends BaseAdminController
 
         $created = 0;
         $assignerId = $request->user()->account_id;
+        $perUserCount = [];
 
         foreach ($request->profile_ids as $profileId) {
+            $userCreated = 0;
             foreach ($request->assignments as $item) {
                 $exists = ContentAssignment::where('profile_id', $profileId)
                     ->where('assignable_type', $item['assignable_type'])
@@ -139,18 +141,25 @@ class ContentAssignmentController extends BaseAdminController
                         'sort_order' => $maxSort + 1,
                     ]);
                     $created++;
+                    $userCreated++;
                 }
+            }
+            if ($userCreated > 0) {
+                $perUserCount[$profileId] = $userCreated;
             }
         }
 
-        // 일괄 할당 알림
-        if ($created > 0) {
-            app(NotificationService::class)->notifyProfiles(
-                $request->profile_ids,
-                'content_assigned',
-                '새 콘텐츠 할당',
-                "{$created}건의 새로운 학습 콘텐츠가 할당되었습니다.",
-            );
+        // 사용자별 할당 알림 (각자에게 본인 할당 수만 표시)
+        foreach ($perUserCount as $profileId => $count) {
+            $profile = UserProfile::find($profileId);
+            if ($profile) {
+                app(NotificationService::class)->notify(
+                    $profile->account_id,
+                    'content_assigned',
+                    '새 콘텐츠 할당',
+                    "{$count}건의 새로운 학습 콘텐츠가 할당되었습니다.",
+                );
+            }
         }
 
         return response()->json([
