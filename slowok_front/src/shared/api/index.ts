@@ -3,6 +3,7 @@ import type { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'a
 
 function isAdminApp(): boolean {
   return window.location.port === '5175'
+    || window.location.port === '5176'
     || window.location.hostname.includes('admin')
     || window.location.hash.startsWith('#/')
 }

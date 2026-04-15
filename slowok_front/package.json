@@ -6,9 +6,11 @@
   "scripts": {
     "dev:user": "vite --config vite.user.config.ts",
     "dev:admin": "vite --config vite.admin.config.ts",
+    "dev:mobile-admin": "vite --config vite.mobile-admin.config.ts",
     "build:user": "vue-tsc -b && vite build --config vite.user.config.ts",
     "build:admin": "vue-tsc -b && vite build --config vite.admin.config.ts",
-    "build:all": "vue-tsc -b && vite build --config vite.user.config.ts && vite build --config vite.admin.config.ts",
+    "build:mobile-admin": "vue-tsc -b && vite build --config vite.mobile-admin.config.ts",
+    "build:all": "vue-tsc -b && vite build --config vite.user.config.ts && vite build --config vite.admin.config.ts && vite build --config vite.mobile-admin.config.ts",
     "preview:user": "vite preview --config vite.user.config.ts",
     "preview:admin": "vite preview --config vite.admin.config.ts",
     "type-check": "vue-tsc -b"
