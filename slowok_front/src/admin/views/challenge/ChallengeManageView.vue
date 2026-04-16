@@ -102,7 +102,7 @@ async function handleSubmit() {
   const payload = {
     title: form.value.title.trim(),
     category_id: Number(form.value.category_id),
-    challenge_type: form.value.challenge_type.trim() || null,
+    challenge_type: form.value.challenge_type.trim(),
     difficulty_level: form.value.difficulty_level,
     allow_retry: form.value.allow_retry,
     sort_order: form.value.sort_order,
