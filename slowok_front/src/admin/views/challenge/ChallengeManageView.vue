@@ -213,7 +213,9 @@ const filteredChallenges = computed(() => {
       return b.challenge_id - a.challenge_id
     }
     if (sortBy.value === 'sort') {
-      const sDiff = (a.sort_order ?? 0) - (b.sort_order ?? 0)
+      const aOrder = a.sort_order || 999999
+      const bOrder = b.sort_order || 999999
+      const sDiff = aOrder - bOrder
       if (sDiff !== 0) return sDiff
       return weekOrder(a.challenge_type ?? '') - weekOrder(b.challenge_type ?? '')
     }
