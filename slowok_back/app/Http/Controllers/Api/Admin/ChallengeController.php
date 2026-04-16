@@ -24,7 +24,7 @@ class ChallengeController extends BaseAdminController
             'difficulty_level' => 'nullable|integer|min:1|max:10',
         ]);
         $challenge = Challenge::create([
-            ...$request->only(['category_id', 'title', 'challenge_type', 'difficulty_level']),
+            ...$request->only(['category_id', 'title', 'challenge_type', 'difficulty_level', 'allow_retry', 'sort_order']),
             'institution_id' => $this->getInstitutionId($request),
         ]);
         $challenge->load(['category', 'questions']);
@@ -48,7 +48,7 @@ class ChallengeController extends BaseAdminController
         ]);
         $instId = $this->getInstitutionId($request);
         $challenge = Challenge::forInstitution($instId)->findOrFail($id);
-        $challenge->update($request->only(['category_id', 'title', 'challenge_type', 'difficulty_level', 'is_active', 'sort_order']));
+        $challenge->update($request->only(['category_id', 'title', 'challenge_type', 'difficulty_level', 'is_active', 'allow_retry', 'sort_order']));
         $challenge->load(['category', 'questions']);
         return response()->json(['success' => true, 'data' => $challenge]);
     }

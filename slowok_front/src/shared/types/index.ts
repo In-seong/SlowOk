@@ -141,6 +141,7 @@ export interface Challenge {
   institution_id: number | null
   is_active?: boolean
   allow_retry?: boolean
+  sort_order?: number
   category?: LearningCategory
   questions?: ChallengeQuestion[]
   latest_attempt?: ChallengeAttempt | null

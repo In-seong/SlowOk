@@ -63,7 +63,7 @@ function openEditModal(challenge: Challenge) {
     challenge_type: challenge.challenge_type,
     difficulty_level: challenge.difficulty_level,
     allow_retry: challenge.allow_retry !== false,
-    sort_order: (challenge as any).sort_order ?? 0,
+    sort_order: challenge.sort_order ?? 0,
   }
   modalError.value = ''
   showModal.value = true
@@ -215,7 +215,7 @@ const filteredChallenges = computed(() => {
     if (sortBy.value === 'sort') {
       const wDiff = weekOrder(a.challenge_type ?? '') - weekOrder(b.challenge_type ?? '')
       if (wDiff !== 0) return wDiff
-      return ((a as any).sort_order ?? 0) - ((b as any).sort_order ?? 0)
+      return ((a.sort_order ?? 0) ?? 0) - ((b.sort_order ?? 0) ?? 0)
     }
     if (sortBy.value === 'type') {
       const diff = weekOrder(a.challenge_type ?? '') - weekOrder(b.challenge_type ?? '')
@@ -361,7 +361,7 @@ onMounted(fetchData)
                   </span>
                 </td>
                 <td class="px-3 py-3.5 text-center">
-                  <span class="text-[13px] font-bold text-[#4CAF50]">{{ (challenge as any).sort_order ?? 0 }}</span>
+                  <span class="text-[13px] font-bold text-[#4CAF50]">{{ challenge.sort_order ?? 0 }}</span>
                 </td>
                 <td class="px-5 py-3.5 text-[#888] text-[13px]">
                   {{ difficultyStars(challenge.difficulty_level) }}
