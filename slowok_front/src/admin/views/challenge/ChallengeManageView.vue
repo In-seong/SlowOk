@@ -147,6 +147,21 @@ async function duplicateChallenge(ch: Challenge) {
   } catch (e: any) { toast.error(e.response?.data?.message || '복제에 실패했습니다.') }
 }
 
+// ========== 주차에서 미배정으로 빼기 ==========
+async function unassignFromWeek(ch: Challenge) {
+  try {
+    const res = await api.put<ApiResponse<Challenge>>(`/admin/challenges/${ch.challenge_id}`, {
+      challenge_type: null,
+      sort_order: 0,
+    })
+    if (res.data.success) {
+      const idx = challenges.value.findIndex(c => c.challenge_id === ch.challenge_id)
+      if (idx !== -1) challenges.value[idx] = res.data.data
+      toast.success(`"${ch.title}" → 미배정으로 이동`)
+    }
+  } catch (e: any) { toast.error(e.response?.data?.message || '실패했습니다.') }
+}
+
 // ========== 미배정 → 현재 주차로 원클릭 배정 ==========
 async function assignToCurrentTab(ch: Challenge) {
   if (activeTab.value === 'all') return
@@ -257,6 +272,34 @@ function getTabCount(type: string): number {
 
 const isDraggable = computed(() => activeTab.value !== 'all' && !searchQuery.value.trim())
 
+// ========== 빈 주차 추가 ==========
+const emptyWeeks = ref<string[]>([])
+
+const allTabs = computed(() => {
+  const real = weekTabs.value
+  const empty = emptyWeeks.value.filter(w => !real.includes(w))
+  return [...real, ...empty].sort((a, b) => weekOrder(a) - weekOrder(b))
+})
+
+function addWeekTab() {
+  const existing = allTabs.value
+  let nextNum = 1
+  for (const tab of existing) {
+    const m = tab.match(/(\d+)주차/)
+    if (m?.[1]) nextNum = Math.max(nextNum, parseInt(m[1]) + 1)
+  }
+  const newWeek = `${nextNum}주차`
+  emptyWeeks.value.push(newWeek)
+  activeTab.value = newWeek
+}
+
+function removeEmptyWeek(week: string) {
+  // 챌린지가 있으면 삭제 불가
+  if (getTabCount(week) > 0) return
+  emptyWeeks.value = emptyWeeks.value.filter(w => w !== week)
+  if (activeTab.value === week) activeTab.value = 'all'
+}
+
 onMounted(fetchData)
 </script>
 
@@ -283,8 +326,14 @@ onMounted(fetchData)
         <button @click="activeTab = 'all'" class="shrink-0 px-4 py-2 rounded-[10px] text-[13px] font-medium transition-all" :class="activeTab === 'all' ? 'bg-[#4CAF50] text-white' : 'bg-white border border-[#E8E8E8] text-[#555] hover:bg-[#F0F0F0]'">
           전체 ({{ challenges.length }})
         </button>
-        <button v-for="week in weekTabs" :key="week" @click="activeTab = week" class="shrink-0 px-4 py-2 rounded-[10px] text-[13px] font-medium transition-all" :class="activeTab === week ? 'bg-[#4CAF50] text-white' : 'bg-white border border-[#E8E8E8] text-[#555] hover:bg-[#F0F0F0]'">
+        <button v-for="week in allTabs" :key="week" @click="activeTab = week" class="shrink-0 px-4 py-2 rounded-[10px] text-[13px] font-medium transition-all relative group" :class="activeTab === week ? 'bg-[#4CAF50] text-white' : 'bg-white border border-[#E8E8E8] text-[#555] hover:bg-[#F0F0F0]'">
           {{ week }} ({{ getTabCount(week) }})
+          <!-- 빈 주차 삭제 버튼 -->
+          <button v-if="getTabCount(week) === 0 && emptyWeeks.includes(week)" @click.stop="removeEmptyWeek(week)" class="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-red-400 text-white text-[9px] leading-none flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">×</button>
+        </button>
+        <!-- 주차 추가 버튼 -->
+        <button @click="addWeekTab" class="shrink-0 w-8 h-8 rounded-[10px] border-2 border-dashed border-[#C8C8C8] text-[#999] hover:border-[#4CAF50] hover:text-[#4CAF50] flex items-center justify-center transition-all" title="주차 추가">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14" /></svg>
         </button>
       </div>
 
@@ -367,6 +416,7 @@ onMounted(fetchData)
                       <button @click="goToQuestionEdit(challenge.challenge_id)" class="border border-[#4CAF50] text-[#4CAF50] hover:bg-[#4CAF50] hover:text-white rounded-[8px] px-3 py-1 text-[13px] font-medium transition-all">문항 관리</button>
                       <button @click="openEditModal(challenge)" class="text-[#4CAF50] hover:text-[#388E3C] text-[13px] font-medium transition-colors">수정</button>
                       <button @click="duplicateChallenge(challenge)" class="text-[#2196F3] hover:text-[#1976D2] text-[13px] font-medium transition-colors">복제</button>
+                      <button v-if="activeTab !== 'all'" @click="unassignFromWeek(challenge)" class="text-orange-500 hover:text-orange-700 text-[13px] font-medium transition-colors">빼기</button>
                       <button @click="deleteChallenge(challenge)" class="text-red-500 hover:text-red-700 text-[13px] font-medium transition-colors">삭제</button>
                     </div>
                   </td>
