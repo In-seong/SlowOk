@@ -14,7 +14,7 @@ const categories = ref<LearningCategory[]>([])
 const loading = ref(true)
 const error = ref('')
 
-// 챌린지 모달 상태
+// 챌린지 모달
 const showModal = ref(false)
 const modalMode = ref<'create' | 'edit'>('create')
 const saving = ref(false)
@@ -43,10 +43,7 @@ function resetForm() {
 
 function openCreateModal() {
   resetForm()
-  // 현재 탭이 주차 탭이면 주차 자동 설정
-  if (activeTab.value !== 'all') {
-    form.value.challenge_type = activeTab.value
-  }
+  if (activeTab.value !== 'all') form.value.challenge_type = activeTab.value
   modalMode.value = 'create'
   showModal.value = true
 }
@@ -57,7 +54,7 @@ function openEditModal(challenge: Challenge) {
   form.value = {
     title: challenge.title,
     category_id: challenge.category_id,
-    challenge_type: challenge.challenge_type,
+    challenge_type: challenge.challenge_type ?? '',
     difficulty_level: challenge.difficulty_level,
     allow_retry: challenge.allow_retry !== false,
     sort_order: challenge.sort_order ?? 0,
@@ -66,26 +63,20 @@ function openEditModal(challenge: Challenge) {
   showModal.value = true
 }
 
-function closeModal() {
-  showModal.value = false
-  resetForm()
-}
+function closeModal() { showModal.value = false; resetForm() }
 
 async function fetchData() {
-  loading.value = true
-  error.value = ''
+  loading.value = true; error.value = ''
   try {
-    const [challengesRes, catsRes] = await Promise.all([
+    const [cr, ca] = await Promise.all([
       api.get<ApiResponse<Challenge[]>>('/admin/challenges'),
       api.get<ApiResponse<LearningCategory[]>>('/admin/learning-categories'),
     ])
-    if (challengesRes.data.success) challenges.value = challengesRes.data.data
-    if (catsRes.data.success) categories.value = catsRes.data.data
+    if (cr.data.success) challenges.value = cr.data.data
+    if (ca.data.success) categories.value = ca.data.data
   } catch (e: any) {
     error.value = e.response?.data?.message || '데이터를 불러오지 못했습니다.'
-  } finally {
-    loading.value = false
-  }
+  } finally { loading.value = false }
 }
 
 function validateForm(): string | null {
@@ -95,10 +86,9 @@ function validateForm(): string | null {
 }
 
 async function handleSubmit() {
-  const validationError = validateForm()
-  if (validationError) { modalError.value = validationError; return }
-  saving.value = true
-  modalError.value = ''
+  const err = validateForm()
+  if (err) { modalError.value = err; return }
+  saving.value = true; modalError.value = ''
   const payload = {
     title: form.value.title.trim(),
     category_id: Number(form.value.category_id),
@@ -126,43 +116,94 @@ async function handleSubmit() {
     closeModal()
   } catch (e: any) {
     modalError.value = e.response?.data?.message || '저장에 실패했습니다.'
-  } finally {
-    saving.value = false
-  }
+  } finally { saving.value = false }
 }
 
-async function deleteChallenge(challenge: Challenge) {
-  if (!confirm(`"${challenge.title}" 챌린지를 정말 삭제하시겠습니까?`)) return
+async function deleteChallenge(ch: Challenge) {
+  if (!confirm(`"${ch.title}" 챌린지를 정말 삭제하시겠습니까?`)) return
   try {
-    await api.delete(`/admin/challenges/${challenge.challenge_id}`)
-    challenges.value = challenges.value.filter(c => c.challenge_id !== challenge.challenge_id)
-  } catch (e: any) {
-    toast.error(e.response?.data?.message || '삭제에 실패했습니다.')
-  }
+    await api.delete(`/admin/challenges/${ch.challenge_id}`)
+    challenges.value = challenges.value.filter(c => c.challenge_id !== ch.challenge_id)
+  } catch (e: any) { toast.error(e.response?.data?.message || '삭제에 실패했습니다.') }
 }
 
-function getCategoryName(categoryId: number): string {
-  return categories.value.find(c => c.category_id === categoryId)?.name || '-'
+function getCategoryName(id: number): string {
+  return categories.value.find(c => c.category_id === id)?.name || '-'
 }
 
-function difficultyStars(level: number): string {
-  return '★'.repeat(level) + '☆'.repeat(5 - level)
+function difficultyStars(lv: number): string {
+  return '★'.repeat(lv) + '☆'.repeat(5 - lv)
 }
 
-function goToQuestionEdit(challengeId: number) {
-  router.push({ name: 'challenge-question-edit', params: { id: challengeId } })
+function goToQuestionEdit(id: number) {
+  router.push({ name: 'challenge-question-edit', params: { id } })
 }
 
-async function duplicateChallenge(challenge: Challenge) {
-  if (!confirm(`"${challenge.title}"을(를) 복제하시겠습니까?\n문항도 함께 복제됩니다.`)) return
+async function duplicateChallenge(ch: Challenge) {
+  if (!confirm(`"${ch.title}"을(를) 복제하시겠습니까?`)) return
   try {
-    const res = await adminApi.duplicateChallenge(challenge.challenge_id)
+    const res = await adminApi.duplicateChallenge(ch.challenge_id)
+    if (res.data.success) { challenges.value.push(res.data.data); toast.success(res.data.message || '복제 완료!') }
+  } catch (e: any) { toast.error(e.response?.data?.message || '복제에 실패했습니다.') }
+}
+
+// ========== 미배정 → 현재 주차로 원클릭 배정 ==========
+async function assignToCurrentTab(ch: Challenge) {
+  if (activeTab.value === 'all') return
+  const week = activeTab.value
+  const currentCount = challenges.value.filter(c => c.challenge_type === week).length
+  try {
+    const res = await api.put<ApiResponse<Challenge>>(`/admin/challenges/${ch.challenge_id}`, {
+      challenge_type: week,
+      sort_order: currentCount + 1,
+    })
     if (res.data.success) {
-      challenges.value.push(res.data.data)
-      toast.success(res.data.message || '복제 완료!')
+      const idx = challenges.value.findIndex(c => c.challenge_id === ch.challenge_id)
+      if (idx !== -1) challenges.value[idx] = res.data.data
+      toast.success(`"${ch.title}" → ${week} 배정 완료`)
     }
-  } catch (e: any) {
-    toast.error(e.response?.data?.message || '복제에 실패했습니다.')
+  } catch (e: any) { toast.error(e.response?.data?.message || '배정에 실패했습니다.') }
+}
+
+// ========== 주차 탭 내 드래그 순서 변경 ==========
+const dragIdx = ref<number | null>(null)
+const dragOverIdx = ref<number | null>(null)
+
+function onDragStart(idx: number) { dragIdx.value = idx }
+function onDragOver(idx: number, e: DragEvent) { e.preventDefault(); dragOverIdx.value = idx }
+function onDragEnd() { dragIdx.value = null; dragOverIdx.value = null }
+
+async function onDrop(idx: number) {
+  if (dragIdx.value === null || dragIdx.value === idx || activeTab.value === 'all') {
+    dragIdx.value = null; dragOverIdx.value = null; return
+  }
+
+  // tabChallenges를 복제해서 순서 변경
+  const list = [...tabChallenges.value]
+  const item = list.splice(dragIdx.value, 1)[0]
+  if (!item) { dragIdx.value = null; dragOverIdx.value = null; return }
+  list.splice(idx, 0, item)
+
+  dragIdx.value = null; dragOverIdx.value = null
+
+  // sort_order 1부터 재배정 후 API 호출
+  const promises = list.map((ch, i) => {
+    const newOrder = i + 1
+    if (ch.sort_order === newOrder) return null
+    return api.put<ApiResponse<Challenge>>(`/admin/challenges/${ch.challenge_id}`, { sort_order: newOrder })
+      .then(res => {
+        if (res.data.success) {
+          const orig = challenges.value.find(c => c.challenge_id === ch.challenge_id)
+          if (orig) orig.sort_order = newOrder
+        }
+      })
+  }).filter(Boolean)
+
+  if (promises.length > 0) {
+    try {
+      await Promise.all(promises)
+      toast.success('순서가 변경되었습니다.')
+    } catch { toast.error('순서 변경에 실패했습니다.') }
   }
 }
 
@@ -171,64 +212,50 @@ const activeTab = ref('all')
 const searchQuery = ref('')
 
 function weekOrder(type: string): number {
-  const match = type.match(/(\d+)주차/)
-  return match?.[1] ? parseInt(match[1]) : 999
+  const m = type.match(/(\d+)주차/)
+  return m?.[1] ? parseInt(m[1]) : 999
 }
 
-// 실제 존재하는 주차 목록 (정렬)
 const weekTabs = computed(() => {
   const types = new Set(challenges.value.map(c => c.challenge_type).filter(Boolean))
   return Array.from(types).sort((a, b) => weekOrder(a) - weekOrder(b))
 })
 
-// 미배정 챌린지
 const unassignedChallenges = computed(() =>
   challenges.value.filter(c => !c.challenge_type || c.challenge_type.trim() === '')
     .sort((a, b) => b.challenge_id - a.challenge_id)
 )
 
-// 현재 탭의 챌린지 (배정된 것만)
 const tabChallenges = computed(() => {
   let list: Challenge[]
-
   if (activeTab.value === 'all') {
-    list = [...challenges.value].sort((a, b) => {
-      const wDiff = weekOrder(a.challenge_type ?? '') - weekOrder(b.challenge_type ?? '')
-      if (wDiff !== 0) return wDiff
-      const aOrder = a.sort_order || 999999
-      const bOrder = b.sort_order || 999999
-      return aOrder - bOrder
+    list = challenges.value.filter(c => c.challenge_type && c.challenge_type.trim() !== '')
+    list = [...list].sort((a, b) => {
+      const w = weekOrder(a.challenge_type ?? '') - weekOrder(b.challenge_type ?? '')
+      if (w !== 0) return w
+      return (a.sort_order || 999) - (b.sort_order || 999)
     })
   } else {
-    list = challenges.value
-      .filter(c => c.challenge_type === activeTab.value)
-      .sort((a, b) => {
-        const aOrder = a.sort_order || 999999
-        const bOrder = b.sort_order || 999999
-        return aOrder - bOrder
-      })
+    list = challenges.value.filter(c => c.challenge_type === activeTab.value)
+      .sort((a, b) => (a.sort_order || 999) - (b.sort_order || 999))
   }
-
   if (searchQuery.value.trim()) {
     const q = searchQuery.value.toLowerCase()
-    list = list.filter(c =>
-      c.title.toLowerCase().includes(q) ||
-      (c.category?.name ?? '').toLowerCase().includes(q)
-    )
+    list = list.filter(c => c.title.toLowerCase().includes(q) || (c.category?.name ?? '').toLowerCase().includes(q))
   }
-
   return list
 })
 
-// 현재 탭에서 미배정도 보여줄지
 const showUnassigned = computed(() => {
-  if (searchQuery.value.trim()) return [] // 검색 중이면 미배정 숨김
+  if (searchQuery.value.trim()) return []
   return unassignedChallenges.value
 })
 
 function getTabCount(type: string): number {
   return challenges.value.filter(c => c.challenge_type === type).length
 }
+
+const isDraggable = computed(() => activeTab.value !== 'all' && !searchQuery.value.trim())
 
 onMounted(fetchData)
 </script>
@@ -241,51 +268,30 @@ onMounted(fetchData)
         <div class="flex items-center gap-3">
           <p class="text-[14px] text-[#888]">챌린지를 관리합니다.</p>
           <div class="relative">
-            <input
-              v-model="searchQuery"
-              type="text"
-              placeholder="제목/카테고리 검색..."
-              class="bg-white border border-[#E8E8E8] rounded-[10px] pl-8 pr-8 py-2 text-[13px] w-[200px] focus:border-[#4CAF50] focus:outline-none"
-            />
+            <input v-model="searchQuery" type="text" placeholder="제목/카테고리 검색..." class="bg-white border border-[#E8E8E8] rounded-[10px] pl-8 pr-8 py-2 text-[13px] w-[200px] focus:border-[#4CAF50] focus:outline-none" />
             <svg class="w-4 h-4 text-[#999] absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
             <button v-if="searchQuery" @click="searchQuery = ''" class="absolute right-2 top-1/2 -translate-y-1/2 text-[#999] hover:text-[#555]">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           </div>
         </div>
-        <button
-          @click="openCreateModal"
-          class="bg-[#4CAF50] hover:bg-[#388E3C] text-white rounded-[12px] px-5 py-2.5 text-[14px] font-medium active:scale-[0.98] transition-all"
-        >
-          + 챌린지 추가
-        </button>
+        <button @click="openCreateModal" class="bg-[#4CAF50] hover:bg-[#388E3C] text-white rounded-[12px] px-5 py-2.5 text-[14px] font-medium active:scale-[0.98] transition-all">+ 챌린지 추가</button>
       </div>
 
       <!-- 주차 탭 -->
       <div class="flex items-center gap-1.5 mb-4 overflow-x-auto pb-1">
-        <button
-          @click="activeTab = 'all'"
-          class="shrink-0 px-4 py-2 rounded-[10px] text-[13px] font-medium transition-all"
-          :class="activeTab === 'all' ? 'bg-[#4CAF50] text-white' : 'bg-white border border-[#E8E8E8] text-[#555] hover:bg-[#F0F0F0]'"
-        >
+        <button @click="activeTab = 'all'" class="shrink-0 px-4 py-2 rounded-[10px] text-[13px] font-medium transition-all" :class="activeTab === 'all' ? 'bg-[#4CAF50] text-white' : 'bg-white border border-[#E8E8E8] text-[#555] hover:bg-[#F0F0F0]'">
           전체 ({{ challenges.length }})
         </button>
-        <button
-          v-for="week in weekTabs"
-          :key="week"
-          @click="activeTab = week"
-          class="shrink-0 px-4 py-2 rounded-[10px] text-[13px] font-medium transition-all"
-          :class="activeTab === week ? 'bg-[#4CAF50] text-white' : 'bg-white border border-[#E8E8E8] text-[#555] hover:bg-[#F0F0F0]'"
-        >
+        <button v-for="week in weekTabs" :key="week" @click="activeTab = week" class="shrink-0 px-4 py-2 rounded-[10px] text-[13px] font-medium transition-all" :class="activeTab === week ? 'bg-[#4CAF50] text-white' : 'bg-white border border-[#E8E8E8] text-[#555] hover:bg-[#F0F0F0]'">
           {{ week }} ({{ getTabCount(week) }})
         </button>
-        <button
-          v-if="unassignedChallenges.length > 0 && activeTab !== 'all'"
-          @click="activeTab = 'all'"
-          class="shrink-0 px-3 py-2 rounded-[10px] text-[12px] font-medium bg-orange-50 text-orange-500 border border-orange-200"
-        >
-          미배정 {{ unassignedChallenges.length }}개
-        </button>
+      </div>
+
+      <!-- 드래그 안내 -->
+      <div v-if="isDraggable && tabChallenges.length > 1" class="mb-3 flex items-center gap-2 text-[12px] text-[#888]">
+        <svg class="w-4 h-4 text-[#4CAF50]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20" /></svg>
+        드래그하여 순서를 변경할 수 있습니다 · 변경 즉시 저장
       </div>
 
       <!-- 로딩 -->
@@ -304,7 +310,7 @@ onMounted(fetchData)
         <p class="text-[#888]">{{ searchQuery ? '검색 결과가 없습니다.' : activeTab === 'all' ? '등록된 챌린지가 없습니다.' : `${activeTab}에 챌린지가 없습니다.` }}</p>
       </div>
 
-      <!-- 챌린지 테이블 -->
+      <!-- 챌린지 목록 -->
       <div v-else class="space-y-4">
         <!-- 배정된 챌린지 -->
         <div v-if="tabChallenges.length > 0" class="bg-white rounded-[16px] shadow-[0_0_10px_rgba(0,0,0,0.1)] overflow-hidden">
@@ -312,12 +318,12 @@ onMounted(fetchData)
             <table class="w-full text-left text-[14px]">
               <thead>
                 <tr class="border-b border-[#E8E8E8] bg-[#FAFAFA]">
+                  <th v-if="isDraggable" class="w-[36px]"></th>
                   <th class="px-3 py-3 font-semibold text-[#555] w-[40px]">#</th>
                   <th class="px-5 py-3 font-semibold text-[#555]">제목</th>
                   <th class="px-5 py-3 font-semibold text-[#555]">카테고리</th>
                   <th v-if="activeTab === 'all'" class="px-5 py-3 font-semibold text-[#555]">주차</th>
                   <th class="px-5 py-3 font-semibold text-[#555]">문항</th>
-                  <th class="px-3 py-3 font-semibold text-[#555] w-[50px]">순서</th>
                   <th class="px-5 py-3 font-semibold text-[#555]">난이도</th>
                   <th class="px-5 py-3 font-semibold text-[#555]">재도전</th>
                   <th class="px-5 py-3 font-semibold text-[#555]">액션</th>
@@ -327,32 +333,34 @@ onMounted(fetchData)
                 <tr
                   v-for="(challenge, idx) in tabChallenges"
                   :key="challenge.challenge_id"
-                  class="border-b border-[#F0F0F0] hover:bg-[#FAFAFA] transition-colors"
+                  :draggable="isDraggable"
+                  @dragstart="isDraggable && onDragStart(idx)"
+                  @dragover="isDraggable && onDragOver(idx, $event)"
+                  @drop="isDraggable && onDrop(idx)"
+                  @dragend="onDragEnd"
+                  class="border-b border-[#F0F0F0] transition-colors"
+                  :class="[
+                    isDraggable ? 'cursor-grab active:cursor-grabbing' : '',
+                    dragOverIdx === idx ? 'bg-[#E8F5E9] border-t-2 border-t-[#4CAF50]' : 'hover:bg-[#FAFAFA]',
+                    dragIdx === idx ? 'opacity-40' : '',
+                  ]"
                 >
+                  <!-- 드래그 핸들 -->
+                  <td v-if="isDraggable" class="pl-3 pr-0 py-3.5">
+                    <svg class="w-4 h-4 text-[#CCC]" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="5" r="1.5"/><circle cx="15" cy="5" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="19" r="1.5"/><circle cx="15" cy="19" r="1.5"/></svg>
+                  </td>
                   <td class="px-3 py-3.5 text-[12px] text-[#999] font-mono">{{ idx + 1 }}</td>
                   <td class="px-5 py-3.5 text-[#333] font-medium">{{ challenge.title }}</td>
                   <td class="px-5 py-3.5 text-[#555]">{{ challenge.category?.name || getCategoryName(challenge.category_id) }}</td>
                   <td v-if="activeTab === 'all'" class="px-5 py-3.5">
-                    <span class="px-2 py-0.5 rounded-full text-[12px] font-medium bg-indigo-50 text-indigo-600">
-                      {{ challenge.challenge_type }}
-                    </span>
+                    <span class="px-2 py-0.5 rounded-full text-[12px] font-medium bg-indigo-50 text-indigo-600">{{ challenge.challenge_type }}</span>
                   </td>
                   <td class="px-5 py-3.5">
-                    <span class="text-[13px] font-medium" :class="(challenge.questions?.length ?? 0) === 0 ? 'text-red-400' : 'text-[#555]'">
-                      {{ challenge.questions?.length ?? 0 }}개
-                    </span>
-                  </td>
-                  <td class="px-3 py-3.5 text-center">
-                    <span class="text-[13px] font-bold text-[#4CAF50]">{{ challenge.sort_order ?? '-' }}</span>
+                    <span class="text-[13px] font-medium" :class="(challenge.questions?.length ?? 0) === 0 ? 'text-red-400' : 'text-[#555]'">{{ challenge.questions?.length ?? 0 }}개</span>
                   </td>
                   <td class="px-5 py-3.5 text-[#888] text-[13px]">{{ difficultyStars(challenge.difficulty_level) }}</td>
                   <td class="px-5 py-3.5">
-                    <span
-                      class="px-2 py-0.5 rounded-full text-[11px] font-medium"
-                      :class="challenge.allow_retry !== false ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'"
-                    >
-                      {{ challenge.allow_retry !== false ? '허용' : '1회만' }}
-                    </span>
+                    <span class="px-2 py-0.5 rounded-full text-[11px] font-medium" :class="challenge.allow_retry !== false ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'">{{ challenge.allow_retry !== false ? '허용' : '1회만' }}</span>
                   </td>
                   <td class="px-5 py-3.5">
                     <div class="flex items-center gap-3">
@@ -366,41 +374,37 @@ onMounted(fetchData)
               </tbody>
             </table>
           </div>
-          <div class="px-5 py-2.5 border-t border-[#F0F0F0] text-[13px] text-[#888]">
-            {{ tabChallenges.length }}개
-          </div>
+          <div class="px-5 py-2.5 border-t border-[#F0F0F0] text-[13px] text-[#888]">{{ tabChallenges.length }}개</div>
         </div>
 
-        <!-- 미배정 챌린지 (전체 탭 또는 주차별 탭 하단) -->
+        <!-- 미배정 챌린지 -->
         <div v-if="showUnassigned.length > 0" class="bg-white rounded-[16px] shadow-[0_0_10px_rgba(0,0,0,0.1)] overflow-hidden border-2 border-dashed border-orange-200">
           <div class="px-5 py-2.5 bg-orange-50 border-b border-orange-200 flex items-center gap-2">
-            <span class="text-[13px] font-bold text-orange-500">미배정</span>
-            <span class="text-[12px] text-orange-400">주차가 설정되지 않은 챌린지 · 수정에서 주차를 배정하세요</span>
+            <span class="text-[13px] font-bold text-orange-500">미배정 ({{ showUnassigned.length }})</span>
+            <span v-if="activeTab !== 'all'" class="text-[12px] text-orange-400">→ "{{ activeTab }}에 추가" 버튼으로 바로 배정</span>
+            <span v-else class="text-[12px] text-orange-400">주차 탭을 선택하면 원클릭 배정할 수 있습니다</span>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-left text-[14px]">
               <tbody>
-                <tr
-                  v-for="challenge in showUnassigned"
-                  :key="challenge.challenge_id"
-                  class="border-b border-[#F0F0F0] hover:bg-orange-50/30 transition-colors"
-                >
+                <tr v-for="ch in showUnassigned" :key="ch.challenge_id" class="border-b border-[#F0F0F0] hover:bg-orange-50/30 transition-colors">
                   <td class="px-3 py-3.5 w-[40px]">
                     <span class="w-5 h-5 flex items-center justify-center rounded-full bg-orange-100 text-orange-400 text-[10px]">!</span>
                   </td>
-                  <td class="px-5 py-3.5 text-[#333] font-medium">{{ challenge.title }}</td>
-                  <td class="px-5 py-3.5 text-[#555]">{{ challenge.category?.name || getCategoryName(challenge.category_id) }}</td>
+                  <td class="px-5 py-3.5 text-[#333] font-medium">{{ ch.title }}</td>
+                  <td class="px-5 py-3.5 text-[#555]">{{ ch.category?.name || getCategoryName(ch.category_id) }}</td>
                   <td class="px-5 py-3.5">
-                    <span class="text-[13px] font-medium" :class="(challenge.questions?.length ?? 0) === 0 ? 'text-red-400' : 'text-[#555]'">
-                      {{ challenge.questions?.length ?? 0 }}개
-                    </span>
+                    <span class="text-[13px] font-medium" :class="(ch.questions?.length ?? 0) === 0 ? 'text-red-400' : 'text-[#555]'">{{ ch.questions?.length ?? 0 }}개</span>
                   </td>
-                  <td class="px-5 py-3.5 text-[#888] text-[13px]">{{ difficultyStars(challenge.difficulty_level) }}</td>
                   <td class="px-5 py-3.5">
-                    <div class="flex items-center gap-3">
-                      <button @click="openEditModal(challenge)" class="bg-orange-500 hover:bg-orange-600 text-white rounded-[8px] px-3 py-1 text-[13px] font-medium transition-all">주차 배정</button>
-                      <button @click="goToQuestionEdit(challenge.challenge_id)" class="text-[#4CAF50] hover:text-[#388E3C] text-[13px] font-medium transition-colors">문항 관리</button>
-                      <button @click="deleteChallenge(challenge)" class="text-red-500 hover:text-red-700 text-[13px] font-medium transition-colors">삭제</button>
+                    <div class="flex items-center gap-2">
+                      <!-- 주차 탭 선택 중이면 원클릭 배정 -->
+                      <button v-if="activeTab !== 'all'" @click="assignToCurrentTab(ch)" class="bg-[#4CAF50] hover:bg-[#388E3C] text-white rounded-[8px] px-3 py-1 text-[13px] font-medium transition-all">
+                        {{ activeTab }}에 추가
+                      </button>
+                      <button v-else @click="openEditModal(ch)" class="bg-orange-500 hover:bg-orange-600 text-white rounded-[8px] px-3 py-1 text-[13px] font-medium transition-all">주차 배정</button>
+                      <button @click="goToQuestionEdit(ch.challenge_id)" class="text-[#4CAF50] hover:text-[#388E3C] text-[13px] font-medium transition-colors">문항</button>
+                      <button @click="deleteChallenge(ch)" class="text-red-500 hover:text-red-700 text-[13px] font-medium transition-colors">삭제</button>
                     </div>
                   </td>
                 </tr>
@@ -418,13 +422,11 @@ onMounted(fetchData)
         <div class="relative bg-white rounded-[16px] shadow-[0_0_30px_rgba(0,0,0,0.2)] w-full max-w-[520px] mx-4 p-6">
           <h2 class="text-[18px] font-bold text-[#333] mb-5">{{ modalMode === 'edit' ? '챌린지 수정' : '챌린지 추가' }}</h2>
           <div v-if="modalError" class="mb-4 bg-red-50 border border-red-200 rounded-[12px] px-4 py-3 text-red-600 text-[14px]">{{ modalError }}</div>
-
           <form @submit.prevent="handleSubmit">
             <div class="mb-4">
               <label class="block text-[14px] font-semibold text-[#333] mb-1.5">제목</label>
               <input v-model="form.title" type="text" placeholder="챌린지 제목" class="w-full bg-[#F8F8F8] border border-[#E8E8E8] rounded-[12px] px-4 py-3 text-[15px] focus:border-[#4CAF50] focus:outline-none transition-colors" />
             </div>
-
             <div class="mb-4">
               <label class="block text-[14px] font-semibold text-[#333] mb-1.5">카테고리</label>
               <select v-model="form.category_id" class="w-full bg-[#F8F8F8] border border-[#E8E8E8] rounded-[12px] px-4 py-3 text-[15px] focus:border-[#4CAF50] focus:outline-none transition-colors">
@@ -432,7 +434,6 @@ onMounted(fetchData)
                 <option v-for="cat in categories" :key="cat.category_id" :value="cat.category_id">{{ cat.name }}</option>
               </select>
             </div>
-
             <div class="mb-4">
               <label class="block text-[14px] font-semibold text-[#333] mb-1.5">주차 구분</label>
               <select v-model="form.challenge_type" class="w-full bg-[#F8F8F8] border border-[#E8E8E8] rounded-[12px] px-4 py-3 text-[15px] focus:border-[#4CAF50] focus:outline-none transition-colors">
@@ -440,12 +441,6 @@ onMounted(fetchData)
                 <option v-for="opt in CHALLENGE_TYPE_OPTIONS" :key="opt" :value="opt">{{ opt }}</option>
               </select>
             </div>
-
-            <div class="mb-4">
-              <label class="block text-[14px] font-semibold text-[#333] mb-1.5">순서 (같은 주차 내)</label>
-              <input v-model.number="form.sort_order" type="number" min="0" placeholder="0" class="w-full bg-[#F8F8F8] border border-[#E8E8E8] rounded-[12px] px-4 py-3 text-[15px] focus:border-[#4CAF50] focus:outline-none transition-colors" />
-            </div>
-
             <div class="mb-5">
               <label class="block text-[14px] font-semibold text-[#333] mb-1.5">난이도 ({{ form.difficulty_level }}/5)</label>
               <div class="flex items-center gap-3">
@@ -453,7 +448,6 @@ onMounted(fetchData)
                 <span class="text-[14px] text-[#888] w-[100px] text-right">{{ '★'.repeat(form.difficulty_level) }}{{ '☆'.repeat(5 - form.difficulty_level) }}</span>
               </div>
             </div>
-
             <div class="mb-5">
               <label class="flex items-center gap-3 cursor-pointer">
                 <div class="relative inline-flex items-center">
@@ -467,11 +461,8 @@ onMounted(fetchData)
                 </div>
               </label>
             </div>
-
             <div class="flex items-center gap-3">
-              <button type="submit" :disabled="saving" class="bg-[#4CAF50] hover:bg-[#388E3C] disabled:opacity-50 text-white rounded-[12px] px-6 py-3 text-[15px] font-medium active:scale-[0.98] transition-all">
-                {{ saving ? '저장 중...' : modalMode === 'edit' ? '수정하기' : '추가하기' }}
-              </button>
+              <button type="submit" :disabled="saving" class="bg-[#4CAF50] hover:bg-[#388E3C] disabled:opacity-50 text-white rounded-[12px] px-6 py-3 text-[15px] font-medium active:scale-[0.98] transition-all">{{ saving ? '저장 중...' : modalMode === 'edit' ? '수정하기' : '추가하기' }}</button>
               <button type="button" @click="closeModal" class="bg-[#F8F8F8] hover:bg-[#E8E8E8] text-[#555] rounded-[12px] px-6 py-3 text-[15px] font-medium active:scale-[0.98] transition-all">취소</button>
             </div>
           </form>
