@@ -221,7 +221,10 @@ const filteredChallenges = computed(() => {
     }
     if (sortBy.value === 'type') {
       const diff = weekOrder(a.challenge_type ?? '') - weekOrder(b.challenge_type ?? '')
-      return diff !== 0 ? diff : a.title.localeCompare(b.title)
+      if (diff !== 0) return diff
+      const aOrder = a.sort_order || 999999
+      const bOrder = b.sort_order || 999999
+      return aOrder - bOrder
     }
     if (sortBy.value === 'title') return a.title.localeCompare(b.title)
     if (sortBy.value === 'difficulty') return a.difficulty_level - b.difficulty_level
