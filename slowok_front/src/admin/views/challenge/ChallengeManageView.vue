@@ -180,7 +180,7 @@ async function duplicateChallenge(challenge: Challenge) {
 // 검색 + 유형 필터 + 정렬 + 페이징
 const searchQuery = ref('')
 const filterType = ref('')
-const sortBy = ref<'sort' | 'type' | 'title' | 'difficulty'>('sort')
+const sortBy = ref<'newest' | 'sort' | 'type' | 'title' | 'difficulty'>('newest')
 const currentPage = ref(1)
 const perPage = 15
 
@@ -209,6 +209,9 @@ const filteredChallenges = computed(() => {
   }
   // 정렬
   return [...filtered].sort((a, b) => {
+    if (sortBy.value === 'newest') {
+      return b.challenge_id - a.challenge_id
+    }
     if (sortBy.value === 'sort') {
       const wDiff = weekOrder(a.challenge_type ?? '') - weekOrder(b.challenge_type ?? '')
       if (wDiff !== 0) return wDiff
@@ -285,6 +288,7 @@ onMounted(fetchData)
             v-model="sortBy"
             class="bg-white border border-[#E8E8E8] rounded-[10px] px-3 py-2 text-[13px] focus:border-[#4CAF50] focus:outline-none"
           >
+            <option value="newest">최신순</option>
             <option value="sort">순서순</option>
             <option value="type">주차순</option>
             <option value="title">제목순</option>
