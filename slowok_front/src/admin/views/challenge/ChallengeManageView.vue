@@ -36,7 +36,7 @@ const form = ref({
 })
 
 function resetForm() {
-  form.value = { title: '', category_id: '', challenge_type: '', difficulty_level: 1, allow_retry: true, sort_order: 0 }
+  form.value = { title: '', category_id: '', challenge_type: '', difficulty_level: 1, allow_retry: false, sort_order: 0 }
   modalError.value = ''
   editingId.value = null
 }
