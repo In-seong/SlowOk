@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import api from '@shared/api'
 import type { ApiResponse } from '@shared/types'
 
@@ -35,11 +35,51 @@ async function fetchData() {
 
 onMounted(fetchData)
 
+// ========== 주차 탭 ==========
+const activeWeek = ref('')
+
+function weekOrder(type: string): number {
+  const m = type.match(/(\d+)주차/)
+  return m?.[1] ? parseInt(m[1]) : 999
+}
+
+const weekTabs = computed(() => {
+  const types = new Set(challenges.value.map(c => c.challenge_type).filter(Boolean))
+  return Array.from(types).sort((a, b) => weekOrder(a) - weekOrder(b))
+})
+
+// 첫 로드 시 1주차 자동 선택
+watch(weekTabs, (tabs) => {
+  if (tabs.length > 0 && !activeWeek.value) {
+    activeWeek.value = tabs[0]!
+  }
+})
+
+// 현재 주차의 챌린지만
+const weekChallenges = computed(() => {
+  return challenges.value
+    .filter(c => c.challenge_type === activeWeek.value)
+    .sort((a, b) => (a.sort_order || 999) - (b.sort_order || 999))
+})
+
 const filteredMatrix = computed(() => {
   if (!searchQuery.value.trim()) return matrix.value
   const q = searchQuery.value.toLowerCase()
   return matrix.value.filter(u => u.name.toLowerCase().includes(q) || u.username.toLowerCase().includes(q))
 })
+
+// 사용자별 현재 주차 완료율
+function getUserWeekProgress(u: UserRow): { completed: number; total: number } {
+  const items = viewMode.value === 'challenge' ? weekChallenges.value : screenings.value
+  let completed = 0
+  let total = items.length
+  for (const item of items) {
+    const id = viewMode.value === 'challenge' ? (item as ChallengeInfo).challenge_id : (item as ScreeningInfo).test_id
+    const data = viewMode.value === 'challenge' ? u.challenges : u.screenings
+    if (data[id] === 'COMPLETED') completed++
+  }
+  return { completed, total }
+}
 
 function statusIcon(status: string | null | undefined): string {
   if (status === 'COMPLETED') return '✅'
@@ -62,28 +102,29 @@ function statusLabel(status: string | null | undefined): string {
   return '미할당'
 }
 
-// 통계
+// 주차별 통계
 const stats = computed(() => {
-  const total = filteredMatrix.value.length
-  if (total === 0) return null
+  const users = filteredMatrix.value
+  if (users.length === 0) return null
 
-  const items = viewMode.value === 'challenge' ? challenges.value : screenings.value
+  const items = viewMode.value === 'challenge' ? weekChallenges.value : screenings.value
   const itemCount = items.length
 
   let completedCells = 0
   let assignedCells = 0
 
-  for (const u of filteredMatrix.value) {
-    const data = viewMode.value === 'challenge' ? u.challenges : u.screenings
-    for (const key of Object.keys(data)) {
-      const s = data[Number(key)]
+  for (const u of users) {
+    for (const item of items) {
+      const id = viewMode.value === 'challenge' ? (item as ChallengeInfo).challenge_id : (item as ScreeningInfo).test_id
+      const data = viewMode.value === 'challenge' ? u.challenges : u.screenings
+      const s = data[id]
       if (s === 'COMPLETED') completedCells++
       if (s) assignedCells++
     }
   }
 
   return {
-    users: total,
+    users: users.length,
     items: itemCount,
     completionRate: assignedCells > 0 ? Math.round((completedCells / assignedCells) * 100) : 0,
     assignedCells,
@@ -94,7 +135,7 @@ const stats = computed(() => {
 
 <template>
   <div class="p-6">
-    <div class="max-w-full mx-auto">
+    <div class="max-w-[1200px] mx-auto">
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center gap-3">
           <h2 class="text-[16px] font-bold text-[#333]">진행 현황</h2>
@@ -126,14 +167,27 @@ const stats = computed(() => {
         </div>
       </div>
 
+      <!-- 주차 탭 (챌린지 모드에서만) -->
+      <div v-if="viewMode === 'challenge' && weekTabs.length > 0" class="flex items-center gap-1.5 mb-4 overflow-x-auto pb-1">
+        <button
+          v-for="week in weekTabs"
+          :key="week"
+          @click="activeWeek = week"
+          class="shrink-0 px-4 py-2 rounded-[10px] text-[13px] font-medium transition-all"
+          :class="activeWeek === week ? 'bg-[#4CAF50] text-white' : 'bg-white border border-[#E8E8E8] text-[#555] hover:bg-[#F0F0F0]'"
+        >
+          {{ week }}
+        </button>
+      </div>
+
       <!-- 통계 카드 -->
-      <div v-if="stats" class="flex gap-4 mb-4">
+      <div v-if="stats && !loading" class="flex gap-4 mb-4">
         <div class="bg-white rounded-[12px] border border-[#E8E8E8] px-4 py-3">
           <p class="text-[11px] text-[#999]">사용자</p>
           <p class="text-[18px] font-bold text-[#333]">{{ stats.users }}명</p>
         </div>
         <div class="bg-white rounded-[12px] border border-[#E8E8E8] px-4 py-3">
-          <p class="text-[11px] text-[#999]">{{ viewMode === 'challenge' ? '챌린지' : '진단' }}</p>
+          <p class="text-[11px] text-[#999]">{{ viewMode === 'challenge' ? activeWeek + ' 챌린지' : '진단' }}</p>
           <p class="text-[18px] font-bold text-[#333]">{{ stats.items }}개</p>
         </div>
         <div class="bg-white rounded-[12px] border border-[#E8E8E8] px-4 py-3">
@@ -160,12 +214,11 @@ const stats = computed(() => {
                 <th class="sticky left-0 bg-[#FAFAFA] z-10 px-3 py-2 text-left font-semibold text-[#555] min-w-[120px]">사용자</th>
                 <template v-if="viewMode === 'challenge'">
                   <th
-                    v-for="c in challenges"
+                    v-for="c in weekChallenges"
                     :key="c.challenge_id"
                     class="px-2 py-2 text-center font-medium text-[#555] min-w-[80px]"
                   >
-                    <div class="text-[10px] text-[#999]">{{ c.challenge_type }}</div>
-                    <div class="text-[11px] truncate max-w-[80px]" :title="c.title">{{ c.title }}</div>
+                    <div class="text-[11px] truncate max-w-[100px]" :title="c.title">{{ c.title }}</div>
                   </th>
                 </template>
                 <template v-else>
@@ -177,11 +230,12 @@ const stats = computed(() => {
                     <div class="text-[11px] truncate max-w-[80px]" :title="s.title">{{ s.title }}</div>
                   </th>
                 </template>
+                <th class="px-3 py-2 text-center font-semibold text-[#555] min-w-[60px]">완료율</th>
               </tr>
             </thead>
             <tbody>
               <tr v-if="filteredMatrix.length === 0">
-                <td :colspan="1 + (viewMode === 'challenge' ? challenges.length : screenings.length)" class="px-4 py-8 text-center text-[#888]">
+                <td :colspan="2 + (viewMode === 'challenge' ? weekChallenges.length : screenings.length)" class="px-4 py-8 text-center text-[#888]">
                   {{ searchQuery ? '검색 결과가 없습니다.' : '데이터가 없습니다.' }}
                 </td>
               </tr>
@@ -196,7 +250,7 @@ const stats = computed(() => {
                 </td>
                 <template v-if="viewMode === 'challenge'">
                   <td
-                    v-for="c in challenges"
+                    v-for="c in weekChallenges"
                     :key="c.challenge_id"
                     :class="statusClass(u.challenges[c.challenge_id])"
                     class="px-2 py-2 text-center"
@@ -216,6 +270,19 @@ const stats = computed(() => {
                     {{ statusIcon(u.screenings[s.test_id]) }}
                   </td>
                 </template>
+                <!-- 완료율 -->
+                <td class="px-3 py-2 text-center">
+                  <span
+                    class="text-[12px] font-bold"
+                    :class="getUserWeekProgress(u).completed === getUserWeekProgress(u).total && getUserWeekProgress(u).total > 0
+                      ? 'text-[#4CAF50]'
+                      : getUserWeekProgress(u).completed > 0
+                        ? 'text-[#FF9800]'
+                        : 'text-[#CCC]'"
+                  >
+                    {{ getUserWeekProgress(u).completed }}/{{ getUserWeekProgress(u).total }}
+                  </span>
+                </td>
               </tr>
             </tbody>
           </table>
