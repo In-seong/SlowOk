@@ -32,6 +32,9 @@ const feedbackAnswer = ref('')
 const wrongShake = ref(false)
 const mcAttemptCount = ref(0)
 
+// 문항별 오답 추적
+const wrongAttempts = ref<Record<number, number>>({})
+
 const challenge = computed<Challenge | null>(() => challengeStore.currentChallenge)
 const questions = computed<ChallengeQuestion[]>(() => challenge.value?.questions ?? [])
 const totalQuestions = computed(() => questions.value.length)
@@ -72,6 +75,7 @@ function selectOption(index: number): void {
   } else {
     // 오답 — 흔들림 + 소리 → 선택 초기화
     mcAttemptCount.value++
+    wrongAttempts.value[currentQuestion.value] = (wrongAttempts.value[currentQuestion.value] ?? 0) + 1
     wrongShake.value = true
     playWrongSound()
     answers.value[currentQuestion.value] = index // 잠깐 빨간색 표시
@@ -134,19 +138,22 @@ function continueNext(): void {
 }
 
 // Handler for sub-component answers
-function onMatchingAnswered(result: { correct: number; total: number }) {
+function onMatchingAnswered(result: { correct: number; total: number; wrongCount?: number }) {
   const idx = currentQuestion.value
   questionResults.value[idx] = result.correct === result.total
+  if (result.wrongCount) wrongAttempts.value[idx] = result.wrongCount
 }
 
-function onImageChoiceAnswered(result: { correct: boolean }) {
+function onImageChoiceAnswered(result: { correct: boolean; selected: string; wrongCount?: number }) {
   const idx = currentQuestion.value
   questionResults.value[idx] = result.correct
+  if (result.wrongCount) wrongAttempts.value[idx] = result.wrongCount
 }
 
 function onImageTextAnswered(result: { correct: boolean }) {
   const idx = currentQuestion.value
   questionResults.value[idx] = result.correct
+  if (!result.correct) wrongAttempts.value[idx] = 1
 }
 
 // [미사용] 음성 기능 비활성화
@@ -183,8 +190,22 @@ async function finishChallenge(): Promise<void> {
     playWrongSound()
   }
 
+  // 문항별 오답 데이터 구성
+  const answerDetails = questions.value.map((q, i) => ({
+    question_id: q.question_id,
+    type: q.question_type ?? 'multiple_choice',
+    wrong_attempts: wrongAttempts.value[i] ?? 0,
+    correct: !!questionResults.value[i],
+  }))
+  const totalWrong = answerDetails.reduce((sum, a) => sum + a.wrong_attempts, 0)
+  const firstTryCorrect = answerDetails.filter(a => a.wrong_attempts === 0 && a.correct).length
+
   submitting.value = true
-  await challengeStore.submitAttempt(challengeId, correctCount, passed)
+  await challengeStore.submitAttempt(challengeId, correctCount, passed, {
+    questions: answerDetails,
+    total_wrong_attempts: totalWrong,
+    first_try_correct_rate: totalQuestions.value > 0 ? Math.round((firstTryCorrect / totalQuestions.value) * 100) / 100 : 0,
+  })
   submitting.value = false
 }
 

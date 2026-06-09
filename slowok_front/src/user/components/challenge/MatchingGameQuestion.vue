@@ -8,7 +8,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'answered', result: { correct: number; total: number }): void
+  (e: 'answered', result: { correct: number; total: number; wrongCount: number }): void
 }>()
 
 const pairs = computed<MatchPair[]>(() => props.question.match_pairs ?? [])
@@ -25,6 +25,7 @@ const selectedRight = ref<number | null>(null)
 const matched = ref<Set<number>>(new Set())
 const wrongPair = ref<{ left: number; right: number } | null>(null)
 const correctCount = ref(0)
+const wrongCount = ref(0)
 const isFinished = ref(false)
 
 function shuffle<T>(arr: T[]): T[] {
@@ -45,6 +46,7 @@ function init() {
   matched.value = new Set()
   wrongPair.value = null
   correctCount.value = 0
+  wrongCount.value = 0
   isFinished.value = false
 }
 
@@ -91,10 +93,11 @@ function tryMatch() {
 
     if (matched.value.size === total.value) {
       isFinished.value = true
-      emit('answered', { correct: correctCount.value, total: total.value })
+      emit('answered', { correct: correctCount.value, total: total.value, wrongCount: wrongCount.value })
     }
   } else {
     playWrongSound()
+    wrongCount.value++
     wrongPair.value = { left: leftIdx, right: rightIdx }
     setTimeout(() => {
       wrongPair.value = null

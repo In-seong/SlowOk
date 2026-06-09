@@ -8,7 +8,7 @@ export const challengeApi = {
   getChallenge(id: number) {
     return api.get<ApiResponse<Challenge>>(`/user/challenges/${id}`)
   },
-  submitAttempt(challengeId: number, data: { score: number; is_passed: boolean }) {
+  submitAttempt(challengeId: number, data: { score: number; is_passed: boolean; answers?: Record<string, unknown> }) {
     return api.post<ApiResponse<ChallengeAttempt>>(`/user/challenges/${challengeId}/attempt`, data)
   },
   getRewardCards() {

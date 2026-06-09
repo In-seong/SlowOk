@@ -41,9 +41,9 @@ export const useChallengeStore = defineStore('challenge', () => {
     }
   }
 
-  async function submitAttempt(challengeId: number, score: number, isPassed: boolean) {
+  async function submitAttempt(challengeId: number, score: number, isPassed: boolean, answers?: Record<string, unknown>) {
     try {
-      const res = await challengeApi.submitAttempt(challengeId, { score, is_passed: isPassed })
+      const res = await challengeApi.submitAttempt(challengeId, { score, is_passed: isPassed, answers })
       return res.data.success ? res.data.data : null
     } catch {
       return null

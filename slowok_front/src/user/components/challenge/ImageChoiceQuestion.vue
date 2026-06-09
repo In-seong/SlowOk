@@ -8,7 +8,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'answered', result: { correct: boolean; selected: string }): void
+  (e: 'answered', result: { correct: boolean; selected: string; wrongCount: number }): void
 }>()
 
 const selected = ref<string | null>(null)
@@ -30,7 +30,7 @@ function selectOption(option: string) {
 
   if (option === props.question.correct_answer) {
     isCorrect.value = true
-    emit('answered', { correct: true, selected: option })
+    emit('answered', { correct: true, selected: option, wrongCount: attemptCount.value })
   } else {
     attemptCount.value++
     wrongShake.value = true
