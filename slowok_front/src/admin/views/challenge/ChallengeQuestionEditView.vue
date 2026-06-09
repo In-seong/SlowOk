@@ -44,7 +44,8 @@ async function fetchData() {
 }
 
 function goBack() {
-  router.push({ name: 'challenges' })
+  const week = route.query.week as string | undefined
+  router.push({ name: 'challenges', query: week ? { week } : undefined })
 }
 
 // 문항 추가: 유형 선택기 표시

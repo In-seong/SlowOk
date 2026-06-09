@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import api from '@shared/api'
 import { adminApi } from '@shared/api/adminApi'
 import type { Challenge, LearningCategory, ApiResponse } from '@shared/types'
 import { useToastStore } from '@shared/stores/toastStore'
 
 const toast = useToastStore()
+const route = useRoute()
 const router = useRouter()
 
 const challenges = ref<Challenge[]>([])
@@ -136,7 +137,7 @@ function difficultyStars(lv: number): string {
 }
 
 function goToQuestionEdit(id: number) {
-  router.push({ name: 'challenge-question-edit', params: { id } })
+  router.push({ name: 'challenge-question-edit', params: { id }, query: { week: activeTab.value } })
 }
 
 async function duplicateChallenge(ch: Challenge) {
@@ -223,7 +224,7 @@ async function onDrop(idx: number) {
 }
 
 // ========== 주차 탭 ==========
-const activeTab = ref('all')
+const activeTab = ref((route.query.week as string) || 'all')
 const searchQuery = ref('')
 
 function weekOrder(type: string): number {
